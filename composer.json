@@ -1,0 +1,11 @@
+{
+	"name": "abuyoyo/adminmenupage",
+	"description": "WordPress admin menu page helper class",
+	"type": "library",
+	"license": "BSD-3-Clause",
+	"autoload": {
+		"psr-4": {
+			"WPHelper\\" : ""
+		}
+	}
+}
