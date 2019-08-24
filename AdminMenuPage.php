@@ -8,7 +8,6 @@
  * @author  abuyoyo
  * @version 0.6
  */
-
 namespace WPHelper;
 
 if ( ! class_exists( 'WPHelper\AdminMenuPage' ) ):
@@ -86,14 +85,35 @@ class AdminMenuPage
 		$this->capability = $capability;
 		$this->slug = $slug;
 		$this->template = rtrim( $template, '/' );
-		
+
+		if ( $parent )
+			$this->parent($parent);
+
+		if ( $icon_url )
+			$this->icon_url($icon_url);
+
+		if ( $position )
+			$this->position($position);
+
+		if ( $scripts )
+			$this->scripts($scripts);
+	}
+	
+	function parent($parent){
 		$this->parent = $parent;
-
+	}
+	
+	function icon_url($icon_url){
 		$this->icon_url = $icon_url;
+	}
+	
+	function position($position){
 		$this->position = $position;
-
+	}
+	
+	function scripts($scripts){
 		$this->scripts = $scripts;
-    }
+	}
 	
 	function setup(){
 		$this->bootstrap(); // set opinionated defaults
@@ -146,17 +166,21 @@ class AdminMenuPage
 	}
 	
 	public function _admin_page_setup(){
-		
-		add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_scripts' ] );
+
+		if ($this->scripts)
+			add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_scripts' ] );
 	}
 
 	public function admin_enqueue_scripts($hook) {
-
+		
 		// redundant
 		// this only gets called on load-{$this->hook_suffix} anyway
 		if( $hook != $this->hook_suffix ) {
 			return;
 		}
+
+		if ( ! $this->scripts)
+			return;
 
 		foreach ($this->scripts as $script_args){
 			wp_enqueue_script( ...$script_args );
