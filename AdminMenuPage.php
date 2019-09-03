@@ -94,6 +94,9 @@ class AdminMenuPage
 		if ( $render_tpl ) // dev
 			$this->render_tpl($render_tpl);
 
+		if (true)
+			$this->render(); // render anyway
+
 		$this->template = rtrim( $template, '/' ); // original - deprecate
 
 		if ( $parent )
@@ -122,12 +125,18 @@ class AdminMenuPage
 	}
 
 
-	function render($render){
-		// wp_die( 'render_cb: ' . is_callable($render_cb)  );
+	function render($render=null){
+
+		if (! $render){
+
+		}
+
 		if( is_callable( $render ) )
 			$this->render_cb($render);
 		else if (is_readable($render) )
 			$this->render_tpl($render);
+		else
+			$this->render_tpl(__DIR__ . '/tpl/default.php');
 	}
 
 	function render_cb($render_cb){
