@@ -169,6 +169,17 @@ class AdminMenuPage
 		$this->scripts = $scripts;
 	}
 	
+	/**
+	 * REGISTER MENU
+	 * 
+	 * This runs for all registers
+	 * hook_suffix not defined yet
+	 * 
+	 * inside WPHelper namespace
+	 * \get_current_screen() function not defined
+	 * \current_action() also????
+	 * 
+	 */
 	function setup(){
 		$this->bootstrap(); // set opinionated defaults
 
@@ -215,10 +226,27 @@ class AdminMenuPage
 		
 	}
 	
+	/**
+	 * REGISTER ADMIN PAGE
+	 * 
+	 * hook_suffix is KNOWN
+	 * get_current_screen() is NOT
+	 * 
+	 * Runs for EVERY AdminMenuPage instance
+	 * AdminNotice->onPage() works
+	 */
 	function _bootstrap_admin_page(){
 		add_action ( 'load-'.$this->hook_suffix , [ $this , '_admin_page_setup' ] );
 	}
 	
+	/**
+	 * SHOW ADMIN PAGE
+	 * 
+	 * current_screen IS AVAILABLE
+	 * 
+	 * Only runs on actual screen showing
+	 * AdminNotice->onPage() redundant
+	 */
 	public function _admin_page_setup(){
 
 		if ($this->scripts)
