@@ -6,9 +6,8 @@
  * Create WordPress admin pages easily
  * 
  * @author  abuyoyo
- * @version 0.6
+ * @version 0.7
  */
-
 namespace WPHelper;
 
 if ( ! class_exists( 'WPHelper\AdminMenuPage' ) ):
@@ -85,16 +84,102 @@ class AdminMenuPage
 		$this->menu_title = $menu_title;
 		$this->capability = $capability;
 		$this->slug = $slug;
-		$this->template = rtrim( $template, '/' );
-		
-		$this->parent = $parent;
 
-		$this->icon_url = $icon_url;
-		$this->position = $position;
+		if ( $render ) // dev
+			$this->render($render);
 
-		$this->scripts = $scripts;
-    }
+		if ( $render_cb ) // dev
+			$this->render_cb($render_cb);
+
+		if ( $render_tpl ) // dev
+			$this->render_tpl($render_tpl);
+
+		if (true)
+			$this->render(); // render anyway
+
+		$this->template = rtrim( $template, '/' ); // original - deprecate
+
+		if ( $parent )
+			$this->parent($parent);
+
+		if ( $icon_url )
+			$this->icon_url($icon_url);
+
+		if ( $position )
+			$this->position($position);
+
+		if ( $scripts )
+			$this->scripts($scripts);
+	}
 	
+	function parent($parent){
+		$this->parent = $parent;
+	}
+	
+	function icon_url($icon_url){
+		$this->icon_url = $icon_url;
+	}
+	
+	function position($position){
+		$this->position = $position;
+	}
+
+
+	function render($render=null){
+
+		if (! $render){
+
+		}
+
+		if( is_callable( $render ) )
+			$this->render_cb($render);
+		else if (is_readable($render) )
+			$this->render_tpl($render);
+		else
+			$this->render_tpl(__DIR__ . '/tpl/default.php');
+	}
+
+	function render_cb($render_cb){
+		
+		// we already have it
+		if ($this->render_cb)
+			return;
+
+		if( is_callable( $render_cb ) )
+			$this->render_cb = $render_cb;
+
+		if ($this->render_cb)
+			AdminNotice::create()->success('render_cb')->show();
+	}
+
+	function render_tpl($render_tpl){
+		
+		// we already have it
+		if ($this->render_tpl)
+			return;
+
+		if( is_readable( $render_tpl ) )
+			$this->render_tpl = $render_tpl;
+
+		if ($this->render_tpl)
+			AdminNotice::create()->success('render_tpl')->show();
+	}
+	
+	function scripts($scripts){
+		$this->scripts = $scripts;
+	}
+	
+	/**
+	 * REGISTER MENU
+	 * 
+	 * This runs for all registers
+	 * hook_suffix not defined yet
+	 * 
+	 * inside WPHelper namespace
+	 * \get_current_screen() function not defined
+	 * \current_action() also????
+	 * 
+	 */
 	function setup(){
 		$this->bootstrap(); // set opinionated defaults
 
@@ -141,22 +226,43 @@ class AdminMenuPage
 		
 	}
 	
+	/**
+	 * REGISTER ADMIN PAGE
+	 * 
+	 * hook_suffix is KNOWN
+	 * get_current_screen() is NOT
+	 * 
+	 * Runs for EVERY AdminMenuPage instance
+	 * AdminNotice->onPage() works
+	 */
 	function _bootstrap_admin_page(){
 		add_action ( 'load-'.$this->hook_suffix , [ $this , '_admin_page_setup' ] );
 	}
 	
+	/**
+	 * SHOW ADMIN PAGE
+	 * 
+	 * current_screen IS AVAILABLE
+	 * 
+	 * Only runs on actual screen showing
+	 * AdminNotice->onPage() redundant
+	 */
 	public function _admin_page_setup(){
-		
-		add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_scripts' ] );
+
+		if ($this->scripts)
+			add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_scripts' ] );
 	}
 
 	public function admin_enqueue_scripts($hook) {
-
+		
 		// redundant
 		// this only gets called on load-{$this->hook_suffix} anyway
 		if( $hook != $this->hook_suffix ) {
 			return;
 		}
+
+		if ( ! $this->scripts)
+			return;
 
 		foreach ($this->scripts as $script_args){
 			wp_enqueue_script( ...$script_args );
@@ -222,8 +328,14 @@ class AdminMenuPage
     {
 		// @todo if render callback supplied - add shortcircuit hook here
 		// execute render callback and return early
-		
-        $this->render_template($this->template);
+
+		if ($this->render_cb && is_callable($this->render_cb)){
+			call_user_func($this->render_cb);
+			return;
+		}else if($this->render_tpl && is_readable($this->render_tpl)){
+			include $this->render_tpl;
+			return;
+		}
     }
  
     /**
@@ -233,12 +345,11 @@ class AdminMenuPage
      */
     private function render_template($template)
     {
-		
          if (!is_readable($template)) {
             return;
         }
  
-        include $this->template;
+        include $template;
     }
 }
 endif;
