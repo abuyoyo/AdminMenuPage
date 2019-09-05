@@ -84,7 +84,17 @@ class AdminMenuPage
 		$this->menu_title = $menu_title;
 		$this->capability = $capability;
 		$this->slug = $slug;
-		$this->template = rtrim( $template, '/' );
+
+		if ( $render ) // dev
+			$this->render($render);
+
+		if ( $render_cb ) // dev
+			$this->render_cb($render_cb);
+
+		if ( $render_tpl ) // dev
+			$this->render_tpl($render_tpl);
+
+		$this->template = rtrim( $template, '/' ); // original - deprecate
 
 		if ( $parent )
 			$this->parent($parent);
@@ -109,6 +119,41 @@ class AdminMenuPage
 	
 	function position($position){
 		$this->position = $position;
+	}
+
+
+	function render($render){
+		// wp_die( 'render_cb: ' . is_callable($render_cb)  );
+		if( is_callable( $render ) )
+			$this->render_cb($render);
+		else if (is_readable($render) )
+			$this->render_tpl($render);
+	}
+
+	function render_cb($render_cb){
+		
+		// we already have it
+		if ($this->render_cb)
+			return;
+
+		if( is_callable( $render_cb ) )
+			$this->render_cb = $render_cb;
+
+		if ($this->render_cb)
+			AdminNotice::create()->success('render_cb')->show();
+	}
+
+	function render_tpl($render_tpl){
+		
+		// we already have it
+		if ($this->render_tpl)
+			return;
+
+		if( is_readable( $render_tpl ) )
+			$this->render_tpl = $render_tpl;
+
+		if ($this->render_tpl)
+			AdminNotice::create()->success('render_tpl')->show();
 	}
 	
 	function scripts($scripts){
@@ -246,8 +291,14 @@ class AdminMenuPage
     {
 		// @todo if render callback supplied - add shortcircuit hook here
 		// execute render callback and return early
-		
-        $this->render_template($this->template);
+
+		if ($this->render_cb && is_callable($this->render_cb)){
+			call_user_func($this->render_cb);
+			return;
+		}else if($this->render_tpl && is_readable($this->render_tpl)){
+			include $this->render_tpl;
+			return;
+		}
     }
  
     /**
@@ -257,12 +308,11 @@ class AdminMenuPage
      */
     private function render_template($template)
     {
-		
          if (!is_readable($template)) {
             return;
         }
  
-        include $this->template;
+        include $template;
     }
 }
 endif;
