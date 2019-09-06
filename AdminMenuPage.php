@@ -6,7 +6,7 @@
  * Create WordPress admin pages easily
  * 
  * @author  abuyoyo
- * @version 0.7
+ * @version 0.8
  */
 namespace WPHelper;
 

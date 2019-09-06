@@ -1,7 +1,5 @@
 # WPHelper \ AdminMenuPage
 
-version 0.6
-
 > Helper class for simple admin menu page registration in WordPress.
 
 ## Requirements
