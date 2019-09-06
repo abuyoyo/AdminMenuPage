@@ -148,8 +148,6 @@ class AdminMenuPage
 		if( is_callable( $render_cb ) )
 			$this->render_cb = $render_cb;
 
-		if ($this->render_cb)
-			AdminNotice::create()->success('render_cb')->show();
 	}
 
 	function render_tpl($render_tpl){
@@ -161,8 +159,6 @@ class AdminMenuPage
 		if( is_readable( $render_tpl ) )
 			$this->render_tpl = $render_tpl;
 
-		if ($this->render_tpl)
-			AdminNotice::create()->success('render_tpl')->show();
 	}
 	
 	function scripts($scripts){
