@@ -6,7 +6,7 @@
  * Create WordPress admin pages easily
  * 
  * @author  abuyoyo
- * @version 0.8
+ * @version 0.9
  * 
  * @todo add styles to WPHelper\AdminMenuPage
  * @todo add 'menu_location' - settings. tools, toplevel etc.
