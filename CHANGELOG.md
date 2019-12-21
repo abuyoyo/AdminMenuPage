@@ -1,6 +1,17 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## v0.9
+
+### Changed
+
+- Don't use extract() in constructor
+- Use setter methods for all variables
+
+### Fixed
+
+- Fix PHP notices: undefined property
+
 ## v0.8
 
 ### Fixed

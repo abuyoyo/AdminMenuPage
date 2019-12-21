@@ -6,7 +6,12 @@
  * Create WordPress admin pages easily
  * 
  * @author  abuyoyo
- * @version 0.8
+ * @version 0.9
+ * 
+ * @todo add styles to WPHelper\AdminMenuPage
+ * @todo add 'menu_location' - settings. tools, toplevel etc.
+ * @todo add add_screen_option( 'per_page', $args );
+ * @todo accept WPHelper\PluginCore instance (get title slug etc. from there)
  */
 namespace WPHelper;
 
@@ -70,46 +75,83 @@ class AdminMenuPage
     private $position;
  
     /**
+     * Render callback function.
+     *
+     * @var callable
+     */
+    private $render_cb;
+ 
+    /**
+     * Render template file
+     *
+     * @var string filename
+     */
+    private $render_tpl;
+ 
+    /**
      * Constructor.
      *
      * @param array $options
      */
     public function __construct($options)
     {
-		extract($options);
+
+		$options = (object) $options;
 		
-        $this->title = $title;
-		if (! $menu_title)
-			$menu_title = $title;
-		$this->menu_title = $menu_title;
-		$this->capability = $capability;
-		$this->slug = $slug;
+		if ( isset( $options->title ) )
+			$this->title( $options->title );
 
-		if ( $render ) // dev
-			$this->render($render);
+		if ( ! isset( $options->menu_title ) )
+			$options->menu_title = $options->title;
 
-		if ( $render_cb ) // dev
-			$this->render_cb($render_cb);
+		if ( isset( $options->menu_title ) )
+			$this->menu_title( $options->menu_title );
 
-		if ( $render_tpl ) // dev
-			$this->render_tpl($render_tpl);
+		if ( isset( $options->capability ) )
+			$this->capability( $options->capability );
+
+		if ( isset( $options->slug ) )
+			$this->slug( $options->slug );
+
+		if ( isset( $options->render ) ) // dev
+			$this->render( $options->render );
+
+		if ( isset( $options->render_cb ) ) // dev - deprecate?
+			$this->render_cb( $options->render_cb );
+
+		if ( isset( $options->render_tpl ) ) // dev - deprecate?
+			$this->render_tpl( $options->render_tpl );
 
 		if (true)
-			$this->render(); // render anyway
+			$this->render(); // render anyway - will use default tpl if render is empty
 
-		$this->template = rtrim( $template, '/' ); // original - deprecate
+		if ( isset( $options->parent ) )
+			$this->parent( $options->parent );
 
-		if ( $parent )
-			$this->parent($parent);
+		if ( isset( $options->icon_url ) )
+			$this->icon_url( $options->icon_url );
 
-		if ( $icon_url )
-			$this->icon_url($icon_url);
+		if ( isset( $options->position ) )
+			$this->position( $options->position );
 
-		if ( $position )
-			$this->position($position);
-
-		if ( $scripts )
-			$this->scripts($scripts);
+		if ( isset( $options->scripts ) )
+			$this->scripts( $options->scripts );
+	}
+	
+	function title($title){
+		$this->title = $title;
+	}
+	
+	function menu_title($menu_title){
+		$this->menu_title = $menu_title;
+	}
+	
+	function capability($capability){
+		$this->capability = $capability;
+	}
+	
+	function slug($slug){
+		$this->slug = $slug;
 	}
 	
 	function parent($parent){
@@ -332,20 +374,6 @@ class AdminMenuPage
 			include $this->render_tpl;
 			return;
 		}
-    }
- 
-    /**
-     * Renders the given template if it's readable.
-     *
-     * @param string $template
-     */
-    private function render_template($template)
-    {
-         if (!is_readable($template)) {
-            return;
-        }
- 
-        include $template;
     }
 }
 endif;
