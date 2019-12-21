@@ -7,6 +7,11 @@
  * 
  * @author  abuyoyo
  * @version 0.8
+ * 
+ * @todo add styles to WPHelper\AdminMenuPage
+ * @todo add 'menu_location' - settings. tools, toplevel etc.
+ * @todo add add_screen_option( 'per_page', $args );
+ * @todo accept WPHelper\PluginCore instance (get title slug etc. from there)
  */
 namespace WPHelper;
 
