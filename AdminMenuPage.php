@@ -95,38 +95,63 @@ class AdminMenuPage
      */
     public function __construct($options)
     {
-		extract($options);
+
+		$options = (object) $options;
 		
-        $this->title = $title;
-		if ( ! isset( $menu_title ) )
-			$menu_title = $title;
-		$this->menu_title = $menu_title;
-		$this->capability = $capability;
-		$this->slug = $slug;
+		if ( isset( $options->title ) )
+			$this->title( $options->title );
 
-		if ( isset( $render ) ) // dev
-			$this->render($render);
+		if ( ! isset( $options->menu_title ) )
+			$options->menu_title = $options->title;
 
-		if ( isset( $render_cb ) ) // dev - deprecate?
-			$this->render_cb($render_cb);
+		if ( isset( $options->menu_title ) )
+			$this->menu_title( $options->menu_title );
 
-		if ( isset( $render_tpl ) ) // dev - deprecate?
-			$this->render_tpl($render_tpl);
+		if ( isset( $options->capability ) )
+			$this->capability( $options->capability );
+
+		if ( isset( $options->slug ) )
+			$this->slug( $options->slug );
+
+		if ( isset( $options->render ) ) // dev
+			$this->render( $options->render );
+
+		if ( isset( $options->render_cb ) ) // dev - deprecate?
+			$this->render_cb( $options->render_cb );
+
+		if ( isset( $options->render_tpl ) ) // dev - deprecate?
+			$this->render_tpl( $options->render_tpl );
 
 		if (true)
 			$this->render(); // render anyway - will use default tpl if render is empty
 
-		if ( isset( $parent ) )
-			$this->parent($parent);
+		if ( isset( $options->parent ) )
+			$this->parent( $options->parent );
 
-		if ( isset( $icon_url ) )
-			$this->icon_url($icon_url);
+		if ( isset( $options->icon_url ) )
+			$this->icon_url( $options->icon_url );
 
-		if ( isset( $position ) )
-			$this->position($position);
+		if ( isset( $options->position ) )
+			$this->position( $options->position );
 
-		if ( isset( $scripts ) )
-			$this->scripts($scripts);
+		if ( isset( $options->scripts ) )
+			$this->scripts( $options->scripts );
+	}
+	
+	function title($title){
+		$this->title = $title;
+	}
+	
+	function menu_title($menu_title){
+		$this->menu_title = $menu_title;
+	}
+	
+	function capability($capability){
+		$this->capability = $capability;
+	}
+	
+	function slug($slug){
+		$this->slug = $slug;
 	}
 	
 	function parent($parent){
