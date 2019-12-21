@@ -75,6 +75,20 @@ class AdminMenuPage
     private $position;
  
     /**
+     * Render callback function.
+     *
+     * @var callable
+     */
+    private $render_cb;
+ 
+    /**
+     * Render template file
+     *
+     * @var string filename
+     */
+    private $render_tpl;
+ 
+    /**
      * Constructor.
      *
      * @param array $options
@@ -84,36 +98,34 @@ class AdminMenuPage
 		extract($options);
 		
         $this->title = $title;
-		if (! $menu_title)
+		if ( ! isset( $menu_title ) )
 			$menu_title = $title;
 		$this->menu_title = $menu_title;
 		$this->capability = $capability;
 		$this->slug = $slug;
 
-		if ( $render ) // dev
+		if ( isset( $render ) ) // dev
 			$this->render($render);
 
-		if ( $render_cb ) // dev
+		if ( isset( $render_cb ) ) // dev - deprecate?
 			$this->render_cb($render_cb);
 
-		if ( $render_tpl ) // dev
+		if ( isset( $render_tpl ) ) // dev - deprecate?
 			$this->render_tpl($render_tpl);
 
 		if (true)
-			$this->render(); // render anyway
+			$this->render(); // render anyway - will use default tpl if render is empty
 
-		$this->template = rtrim( $template, '/' ); // original - deprecate
-
-		if ( $parent )
+		if ( isset( $parent ) )
 			$this->parent($parent);
 
-		if ( $icon_url )
+		if ( isset( $icon_url ) )
 			$this->icon_url($icon_url);
 
-		if ( $position )
+		if ( isset( $position ) )
 			$this->position($position);
 
-		if ( $scripts )
+		if ( isset( $scripts ) )
 			$this->scripts($scripts);
 	}
 	
@@ -337,20 +349,6 @@ class AdminMenuPage
 			include $this->render_tpl;
 			return;
 		}
-    }
- 
-    /**
-     * Renders the given template if it's readable.
-     *
-     * @param string $template
-     */
-    private function render_template($template)
-    {
-         if (!is_readable($template)) {
-            return;
-        }
- 
-        include $template;
     }
 }
 endif;
