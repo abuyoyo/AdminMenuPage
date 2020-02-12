@@ -8,7 +8,6 @@
  * @author  abuyoyo
  * @version 0.9
  * 
- * @todo add styles to WPHelper\AdminMenuPage
  * @todo add 'menu_location' - settings. tools, toplevel etc.
  * @todo add add_screen_option( 'per_page', $args );
  * @todo accept WPHelper\PluginCore instance (get title slug etc. from there)
@@ -89,6 +88,13 @@ class AdminMenuPage
     private $render_tpl;
  
     /**
+     * Styles
+     *
+     * @var array[] arrays of script arguments passed to wp_enqueue_style()
+     */
+    private $styles;
+ 
+    /**
      * Constructor.
      *
      * @param array $options
@@ -136,6 +142,9 @@ class AdminMenuPage
 
 		if ( isset( $options->scripts ) )
 			$this->scripts( $options->scripts );
+
+		if ( isset( $options->styles ) )
+			$this->styles( $options->styles );
 	}
 	
 	function title($title){
@@ -205,6 +214,10 @@ class AdminMenuPage
 	
 	function scripts($scripts){
 		$this->scripts = $scripts;
+	}
+	
+	function styles($styles){
+		$this->styles = $styles;
 	}
 	
 	/**
@@ -289,6 +302,9 @@ class AdminMenuPage
 
 		if ($this->scripts)
 			add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_scripts' ] );
+
+		if ($this->styles)
+			add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_styles' ] );
 	}
 
 	public function admin_enqueue_scripts($hook) {
@@ -304,6 +320,23 @@ class AdminMenuPage
 
 		foreach ($this->scripts as $script_args){
 			wp_enqueue_script( ...$script_args );
+		}
+
+	}
+
+	public function admin_enqueue_styles($hook) {
+		
+		// redundant
+		// this only gets called on load-{$this->hook_suffix} anyway
+		if( $hook != $this->hook_suffix ) {
+			return;
+		}
+
+		if ( ! $this->styles)
+			return;
+
+		foreach ($this->styles as $style_args){
+			wp_enqueue_style( ...$style_args );
 		}
 
 	}
