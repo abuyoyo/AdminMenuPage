@@ -1,6 +1,12 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## v0.10
+
+### Added
+
+- Styles - enqueue styles to registered admin page
+
 ## v0.9
 
 ### Changed
