@@ -6,7 +6,7 @@
  * Create WordPress admin pages easily
  * 
  * @author  abuyoyo
- * @version 0.9
+ * @version 0.10
  * 
  * @todo add 'menu_location' - settings. tools, toplevel etc.
  * @todo add add_screen_option( 'per_page', $args );
