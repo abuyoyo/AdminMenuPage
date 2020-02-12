@@ -11,6 +11,7 @@
  * @todo add 'menu_location' - settings. tools, toplevel etc.
  * @todo add add_screen_option( 'per_page', $args );
  * @todo accept WPHelper\PluginCore instance (get title slug etc. from there)
+ * @todo fix is_readable() PHP error when sending callback array
  */
 namespace WPHelper;
 
