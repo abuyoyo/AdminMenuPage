@@ -88,6 +88,13 @@ class AdminMenuPage
     private $render_tpl;
  
     /**
+     * Scripts
+     *
+     * @var array[] arrays of script arguments passed to wp_enqueue_script()
+     */
+    private $scripts;
+ 
+    /**
      * Styles
      *
      * @var array[] arrays of script arguments passed to wp_enqueue_style()
