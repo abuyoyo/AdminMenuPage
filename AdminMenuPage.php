@@ -272,15 +272,28 @@ class AdminMenuPage
 				$this->position
 			);
 		}else{
-			$this->hook_suffix = \add_submenu_page(
-				$this->parent, 
-				$this->title, 
-				$this->menu_title, 
-				$this->capability, 
-				$this->slug, 
-				[ $this , 'render_admin_page' ]
-			);
-			
+			switch ($this->parent){
+				case 'options':
+				case 'settings':
+					$this->hook_suffix = \add_options_page(
+						$this->title, 
+						$this->menu_title, 
+						$this->capability, 
+						$this->slug, 
+						[ $this , 'render_admin_page' ]
+					);
+					break;
+				default:
+					$this->hook_suffix = \add_submenu_page(
+						$this->parent, 
+						$this->title, 
+						$this->menu_title, 
+						$this->capability, 
+						$this->slug, 
+						[ $this , 'render_admin_page' ]
+					);
+					break;
+			}
 		}
 		
 	}
