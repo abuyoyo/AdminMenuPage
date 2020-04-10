@@ -6,11 +6,12 @@
  * Create WordPress admin pages easily
  * 
  * @author  abuyoyo
- * @version 0.10
+ * @version 0.11
  * 
  * @todo add 'menu_location' - settings. tools, toplevel etc.
  * @todo add add_screen_option( 'per_page', $args );
  * @todo accept WPHelper\PluginCore instance (get title slug etc. from there)
+ * @todo fix is_readable() PHP error when sending callback array
  */
 namespace WPHelper;
 
@@ -102,6 +103,13 @@ class AdminMenuPage
     private $styles;
  
     /**
+     * Settings Page
+     *
+     * @var SettingsPage
+     */
+    private $settings_page;
+ 
+    /**
      * Constructor.
      *
      * @param array $options
@@ -152,6 +160,11 @@ class AdminMenuPage
 
 		if ( isset( $options->styles ) )
 			$this->styles( $options->styles );
+
+		if ( isset( $options->settings ) )
+			$this->settings( $options->settings );
+
+		$this->bootstrap();
 	}
 	
 	function title($title){
@@ -184,12 +197,9 @@ class AdminMenuPage
 
 
 	function render($render=null){
-
-		if (! $render){
-
-		}
-
-		if( is_callable( $render ) )
+		if ( 'settings-page' == $render ){
+			$this->render_tpl(__DIR__ . '/tpl/settings_page.php');
+		}else if( is_callable( $render ) )
 			$this->render_cb($render);
 		else if (is_readable($render) )
 			$this->render_tpl($render);
@@ -226,6 +236,11 @@ class AdminMenuPage
 	function styles($styles){
 		$this->styles = $styles;
 	}
+
+	function settings($settings){
+		$this->settings_page = new SettingsPage($this->get_slug(), $settings);
+		$this->settings_page->setup();
+	}
 	
 	/**
 	 * REGISTER MENU
@@ -237,12 +252,10 @@ class AdminMenuPage
 	 * \get_current_screen() function not defined
 	 * \current_action() also????
 	 * 
+	 * @todo deprecate
 	 */
 	function setup(){
-		$this->bootstrap(); // set opinionated defaults
-
-		add_action ( 'admin_menu' , [ $this , 'add_menu_page' ], 11 );
-		add_action ( 'admin_menu' , [ $this , '_bootstrap_admin_page' ], 12 );
+		
 	}
 
 	/**
@@ -253,6 +266,9 @@ class AdminMenuPage
 	function bootstrap(){
 		if ( ! $this->capability )
 			$this->capability = 'manage_options';
+
+		add_action ( 'admin_menu' , [ $this , 'add_menu_page' ], 11 );
+		add_action ( 'admin_menu' , [ $this , '_bootstrap_admin_page' ], 12 );
 	}
 	
 	/**
@@ -271,15 +287,28 @@ class AdminMenuPage
 				$this->position
 			);
 		}else{
-			$this->hook_suffix = \add_submenu_page(
-				$this->parent, 
-				$this->title, 
-				$this->menu_title, 
-				$this->capability, 
-				$this->slug, 
-				[ $this , 'render_admin_page' ]
-			);
-			
+			switch ($this->parent){
+				case 'options':
+				case 'settings':
+					$this->hook_suffix = \add_options_page(
+						$this->title, 
+						$this->menu_title, 
+						$this->capability, 
+						$this->slug, 
+						[ $this , 'render_admin_page' ]
+					);
+					break;
+				default:
+					$this->hook_suffix = \add_submenu_page(
+						$this->parent, 
+						$this->title, 
+						$this->menu_title, 
+						$this->capability, 
+						$this->slug, 
+						[ $this , 'render_admin_page' ]
+					);
+					break;
+			}
 		}
 		
 	}

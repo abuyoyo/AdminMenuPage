@@ -1,6 +1,17 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## v0.11
+
+### Added
+
+- Setting Page - class and template for registering WordPress settings page.
+- Options_Menu - use WordPress core `add_options_page` to register page.
+
+### Changed
+
+- No longer require call to `setup()` method. Bootstrap into WordPress from constructor method.
+
 ## v0.10
 
 ### Added
