@@ -103,6 +103,13 @@ class AdminMenuPage
     private $styles;
  
     /**
+     * Settings Page
+     *
+     * @var SettingsPage
+     */
+    private $settings_page;
+ 
+    /**
      * Constructor.
      *
      * @param array $options
@@ -153,6 +160,9 @@ class AdminMenuPage
 
 		if ( isset( $options->styles ) )
 			$this->styles( $options->styles );
+
+		if ( isset( $options->settings ) )
+			$this->settings( $options->settings );
 	}
 	
 	function title($title){
@@ -185,12 +195,9 @@ class AdminMenuPage
 
 
 	function render($render=null){
-
-		if (! $render){
-
-		}
-
-		if( is_callable( $render ) )
+		if ( 'settings-page' == $render ){
+			$this->render_tpl(__DIR__ . '/tpl/settings_page.php');
+		}else if( is_callable( $render ) )
 			$this->render_cb($render);
 		else if (is_readable($render) )
 			$this->render_tpl($render);
@@ -226,6 +233,11 @@ class AdminMenuPage
 	
 	function styles($styles){
 		$this->styles = $styles;
+	}
+
+	function settings($settings){
+		$this->settings_page = new SettingsPage($this->get_slug(), $settings);
+		$this->settings_page->setup();
 	}
 	
 	/**
