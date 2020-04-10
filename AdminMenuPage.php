@@ -163,6 +163,8 @@ class AdminMenuPage
 
 		if ( isset( $options->settings ) )
 			$this->settings( $options->settings );
+
+		$this->bootstrap();
 	}
 	
 	function title($title){
@@ -250,12 +252,10 @@ class AdminMenuPage
 	 * \get_current_screen() function not defined
 	 * \current_action() also????
 	 * 
+	 * @todo deprecate
 	 */
 	function setup(){
-		$this->bootstrap(); // set opinionated defaults
-
-		add_action ( 'admin_menu' , [ $this , 'add_menu_page' ], 11 );
-		add_action ( 'admin_menu' , [ $this , '_bootstrap_admin_page' ], 12 );
+		
 	}
 
 	/**
@@ -266,6 +266,9 @@ class AdminMenuPage
 	function bootstrap(){
 		if ( ! $this->capability )
 			$this->capability = 'manage_options';
+
+		add_action ( 'admin_menu' , [ $this , 'add_menu_page' ], 11 );
+		add_action ( 'admin_menu' , [ $this , '_bootstrap_admin_page' ], 12 );
 	}
 	
 	/**
