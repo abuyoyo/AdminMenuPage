@@ -1,12 +1,12 @@
 <?php
 /**
- * AdminMenuPage
+ * AdminPage
  * 
  * Helper class
  * Create WordPress admin pages easily
  * 
  * @author  abuyoyo
- * @version 0.11
+ * @version 0.12
  * 
  * @todo add 'menu_location' - settings. tools, toplevel etc.
  * @todo add add_screen_option( 'per_page', $args );
@@ -15,99 +15,103 @@
  */
 namespace WPHelper;
 
-if ( ! class_exists( 'WPHelper\AdminMenuPage' ) ):
-class AdminMenuPage
+use function add_menu_page;
+use function add_options_page;
+use function add_submenu_page;
+
+if ( ! class_exists( 'WPHelper\AdminPage' ) ):
+class AdminPage
 {
     /**
      * Title displayed on page.
      *
      * @var string
      */
-    private $title;
+    protected $title;
  
     /**
      * Title displayed in menu.
      *
      * @var string
      */
-    private $menu_title;
+    protected $menu_title;
  
     /**
      * User capabailty required to view page.
      *
      * @var string
      */
-    private $capability;
+    protected $capability;
  
     /**
      * Menu slug.
      *
      * @var string
      */
-    private $slug;
+    protected $slug;
 
     /**
      * Path to the admin page templates.
      *
      * @var string
      */
-    private $template;
+    protected $template;
  
     /**
      * Parent slug if submenu.
      *
      * @var string
      */
-    private $parent;
+    protected $parent;
  
     /**
      * Icon to use in menu.
      *
      * @var string
      */
-    private $icon_url;
+    protected $icon_url;
  
     /**
      * Position in menu.
      *
      * @var int
      */
-    private $position;
+    protected $position;
  
     /**
      * Render callback function.
      *
      * @var callable
      */
-    private $render_cb;
+    protected $render_cb;
  
     /**
      * Render template file
      *
      * @var string filename
      */
-    private $render_tpl;
+    protected $render_tpl;
  
     /**
      * Scripts
      *
      * @var array[] arrays of script arguments passed to wp_enqueue_script()
      */
-    private $scripts;
+    protected $scripts;
  
     /**
      * Styles
      *
      * @var array[] arrays of script arguments passed to wp_enqueue_style()
      */
-    private $styles;
+    protected $styles;
  
     /**
      * Settings Page
      *
      * @var SettingsPage
      */
-    private $settings_page;
+    protected $settings_page;
  
     /**
      * Constructor.
@@ -277,7 +281,7 @@ class AdminMenuPage
 	public function add_menu_page(){
 
 		if ( ! $this->parent ){
-			$this->hook_suffix = \add_menu_page( 
+			$this->hook_suffix = add_menu_page( 
 				$this->title, 
 				$this->menu_title, 
 				$this->capability, 
@@ -290,7 +294,7 @@ class AdminMenuPage
 			switch ($this->parent){
 				case 'options':
 				case 'settings':
-					$this->hook_suffix = \add_options_page(
+					$this->hook_suffix = add_options_page(
 						$this->title, 
 						$this->menu_title, 
 						$this->capability, 
@@ -299,7 +303,7 @@ class AdminMenuPage
 					);
 					break;
 				default:
-					$this->hook_suffix = \add_submenu_page(
+					$this->hook_suffix = add_submenu_page(
 						$this->parent, 
 						$this->title, 
 						$this->menu_title, 
@@ -319,7 +323,7 @@ class AdminMenuPage
 	 * hook_suffix is KNOWN
 	 * get_current_screen() is NOT
 	 * 
-	 * Runs for EVERY AdminMenuPage instance
+	 * Runs for EVERY AdminPage instance
 	 * AdminNotice->onPage() works
 	 */
 	function _bootstrap_admin_page(){

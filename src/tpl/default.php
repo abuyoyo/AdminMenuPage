@@ -2,11 +2,11 @@
 	<h1><?= get_admin_page_title() ?></h1>
 
 	<div class="card">
-		<h3>WPHelper\AdminMenuPage</h3>
+		<h3>WPHelper\AdminPage</h3>
 		<p>Please provide a template file or callback function to render this page
 		<br />Like so:
 		</p>
-		<pre><code style="display: block;">new WPHelper\AdminMenuPage(
+		<pre><code style="display: block;">new WPHelper\AdminPage(
 	[
 		'slug'     => '<?=$this->slug?>',
 		'title'    => '<?=$this->title?>',

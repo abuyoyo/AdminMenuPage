@@ -9,11 +9,11 @@
  */
 namespace WPHelper;
 
-use register_setting;
-use add_settings_section;
-use add_settings_field;
-use checked;
-use get_option;
+use function register_setting;
+use function add_settings_section;
+use function add_settings_field;
+use function checked;
+use function get_option;
 
 if ( ! class_exists( 'WPHelper\SettingsPage' ) ):
 class SettingsPage{
@@ -23,14 +23,14 @@ class SettingsPage{
 	 * 
 	 * @var String $page
 	 */
-	private $page;
+	protected $page;
 	
 	/**
 	 * option_name key used in wp_options table
 	 * 
 	 * @var String $option_name
 	 */
-	private $option_name;
+	protected $option_name;
 	
 	/**
 	 * option_group used by register_setting() and settings_fields()

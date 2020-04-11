@@ -2,7 +2,7 @@
 /**
  * Template for Settings page
  * 
- * included from WPHelper\AdminMenuPage::render_admin_page()
+ * included from WPHelper\AdminPage::render_admin_page()
  * so $this is available
  */
 ?>

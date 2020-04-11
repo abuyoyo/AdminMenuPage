@@ -1,6 +1,14 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## v0.12
+
+### Changed
+
+- New `AdminPage` class.
+- Deprecate class `AdminMenuPage` in favor of `AdminPage`.
+- Restructure source files.
+
 ## v0.11
 
 ### Added
