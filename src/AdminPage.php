@@ -1,6 +1,6 @@
 <?php
 /**
- * AdminMenuPage
+ * AdminPage
  * 
  * Helper class
  * Create WordPress admin pages easily
@@ -15,8 +15,8 @@
  */
 namespace WPHelper;
 
-if ( ! class_exists( 'WPHelper\AdminMenuPage' ) ):
-class AdminMenuPage
+if ( ! class_exists( 'WPHelper\AdminPage' ) ):
+class AdminPage
 {
     /**
      * Title displayed on page.
@@ -319,7 +319,7 @@ class AdminMenuPage
 	 * hook_suffix is KNOWN
 	 * get_current_screen() is NOT
 	 * 
-	 * Runs for EVERY AdminMenuPage instance
+	 * Runs for EVERY AdminPage instance
 	 * AdminNotice->onPage() works
 	 */
 	function _bootstrap_admin_page(){
