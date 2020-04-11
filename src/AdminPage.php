@@ -23,91 +23,91 @@ class AdminPage
      *
      * @var string
      */
-    private $title;
+    protected $title;
  
     /**
      * Title displayed in menu.
      *
      * @var string
      */
-    private $menu_title;
+    protected $menu_title;
  
     /**
      * User capabailty required to view page.
      *
      * @var string
      */
-    private $capability;
+    protected $capability;
  
     /**
      * Menu slug.
      *
      * @var string
      */
-    private $slug;
+    protected $slug;
 
     /**
      * Path to the admin page templates.
      *
      * @var string
      */
-    private $template;
+    protected $template;
  
     /**
      * Parent slug if submenu.
      *
      * @var string
      */
-    private $parent;
+    protected $parent;
  
     /**
      * Icon to use in menu.
      *
      * @var string
      */
-    private $icon_url;
+    protected $icon_url;
  
     /**
      * Position in menu.
      *
      * @var int
      */
-    private $position;
+    protected $position;
  
     /**
      * Render callback function.
      *
      * @var callable
      */
-    private $render_cb;
+    protected $render_cb;
  
     /**
      * Render template file
      *
      * @var string filename
      */
-    private $render_tpl;
+    protected $render_tpl;
  
     /**
      * Scripts
      *
      * @var array[] arrays of script arguments passed to wp_enqueue_script()
      */
-    private $scripts;
+    protected $scripts;
  
     /**
      * Styles
      *
      * @var array[] arrays of script arguments passed to wp_enqueue_style()
      */
-    private $styles;
+    protected $styles;
  
     /**
      * Settings Page
      *
      * @var SettingsPage
      */
-    private $settings_page;
+    protected $settings_page;
  
     /**
      * Constructor.

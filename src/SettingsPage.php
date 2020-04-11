@@ -23,14 +23,14 @@ class SettingsPage{
 	 * 
 	 * @var String $page
 	 */
-	private $page;
+	protected $page;
 	
 	/**
 	 * option_name key used in wp_options table
 	 * 
 	 * @var String $option_name
 	 */
-	private $option_name;
+	protected $option_name;
 	
 	/**
 	 * option_group used by register_setting() and settings_fields()
