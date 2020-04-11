@@ -15,6 +15,10 @@
  */
 namespace WPHelper;
 
+use function add_menu_page;
+use function add_options_page;
+use function add_submenu_page;
+
 if ( ! class_exists( 'WPHelper\AdminPage' ) ):
 class AdminPage
 {
@@ -277,7 +281,7 @@ class AdminPage
 	public function add_menu_page(){
 
 		if ( ! $this->parent ){
-			$this->hook_suffix = \add_menu_page( 
+			$this->hook_suffix = add_menu_page( 
 				$this->title, 
 				$this->menu_title, 
 				$this->capability, 
@@ -290,7 +294,7 @@ class AdminPage
 			switch ($this->parent){
 				case 'options':
 				case 'settings':
-					$this->hook_suffix = \add_options_page(
+					$this->hook_suffix = add_options_page(
 						$this->title, 
 						$this->menu_title, 
 						$this->capability, 
@@ -299,7 +303,7 @@ class AdminPage
 					);
 					break;
 				default:
-					$this->hook_suffix = \add_submenu_page(
+					$this->hook_suffix = add_submenu_page(
 						$this->parent, 
 						$this->title, 
 						$this->menu_title, 
