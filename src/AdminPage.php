@@ -106,6 +106,13 @@ class AdminPage
 	 */
 	protected $styles;
 
+    /**
+     * Methods
+     *
+     * @var Callable[] arrays of Callbale methods to hook on `load-{$hook_suffix}` 
+     */
+	protected $methods = [];
+
 	/**
 	* Hook suffix provided by WordPress when registering menu page.
 	*
@@ -171,6 +178,9 @@ class AdminPage
 
 		if ( isset( $options->styles ) )
 			$this->styles( $options->styles );
+
+		if ( isset( $options->methods ) )
+			$this->methods( $options->methods );
 
 		if ( isset( $options->settings ) )
 			$this->settings( $options->settings );
@@ -245,6 +255,10 @@ class AdminPage
 
 	function styles($styles){
 		$this->styles = $styles;
+	}
+
+	function methods($methods){
+		$this->methods = $methods;
 	}
 
 	function settings($settings){
@@ -338,6 +352,12 @@ class AdminPage
 	 */
 	function _bootstrap_admin_page(){
 		add_action ( 'load-'.$this->hook_suffix , [ $this , '_admin_page_setup' ] );
+
+		foreach ( $this->methods as $method ){
+			if( is_callable( $method ) ){
+				add_action ( 'load-'.$this->hook_suffix , $method );
+			}
+		}
 	}
 
 	/**
