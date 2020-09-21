@@ -106,6 +106,13 @@ class AdminPage
      */
 	protected $styles;
  
+	/**
+	* Hook suffix provided by WordPress when registering menu page.
+	*
+	* @var string
+	*/
+	protected $hook_suffix;
+ 
     /**
      * Settings Page
      *
@@ -423,6 +430,16 @@ class AdminPage
     public function get_parent_slug()
     {
         return $this->parent;
+    }
+ 
+    /**
+     * Get the parent slug of the admin page.
+     *
+     * @return string
+     */
+    public function get_hook_suffix()
+    {
+        return $this->hook_suffix;
     }
  
     /**
