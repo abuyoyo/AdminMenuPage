@@ -1,6 +1,13 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.13
+
+### Added
+
+- Add `methods` option to load functions on `load-{hook_suffix}` hook.
+- Add `get_hook_suffix()` getter method (`hook_suffix` variable is no longer public).
+
 ## v0.12
 
 ### Changed
