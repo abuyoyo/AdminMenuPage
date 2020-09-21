@@ -8,7 +8,7 @@
  * @author  abuyoyo
  * @version 0.12
  * 
- * @todo add 'menu_location' - settings. tools, toplevel etc.
+ * @todo add 'menu_location' - settings. tools, toplevel etc. (extend 'parent' option)
  * @todo add add_screen_option( 'per_page', $args );
  * @todo accept WPHelper\PluginCore instance (get title slug etc. from there)
  * @todo fix is_readable() PHP error when sending callback array
@@ -104,7 +104,7 @@ class AdminPage
      *
      * @var array[] arrays of script arguments passed to wp_enqueue_style()
      */
-    protected $styles;
+	protected $styles;
  
     /**
      * Settings Page
@@ -247,7 +247,11 @@ class AdminPage
 	}
 	
 	/**
-	 * REGISTER MENU
+	 * REGISTER MENU - NOOP/DEPRECATE NOTICE
+	 * 
+	 * Empty function. Kept here for backward-compatibility purposes.
+	 * 
+	 * All setup operations are now made in the constructor. This function is empty and will be deprecated.
 	 * 
 	 * This runs for all registers
 	 * hook_suffix not defined yet
