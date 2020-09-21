@@ -17,35 +17,35 @@ use function get_option;
 
 if ( ! class_exists( 'WPHelper\SettingsPage' ) ):
 class SettingsPage{
-	
+
 	/**
 	 * Page slug to display sections
 	 * 
 	 * @var String $page
 	 */
 	protected $page;
-	
+
 	/**
 	 * option_name key used in wp_options table
 	 * 
 	 * @var String $option_name
 	 */
 	protected $option_name;
-	
+
 	/**
 	 * option_group used by register_setting() and settings_fields()
 	 * 
 	 * @var String $option_group
 	 */
 	public $option_group;
-	
+
 	/**
 	 * Sections
 	 * 
 	 * @var Array[] $sections
 	 */
 	public $sections = [];
-	
+
 	/**
 	 * Fields
 	 * 
@@ -54,12 +54,12 @@ class SettingsPage{
 	public $fields = [];
 
 	/**
-     * Constructor.
-     *
-     * @param array $options
-     */
-    public function __construct($page_slug,$settings)
-    {
+	 * Constructor.
+	 *
+	 * @param array $options
+	 */
+	public function __construct($page_slug,$settings)
+	{
 		$this->page = $page_slug;
 
 		if ( ! empty($settings['option_name']) )
@@ -71,7 +71,7 @@ class SettingsPage{
 			$this->option_group = $settings['option_group'];
 		else
 			$this->option_group = $this->page . '_option_group';
-			
+
 		foreach ($settings['sections'] as $section){
 			// extract fields
 			foreach ($section['fields'] as $field){
@@ -86,7 +86,6 @@ class SettingsPage{
 	function setup(){
 		add_action( 'admin_init', [$this,'register_settings'] );
 	}
-
 
 	public function register_settings(){
 		register_setting(
@@ -115,14 +114,14 @@ class SettingsPage{
 				$field //send setting array as $args for print function
 			);
 		}
-		
+
 	}
 
 	function print_checkbox( $field ){
 		extract($field);
-		
+
 		$options = get_option( $this->option_name );
-		
+
 		$input_tag = sprintf(
 			'<label for="%1$s">
 				<input name="%2$s[%1$s]" type="checkbox" id="%1$s" value="1"  %4$s />
@@ -136,7 +135,7 @@ class SettingsPage{
 		$input_tag = apply_filters( 'wphelper/settings_page/input_checkbox', $input_tag, $field, $this->option_name, $options );
 
 		echo $input_tag;
-		
+
 	}
 
 	/**

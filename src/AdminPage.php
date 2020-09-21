@@ -22,114 +22,114 @@ use function add_submenu_page;
 if ( ! class_exists( 'WPHelper\AdminPage' ) ):
 class AdminPage
 {
-    /**
-     * Title displayed on page.
-     *
-     * @var string
-     */
-    protected $title;
- 
-    /**
-     * Title displayed in menu.
-     *
-     * @var string
-     */
-    protected $menu_title;
- 
-    /**
-     * User capabailty required to view page.
-     *
-     * @var string
-     */
-    protected $capability;
- 
-    /**
-     * Menu slug.
-     *
-     * @var string
-     */
-    protected $slug;
+	/**
+	 * Title displayed on page.
+	 *
+	 * @var string
+	 */
+	protected $title;
 
-    /**
-     * Path to the admin page templates.
-     *
-     * @var string
-     */
-    protected $template;
- 
-    /**
-     * Parent slug if submenu.
-     *
-     * @var string
-     */
-    protected $parent;
- 
-    /**
-     * Icon to use in menu.
-     *
-     * @var string
-     */
-    protected $icon_url;
- 
-    /**
-     * Position in menu.
-     *
-     * @var int
-     */
-    protected $position;
- 
-    /**
-     * Render callback function.
-     *
-     * @var callable
-     */
-    protected $render_cb;
- 
-    /**
-     * Render template file
-     *
-     * @var string filename
-     */
-    protected $render_tpl;
- 
-    /**
-     * Scripts
-     *
-     * @var array[] arrays of script arguments passed to wp_enqueue_script()
-     */
-    protected $scripts;
- 
-    /**
-     * Styles
-     *
-     * @var array[] arrays of script arguments passed to wp_enqueue_style()
-     */
+	/**
+	 * Title displayed in menu.
+	 *
+	 * @var string
+	 */
+	protected $menu_title;
+
+	/**
+	 * User capabailty required to view page.
+	 *
+	 * @var string
+	 */
+	protected $capability;
+
+	/**
+	 * Menu slug.
+	 *
+	 * @var string
+	 */
+	protected $slug;
+
+	/**
+	 * Path to the admin page templates.
+	 *
+	 * @var string
+	 */
+	protected $template;
+
+	/**
+	 * Parent slug if submenu.
+	 *
+	 * @var string
+	 */
+	protected $parent;
+
+	/**
+	 * Icon to use in menu.
+	 *
+	 * @var string
+	 */
+	protected $icon_url;
+
+	/**
+	 * Position in menu.
+	 *
+	 * @var int
+	 */
+	protected $position;
+
+	/**
+	 * Render callback function.
+	 *
+	 * @var callable
+	 */
+	protected $render_cb;
+
+	/**
+	 * Render template file
+	 *
+	 * @var string filename
+	 */
+	protected $render_tpl;
+
+	/**
+	 * Scripts
+	 *
+	 * @var array[] arrays of script arguments passed to wp_enqueue_script()
+	 */
+	protected $scripts;
+
+	/**
+	 * Styles
+	 *
+	 * @var array[] arrays of script arguments passed to wp_enqueue_style()
+	 */
 	protected $styles;
- 
+
 	/**
 	* Hook suffix provided by WordPress when registering menu page.
 	*
 	* @var string
 	*/
 	protected $hook_suffix;
- 
-    /**
-     * Settings Page
-     *
-     * @var SettingsPage
-     */
-    protected $settings_page;
- 
-    /**
-     * Constructor.
-     *
-     * @param array $options
-     */
-    public function __construct($options)
-    {
+
+	/**
+	 * Settings Page
+	 *
+	 * @var SettingsPage
+	 */
+	protected $settings_page;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param array $options
+	 */
+	public function __construct($options)
+	{
 
 		$options = (object) $options;
-		
+
 		if ( isset( $options->title ) )
 			$this->title( $options->title );
 
@@ -177,35 +177,34 @@ class AdminPage
 
 		$this->bootstrap();
 	}
-	
+
 	function title($title){
 		$this->title = $title;
 	}
-	
+
 	function menu_title($menu_title){
 		$this->menu_title = $menu_title;
 	}
-	
+
 	function capability($capability){
 		$this->capability = $capability;
 	}
-	
+
 	function slug($slug){
 		$this->slug = $slug;
 	}
-	
+
 	function parent($parent){
 		$this->parent = $parent;
 	}
-	
+
 	function icon_url($icon_url){
 		$this->icon_url = $icon_url;
 	}
-	
+
 	function position($position){
 		$this->position = $position;
 	}
-
 
 	function render($render=null){
 		if ( 'settings-page' == $render ){
@@ -219,7 +218,7 @@ class AdminPage
 	}
 
 	function render_cb($render_cb){
-		
+
 		// we already have it
 		if ($this->render_cb)
 			return;
@@ -230,7 +229,7 @@ class AdminPage
 	}
 
 	function render_tpl($render_tpl){
-		
+
 		// we already have it
 		if ($this->render_tpl)
 			return;
@@ -239,11 +238,11 @@ class AdminPage
 			$this->render_tpl = $render_tpl;
 
 	}
-	
+
 	function scripts($scripts){
 		$this->scripts = $scripts;
 	}
-	
+
 	function styles($styles){
 		$this->styles = $styles;
 	}
@@ -252,7 +251,7 @@ class AdminPage
 		$this->settings_page = new SettingsPage($this->get_slug(), $settings);
 		$this->settings_page->setup();
 	}
-	
+
 	/**
 	 * REGISTER MENU - NOOP/DEPRECATE NOTICE
 	 * 
@@ -270,7 +269,7 @@ class AdminPage
 	 * @todo deprecate
 	 */
 	function setup(){
-		
+
 	}
 
 	/**
@@ -285,7 +284,7 @@ class AdminPage
 		add_action ( 'admin_menu' , [ $this , 'add_menu_page' ], 11 );
 		add_action ( 'admin_menu' , [ $this , '_bootstrap_admin_page' ], 12 );
 	}
-	
+
 	/**
 	 * Add WordPress toplevel or submenu page
 	 */
@@ -325,9 +324,9 @@ class AdminPage
 					break;
 			}
 		}
-		
+
 	}
-	
+
 	/**
 	 * REGISTER ADMIN PAGE
 	 * 
@@ -340,7 +339,7 @@ class AdminPage
 	function _bootstrap_admin_page(){
 		add_action ( 'load-'.$this->hook_suffix , [ $this , '_admin_page_setup' ] );
 	}
-	
+
 	/**
 	 * SHOW ADMIN PAGE
 	 * 
@@ -359,7 +358,7 @@ class AdminPage
 	}
 
 	public function admin_enqueue_scripts($hook) {
-		
+
 		// redundant
 		// this only gets called on load-{$this->hook_suffix} anyway
 		if( $hook != $this->hook_suffix ) {
@@ -376,7 +375,7 @@ class AdminPage
 	}
 
 	public function admin_enqueue_styles($hook) {
-		
+
 		// redundant
 		// this only gets called on load-{$this->hook_suffix} anyway
 		if( $hook != $this->hook_suffix ) {
@@ -391,73 +390,72 @@ class AdminPage
 		}
 
 	}
- 
-    /**
-     * Get the capability required to view the admin page.
-     *
-     * @return string
-     */
-    public function get_capability()
-    {
-        return $this->capabailty;
-    }
- 
-    /**
-     * Get the title of the admin page in the WordPress admin menu.
-     *
-     * @return string
-     */
-    public function get_menu_title()
-    {
-        return $this->menu_title;
-    }
- 
-    /**
-     * Get the title of the admin page.
-     *
-     * @return string
-     */
-    public function get_title()
-    {
+
+	/**
+	 * Get the capability required to view the admin page.
+	 *
+	 * @return string
+	 */
+	public function get_capability()
+	{
+		return $this->capabailty;
+	}
+
+	/**
+	 * Get the title of the admin page in the WordPress admin menu.
+	 *
+	 * @return string
+	 */
+	public function get_menu_title()
+	{
+		return $this->menu_title;
+	}
+
+	/**
+	 * Get the title of the admin page.
+	 *
+	 * @return string
+	 */
+	public function get_title()
+	{
 		return $this->title;
-    }
- 
-    /**
-     * Get the parent slug of the admin page.
-     *
-     * @return string
-     */
-    public function get_parent_slug()
-    {
-        return $this->parent;
-    }
- 
-    /**
-     * Get the parent slug of the admin page.
-     *
-     * @return string
-     */
-    public function get_hook_suffix()
-    {
-        return $this->hook_suffix;
-    }
- 
-    /**
-     * Get the slug used by the admin page.
-     *
-     * @return string
-     */
-    public function get_slug()
-    {
-        return $this->slug;
-    }
- 
- 
-    /**
-     * Render the top section of the plugin's admin page.
-     */
-    public function render_admin_page()
-    {
+	}
+
+	/**
+	 * Get the parent slug of the admin page.
+	 *
+	 * @return string
+	 */
+	public function get_parent_slug()
+	{
+		return $this->parent;
+	}
+
+	/**
+	 * Get the parent slug of the admin page.
+	 *
+	 * @return string
+	 */
+	public function get_hook_suffix()
+	{
+		return $this->hook_suffix;
+	}
+
+	/**
+	 * Get the slug used by the admin page.
+	 *
+	 * @return string
+	 */
+	public function get_slug()
+	{
+		return $this->slug;
+	}
+
+	/**
+	 * Render the top section of the plugin's admin page.
+	 */
+	public function render_admin_page()
+	{
 		// @todo if render callback supplied - add shortcircuit hook here
 		// execute render callback and return early
 
@@ -468,6 +466,6 @@ class AdminPage
 			include $this->render_tpl;
 			return;
 		}
-    }
+	}
 }
 endif;
