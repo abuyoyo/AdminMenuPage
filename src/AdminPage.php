@@ -12,6 +12,7 @@
  * @todo add add_screen_option( 'per_page', $args );
  * @todo accept WPHelper\PluginCore instance (get title slug etc. from there)
  * @todo fix is_readable() PHP error when sending callback array
+ * @todo is_readable() + is_callable() called twice - on register and on render
  */
 namespace WPHelper;
 
