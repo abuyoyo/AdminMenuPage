@@ -129,7 +129,7 @@ class SettingsPage{
 			$id,
 			$this->option_name,
 			$description,
-			checked( $options[$id], '1', false)
+			checked( ( $options[$id] ?? false ), '1', false)
 		);
 
 		$input_tag = apply_filters( 'wphelper/settings_page/input_checkbox', $input_tag, $field, $this->option_name, $options );
