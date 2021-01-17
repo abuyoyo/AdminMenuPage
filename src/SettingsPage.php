@@ -97,7 +97,7 @@ class SettingsPage{
 		foreach ($this->sections as $section){
 			add_settings_section(
 				$section['id'], // $id - Slug-name to identify the section. Used in the 'id' attribute of tags.
-				$section['title'], // $title - Formatted title of the section. Shown as the heading for the section.
+				$section['title'] ?? null, // $title - Formatted title of the section. Shown as the heading for the section.
 				$this->section_description_cb($section), // $callback - Function that echos out any content at the top of the section (between heading and fields).
 				$this->page // $page - The slug-name of the settings page on which to show the section.
 											//Built-in pages include 'general', 'reading', 'writing', 'discussion', 'media', etc.
