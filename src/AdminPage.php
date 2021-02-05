@@ -193,7 +193,11 @@ class AdminPage
 		if ( isset( $options->settings ) )
 			$this->settings( $options->settings );
 
-		$this->bootstrap();
+		/**
+		 * Bootstrap on init. Do not call directly from constructor.
+		 * That way setter functions can be called after instance is created.
+		 */
+		add_action( 'init', [ $this, 'bootstrap' ] );
 	}
 
 	function title($title){
@@ -304,7 +308,7 @@ class AdminPage
 	 * 
 	 * @return void
 	 */
-	function bootstrap(){
+	public function bootstrap(){
 		if ( ! $this->capability )
 			$this->capability = 'manage_options';
 
