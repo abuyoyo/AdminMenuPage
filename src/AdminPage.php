@@ -80,6 +80,13 @@ class AdminPage
 	protected $position;
 
 	/**
+	 * Render Type (callback, template, settings-page, cmb2-page etc.)
+	 *
+	 * @var string
+	 */
+	protected $render;
+
+	/**
 	 * Render callback function.
 	 *
 	 * @var callable
@@ -220,12 +227,17 @@ class AdminPage
 	function render($render=null){
 		if ( 'settings-page' == $render ){
 			$this->render_tpl(__DIR__ . '/tpl/settings_page.php');
-		}else if( is_callable( $render ) )
+			$this->render = $this->render ?? $render;
+		}else if( is_callable( $render ) ){
 			$this->render_cb($render);
-		else if (is_readable($render) )
+			$this->render = $this->render ?? 'render_cb';
+		}else if ( is_readable($render) ){
 			$this->render_tpl($render);
-		else
+			$this->render = $this->render ?? 'render_tpl';
+		}else{
 			$this->render_tpl(__DIR__ . '/tpl/default.php');
+			$this->render = $this->render ?? 'render_tpl';
+		}
 	}
 
 	function render_cb($render_cb){
@@ -473,6 +485,16 @@ class AdminPage
 	}
 
 	/**
+	 * Get the render template.
+	 *
+	 * @return string
+	 */
+	public function get_render_tpl()
+	{
+		return $this->render_tpl;
+	}
+
+	/**
 	 * Render the top section of the plugin's admin page.
 	 */
 	public function render_admin_page()
@@ -480,12 +502,10 @@ class AdminPage
 		// @todo if render callback supplied - add shortcircuit hook here
 		// execute render callback and return early
 
-		if ($this->render_cb && is_callable($this->render_cb)){
-			call_user_func($this->render_cb);
-			return;
-		}else if($this->render_tpl && is_readable($this->render_tpl)){
+		if ( isset( $this->render_cb ) && is_callable($this->render_cb)) {
+			call_user_func( $this->render_cb );
+		}else if ( isset( $this->render_tpl ) && is_readable($this->render_tpl)) {
 			include $this->render_tpl;
-			return;
 		}
 	}
 }
