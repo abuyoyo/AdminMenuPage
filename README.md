@@ -9,7 +9,7 @@
 
 ## Installation
 
-Install with [Composer](https://getcomposer.org/) or just drop AdminMenuPage.php into your plugin folder and require it.
+Install with [Composer](https://getcomposer.org/) or just drop AdminPage.php into your plugin folder and require it.
 
 ```PHP
 // Require the Composer autoloader anywhere in your code.
@@ -21,7 +21,7 @@ OR
 
 ```PHP
 // Require the class file directly from your plugin.
-require_once __DIR__ . 'AdminMenuPage.php';
+require_once __DIR__ . 'AdminPage.php';
 
 ```
 
@@ -31,8 +31,8 @@ WPHelper\AdminMenuPage uses [PSR-4](https://www.php-fig.org/psr/psr-4/) to autol
 ## Basic Usage
 
 ```PHP
-// Import AdminMenuPage.
-use WPHelper\AdminMenuPage;
+// Import AdminPage.
+use WPHelper\AdminPage;
 
 // Register the admin menu page.
 $args = [
@@ -51,7 +51,7 @@ $args = [
 ];
 
 // Register the admin menu page.
-$admin_menu_page = new AdminMenuPage( $args );
+$admin_menu_page = new AdminPage( $args );
 $admin_menu_page->setup();
 
 // That's it. We're done.
