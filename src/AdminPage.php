@@ -279,8 +279,25 @@ class AdminPage
 	}
 
 	function settings($settings){
-		$this->settings_page = new SettingsPage($this->get_slug(), $settings);
-		$this->settings_page->setup();
+		$this->settings = $settings;
+	}
+
+	public function options(){
+		$options = [
+			'title' => $this->title,
+			'menu_title' => $this->menu_title,
+			'capability' => $this->capability,
+			'slug' => $this->slug,
+			'parent' => $this->parent,
+			'icon_url' => $this->icon_url,
+			'position' => $this->position,
+			'render' => $this->render, // render_cb | render_tpl | settings-page | cmb2 | cmb2-tabs
+			'render_cb' => $this->render_cb,
+			'render_tpl' => $this->render_tpl,
+			'settings' => $this->settings,
+		];
+
+		return $options;
 	}
 
 	/**
@@ -311,6 +328,13 @@ class AdminPage
 	public function bootstrap(){
 		if ( ! $this->capability )
 			$this->capability = 'manage_options';
+
+		if ( $this->render == 'settings-page' ){
+
+			$this->settings_page = new SettingsPage($this);
+			$this->settings_page->setup();
+
+		}
 
 		add_action ( 'admin_menu' , [ $this , 'add_menu_page' ], 11 );
 		add_action ( 'admin_menu' , [ $this , '_bootstrap_admin_page' ], 12 );

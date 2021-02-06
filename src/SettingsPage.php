@@ -19,6 +19,13 @@ if ( ! class_exists( 'WPHelper\SettingsPage' ) ):
 class SettingsPage{
 
 	/**
+	 * AdminPage instance that called this class
+	 * 
+	 * @var AdminPage $admin_page instance
+	 */
+	protected $admin_page;
+
+	/**
 	 * Page slug to display sections
 	 * 
 	 * @var String $page
@@ -56,11 +63,17 @@ class SettingsPage{
 	/**
 	 * Constructor.
 	 *
-	 * @param array $options
+	 * @param AdminPage $admin_page instance
 	 */
-	public function __construct($page_slug,$settings)
+	public function __construct($admin_page)
 	{
-		$this->page = $page_slug;
+		// save reference to caller instance
+		$this->admin_page = $admin_page;
+
+		$admin_options = $admin_page->options();
+		$settings = $admin_options['settings'];
+
+		$this->page = $admin_options['slug'];
 
 		if ( ! empty($settings['option_name']) )
 			$this->option_name = $settings['option_name'];
