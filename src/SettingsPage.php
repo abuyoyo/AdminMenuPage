@@ -64,9 +64,15 @@ class SettingsPage{
 	 * Constructor.
 	 *
 	 * @param AdminPage $admin_page instance
+	 * @param null $settings deprecated
 	 */
-	public function __construct($admin_page)
+	public function __construct($admin_page, $settings = null)
 	{
+
+		if ( ! empty( $settings ) ) {
+			_deprecated_argument( __FUNCTION__, '3.0.0' );
+		}
+
 		// save reference to caller instance
 		$this->admin_page = $admin_page;
 
