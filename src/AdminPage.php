@@ -331,11 +331,9 @@ class AdminPage
 	 * inside WPHelper namespace
 	 * \get_current_screen() function not defined
 	 * \current_action() also????
-	 * 
-	 * @todo deprecate
 	 */
 	function setup(){
-
+		_doing_it_wrong( __METHOD__, 'Deprecated. Noop/no-op. This function will be removed in v1.0', '0.14' );
 	}
 
 	/**
