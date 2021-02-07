@@ -230,7 +230,16 @@ class AdminPage
 	}
 
 	function parent($parent){
+		switch( $parent ) {
+			case 'options':
+			case 'settings':
+			case 'options-general.php':
+				$this->parent = 'options-general.php';
+			break;
+			default:
 		$this->parent = $parent;
+			break;
+	}
 	}
 
 	function icon_url($icon_url){
@@ -375,6 +384,7 @@ class AdminPage
 			switch ($this->parent){
 				case 'options':
 				case 'settings':
+				case 'options-general.php':
 					$this->hook_suffix = add_options_page(
 						$this->title, 
 						$this->menu_title, 
