@@ -1,6 +1,12 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.15
+
+### Changed
+
+- Restore deprecated param to SettingsPage constructor and add `_deprecated_argument` message.
+
 ## 0.14
 
 ### Added
