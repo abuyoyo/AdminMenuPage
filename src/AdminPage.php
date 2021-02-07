@@ -143,6 +143,13 @@ class AdminPage
 	protected $settings_page;
 
 	/**
+	 * Delegate admin_menu hookup to CMB2 implementation
+	 *
+	 * @var boolean
+	 */
+	protected $delegate_hookup = false;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param array $options
@@ -161,6 +168,9 @@ class AdminPage
 		if ( isset( $options->title ) )
 			$this->title( $options->title );
 
+		/**
+		 * @todo move this to bootstrap()
+		 */
 		if ( ! isset( $options->menu_title ) )
 			$options->menu_title = $options->title;
 
@@ -237,9 +247,9 @@ class AdminPage
 				$this->parent = 'options-general.php';
 			break;
 			default:
-		$this->parent = $parent;
+				$this->parent = $parent;
 			break;
-	}
+		}
 	}
 
 	function icon_url($icon_url){
@@ -254,6 +264,19 @@ class AdminPage
 		if ( 'settings-page' == $render ){
 			$this->render_tpl(__DIR__ . '/tpl/settings_page.php');
 			$this->render = $this->render ?? $render;
+		}else if ( 'cmb2' == $render || 'cmb2-tabs' == $render ){
+
+			$this->delegate_hookup = true;
+
+			if ( ! empty( $this->plugin_core ) ){
+				$this->plugin_info = new PluginInfoMetaBox( $this->plugin_core );
+				$this->render_tpl(__DIR__ . '/tpl/cmb2_options_page-plugin_info.php');
+			}else{
+				$this->render_tpl(__DIR__ . '/tpl/cmb2_options_page.php');
+			}
+
+			$this->render = $this->render ?? $render;
+
 		}else if( is_callable( $render ) ){
 			$this->render_cb($render);
 			$this->render = $this->render ?? 'render_cb';
@@ -361,6 +384,26 @@ class AdminPage
 
 		}
 
+		// if ( $this->delegate_hookup ){
+		if ( 'cmb2' == $this->render || 'cmb2-tabs' == $this->render ){
+
+			if ($this->settings['options_type'] == 'multi'){
+				$this->cmb2_page = new CMB2_OptionsPage_Multi( $this );
+			}else{
+				$this->cmb2_page = new CMB2_OptionsPage( $this );
+			}
+			
+			/**
+			 * @todo Perhpaps this can hook on admin_init - right after admin_menu has finished
+			 * @todo CMB2 options-page does not return page_hook/hook_suffix - MUST validate
+			 */
+			add_action ( 'admin_menu' , [ $this , '_bootstrap_admin_page' ], 12 );
+			
+			// skip add_menu_page
+			return;
+		}
+
+		// if ( ! $this->delegate_hookup ){
 		add_action ( 'admin_menu' , [ $this , 'add_menu_page' ], 11 );
 		add_action ( 'admin_menu' , [ $this , '_bootstrap_admin_page' ], 12 );
 	}
@@ -408,6 +451,26 @@ class AdminPage
 
 	}
 
+
+	/**
+	 * 
+	 */
+	public function validate_page_hook(){
+
+		/**
+		 * hack!
+		 * This is ad hoc validation - should do this earlier
+		 */
+		if ( empty( $this->slug ) ){
+			$this->slug = $this->settings['option_key'];
+		}
+
+		if ( empty( $this->hook_suffix ) ){
+			$this->hook_suffix = get_plugin_page_hookname( $this->slug, $this->parent );
+		}
+
+	}
+
 	/**
 	 * REGISTER ADMIN PAGE
 	 * 
@@ -416,9 +479,19 @@ class AdminPage
 	 * 
 	 * Runs for EVERY AdminPage instance
 	 * AdminNotice->onPage() works
+	 * 
+	 * @hook admin_menu priority 12
+	 * 
+	 * @todo move this function to admin_init - after admin_menu has finished
 	 */
-	function _bootstrap_admin_page(){
-		add_action ( 'load-'.$this->hook_suffix , [ $this , '_admin_page_setup' ] );
+	public function _bootstrap_admin_page(){
+
+		/**
+		 * @todo perhaps run this on 'admin_init'
+		 */
+		$this->validate_page_hook();
+
+		add_action ( 'load-' . $this->hook_suffix , [ $this , '_admin_page_setup' ] );
 
 		foreach ( $this->methods as $method ){
 			if( is_callable( $method ) ){
