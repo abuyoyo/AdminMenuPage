@@ -129,6 +129,13 @@ class AdminPage
 	protected $hook_suffix;
 
 	/**
+	 * PluginCore instance
+	 *
+	 * @var PluginCore
+	 */
+	protected $plugin_core;
+
+	/**
 	 * Settings Page
 	 *
 	 * @var SettingsPage
@@ -144,6 +151,12 @@ class AdminPage
 	{
 
 		$options = (object) $options;
+
+		/**
+		 * @todo - fallback to plugin_core on missing options (title, etc.) in bootstrap()
+		 */
+		if ( isset( $options->plugin_core ) )
+			$this->plugin_core( $options->plugin_core );
 
 		if ( isset( $options->title ) )
 			$this->title( $options->title );
@@ -278,6 +291,10 @@ class AdminPage
 		$this->methods = $methods;
 	}
 
+	function plugin_core($plugin_core){
+		$this->plugin_core = $plugin_core;
+	}
+
 	function settings($settings){
 		$this->settings = $settings;
 	}
@@ -295,6 +312,7 @@ class AdminPage
 			'render_cb' => $this->render_cb,
 			'render_tpl' => $this->render_tpl,
 			'settings' => $this->settings,
+			'plugin_core' => $this->plugin_core,
 		];
 
 		return $options;
