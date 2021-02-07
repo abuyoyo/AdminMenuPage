@@ -1,6 +1,20 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.14
+
+### Added
+
+- Add CMB2 Options-page delegation. Allows adding CMB2 options page.
+- Add CMB2 Options "multi" page. Allows CMB2 options page that saves each field to its own row in options table.
+- Supports CMB2 tabs in CMB2 option-pages.
+- Add Plugin Info metabox to CMB2 tables.
+
+### Changed
+
+- Deprecate `AdminPage->setup` - add `_doing_it_wrong` message.
+- Admin Page method `bootstrap()` runs on `init` hook instead of constructor. Allows setter functions to have effect.
+
 ## 0.13
 
 ### Added
