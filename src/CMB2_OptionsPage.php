@@ -93,9 +93,17 @@ class CMB2_OptionsPage{
 
 		if ( isset( $settings['fields'] ) ){
 			$this->fields = $settings['fields'];
+			/**
+			 * @todo revisit this - might not need to unset fields
+			 */
 			unset( $settings['fields'] );
 		}
 
+		/**
+		 * If args are formatted for SettingsPage we convert to CMB2 options format
+		 * 
+		 * @todo export this to dedicated method
+		 */
 		if ( isset( $settings['sections'] ) ){
 			$this->fields = [];
 			foreach ( $settings['sections'] as $section ){
@@ -137,7 +145,8 @@ class CMB2_OptionsPage{
 			);
 		}
 
-		
+		// re-insert fields back into settings
+		$settings['fields'] = $this->fields;
 
 		$this->cmb2_options = $settings;
 
@@ -149,10 +158,6 @@ class CMB2_OptionsPage{
 
 	public function register_metabox(){
 		$this->cmb = new CMB2( $this->cmb2_options );
-
-		foreach( $this->fields as $field ){
-			$this->cmb->add_field( $field );
-		}
 	}
 
 	/**
