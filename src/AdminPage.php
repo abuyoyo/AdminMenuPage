@@ -6,12 +6,13 @@
  * Create WordPress admin pages easily
  * 
  * @author  abuyoyo
- * @version 0.13
+ * @version 0.14
  * 
  * @todo add 'menu_location' - settings. tools, toplevel etc. (extend 'parent' option)
  * @todo add add_screen_option( 'per_page', $args );
  * @todo accept WPHelper\PluginCore instance (get title slug etc. from there)
  * @todo fix is_readable() PHP error when sending callback array
+ * @todo is_readable() + is_callable() called twice - on register and on render
  */
 namespace WPHelper;
 
@@ -79,6 +80,13 @@ class AdminPage
 	protected $position;
 
 	/**
+	 * Render Type (callback, template, settings-page, cmb2-page etc.)
+	 *
+	 * @var string
+	 */
+	protected $render;
+
+	/**
 	 * Render callback function.
 	 *
 	 * @var callable
@@ -121,11 +129,25 @@ class AdminPage
 	protected $hook_suffix;
 
 	/**
+	 * PluginCore instance
+	 *
+	 * @var PluginCore
+	 */
+	protected $plugin_core;
+
+	/**
 	 * Settings Page
 	 *
 	 * @var SettingsPage
 	 */
 	protected $settings_page;
+
+	/**
+	 * Delegate admin_menu hookup to CMB2 implementation
+	 *
+	 * @var boolean
+	 */
+	protected $delegate_hookup = false;
 
 	/**
 	 * Constructor.
@@ -137,9 +159,18 @@ class AdminPage
 
 		$options = (object) $options;
 
+		/**
+		 * @todo - fallback to plugin_core on missing options (title, etc.) in bootstrap()
+		 */
+		if ( isset( $options->plugin_core ) )
+			$this->plugin_core( $options->plugin_core );
+
 		if ( isset( $options->title ) )
 			$this->title( $options->title );
 
+		/**
+		 * @todo move this to bootstrap()
+		 */
 		if ( ! isset( $options->menu_title ) )
 			$options->menu_title = $options->title;
 
@@ -185,7 +216,11 @@ class AdminPage
 		if ( isset( $options->settings ) )
 			$this->settings( $options->settings );
 
-		$this->bootstrap();
+		/**
+		 * Bootstrap on init. Do not call directly from constructor.
+		 * That way setter functions can be called after instance is created.
+		 */
+		add_action( 'init', [ $this, 'bootstrap' ] );
 	}
 
 	function title($title){
@@ -205,7 +240,16 @@ class AdminPage
 	}
 
 	function parent($parent){
-		$this->parent = $parent;
+		switch( $parent ) {
+			case 'options':
+			case 'settings':
+			case 'options-general.php':
+				$this->parent = 'options-general.php';
+			break;
+			default:
+				$this->parent = $parent;
+			break;
+		}
 	}
 
 	function icon_url($icon_url){
@@ -219,12 +263,30 @@ class AdminPage
 	function render($render=null){
 		if ( 'settings-page' == $render ){
 			$this->render_tpl(__DIR__ . '/tpl/settings_page.php');
-		}else if( is_callable( $render ) )
+			$this->render = $this->render ?? $render;
+		}else if ( 'cmb2' == $render || 'cmb2-tabs' == $render ){
+
+			$this->delegate_hookup = true;
+
+			if ( ! empty( $this->plugin_core ) ){
+				$this->plugin_info = new PluginInfoMetaBox( $this->plugin_core );
+				$this->render_tpl(__DIR__ . '/tpl/cmb2_options_page-plugin_info.php');
+			}else{
+				$this->render_tpl(__DIR__ . '/tpl/cmb2_options_page.php');
+			}
+
+			$this->render = $this->render ?? $render;
+
+		}else if( is_callable( $render ) ){
 			$this->render_cb($render);
-		else if (is_readable($render) )
+			$this->render = $this->render ?? 'render_cb';
+		}else if ( is_readable($render) ){
 			$this->render_tpl($render);
-		else
+			$this->render = $this->render ?? 'render_tpl';
+		}else{
 			$this->render_tpl(__DIR__ . '/tpl/default.php');
+			$this->render = $this->render ?? 'render_tpl';
+		}
 	}
 
 	function render_cb($render_cb){
@@ -261,9 +323,31 @@ class AdminPage
 		$this->methods = $methods;
 	}
 
+	function plugin_core($plugin_core){
+		$this->plugin_core = $plugin_core;
+	}
+
 	function settings($settings){
-		$this->settings_page = new SettingsPage($this->get_slug(), $settings);
-		$this->settings_page->setup();
+		$this->settings = $settings;
+	}
+
+	public function options(){
+		$options = [
+			'title' => $this->title,
+			'menu_title' => $this->menu_title,
+			'capability' => $this->capability,
+			'slug' => $this->slug,
+			'parent' => $this->parent,
+			'icon_url' => $this->icon_url,
+			'position' => $this->position,
+			'render' => $this->render, // render_cb | render_tpl | settings-page | cmb2 | cmb2-tabs
+			'render_cb' => $this->render_cb,
+			'render_tpl' => $this->render_tpl,
+			'settings' => $this->settings,
+			'plugin_core' => $this->plugin_core,
+		];
+
+		return $options;
 	}
 
 	/**
@@ -279,11 +363,9 @@ class AdminPage
 	 * inside WPHelper namespace
 	 * \get_current_screen() function not defined
 	 * \current_action() also????
-	 * 
-	 * @todo deprecate
 	 */
 	function setup(){
-
+		_doing_it_wrong( __METHOD__, 'Deprecated. Noop/no-op. This function will be removed in v1.0', '0.14' );
 	}
 
 	/**
@@ -291,10 +373,37 @@ class AdminPage
 	 * 
 	 * @return void
 	 */
-	function bootstrap(){
+	public function bootstrap(){
 		if ( ! $this->capability )
 			$this->capability = 'manage_options';
 
+		if ( $this->render == 'settings-page' ){
+
+			$this->settings_page = new SettingsPage($this);
+			$this->settings_page->setup();
+
+		}
+
+		// if ( $this->delegate_hookup ){
+		if ( 'cmb2' == $this->render || 'cmb2-tabs' == $this->render ){
+
+			if ($this->settings['options_type'] == 'multi'){
+				$this->cmb2_page = new CMB2_OptionsPage_Multi( $this );
+			}else{
+				$this->cmb2_page = new CMB2_OptionsPage( $this );
+			}
+			
+			/**
+			 * @todo Perhpaps this can hook on admin_init - right after admin_menu has finished
+			 * @todo CMB2 options-page does not return page_hook/hook_suffix - MUST validate
+			 */
+			add_action ( 'admin_menu' , [ $this , '_bootstrap_admin_page' ], 12 );
+			
+			// skip add_menu_page
+			return;
+		}
+
+		// if ( ! $this->delegate_hookup ){
 		add_action ( 'admin_menu' , [ $this , 'add_menu_page' ], 11 );
 		add_action ( 'admin_menu' , [ $this , '_bootstrap_admin_page' ], 12 );
 	}
@@ -318,6 +427,7 @@ class AdminPage
 			switch ($this->parent){
 				case 'options':
 				case 'settings':
+				case 'options-general.php':
 					$this->hook_suffix = add_options_page(
 						$this->title, 
 						$this->menu_title, 
@@ -341,6 +451,26 @@ class AdminPage
 
 	}
 
+
+	/**
+	 * 
+	 */
+	public function validate_page_hook(){
+
+		/**
+		 * hack!
+		 * This is ad hoc validation - should do this earlier
+		 */
+		if ( empty( $this->slug ) ){
+			$this->slug = $this->settings['option_key'];
+		}
+
+		if ( empty( $this->hook_suffix ) ){
+			$this->hook_suffix = get_plugin_page_hookname( $this->slug, $this->parent );
+		}
+
+	}
+
 	/**
 	 * REGISTER ADMIN PAGE
 	 * 
@@ -349,9 +479,19 @@ class AdminPage
 	 * 
 	 * Runs for EVERY AdminPage instance
 	 * AdminNotice->onPage() works
+	 * 
+	 * @hook admin_menu priority 12
+	 * 
+	 * @todo move this function to admin_init - after admin_menu has finished
 	 */
-	function _bootstrap_admin_page(){
-		add_action ( 'load-'.$this->hook_suffix , [ $this , '_admin_page_setup' ] );
+	public function _bootstrap_admin_page(){
+
+		/**
+		 * @todo perhaps run this on 'admin_init'
+		 */
+		$this->validate_page_hook();
+
+		add_action ( 'load-' . $this->hook_suffix , [ $this , '_admin_page_setup' ] );
 
 		foreach ( $this->methods as $method ){
 			if( is_callable( $method ) ){
@@ -472,6 +612,16 @@ class AdminPage
 	}
 
 	/**
+	 * Get the render template.
+	 *
+	 * @return string
+	 */
+	public function get_render_tpl()
+	{
+		return $this->render_tpl;
+	}
+
+	/**
 	 * Render the top section of the plugin's admin page.
 	 */
 	public function render_admin_page()
@@ -479,12 +629,10 @@ class AdminPage
 		// @todo if render callback supplied - add shortcircuit hook here
 		// execute render callback and return early
 
-		if ($this->render_cb && is_callable($this->render_cb)){
-			call_user_func($this->render_cb);
-			return;
-		}else if($this->render_tpl && is_readable($this->render_tpl)){
+		if ( isset( $this->render_cb ) && is_callable($this->render_cb)) {
+			call_user_func( $this->render_cb );
+		}else if ( isset( $this->render_tpl ) && is_readable($this->render_tpl)) {
 			include $this->render_tpl;
-			return;
 		}
 	}
 }

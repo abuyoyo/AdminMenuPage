@@ -19,6 +19,13 @@ if ( ! class_exists( 'WPHelper\SettingsPage' ) ):
 class SettingsPage{
 
 	/**
+	 * AdminPage instance that called this class
+	 * 
+	 * @var AdminPage $admin_page instance
+	 */
+	protected $admin_page;
+
+	/**
 	 * Page slug to display sections
 	 * 
 	 * @var String $page
@@ -56,11 +63,17 @@ class SettingsPage{
 	/**
 	 * Constructor.
 	 *
-	 * @param array $options
+	 * @param AdminPage $admin_page instance
 	 */
-	public function __construct($page_slug,$settings)
+	public function __construct($admin_page)
 	{
-		$this->page = $page_slug;
+		// save reference to caller instance
+		$this->admin_page = $admin_page;
+
+		$admin_options = $admin_page->options();
+		$settings = $admin_options['settings'];
+
+		$this->page = $admin_options['slug'];
 
 		if ( ! empty($settings['option_name']) )
 			$this->option_name = $settings['option_name'];
@@ -97,7 +110,7 @@ class SettingsPage{
 		foreach ($this->sections as $section){
 			add_settings_section(
 				$section['id'], // $id - Slug-name to identify the section. Used in the 'id' attribute of tags.
-				$section['title'], // $title - Formatted title of the section. Shown as the heading for the section.
+				$section['title'] ?? null, // $title - Formatted title of the section. Shown as the heading for the section.
 				$this->section_description_cb($section), // $callback - Function that echos out any content at the top of the section (between heading and fields).
 				$this->page // $page - The slug-name of the settings page on which to show the section.
 											//Built-in pages include 'general', 'reading', 'writing', 'discussion', 'media', etc.
@@ -129,7 +142,7 @@ class SettingsPage{
 			$id,
 			$this->option_name,
 			$description,
-			checked( $options[$id], '1', false)
+			checked( ( $options[$id] ?? false ), '1', false)
 		);
 
 		$input_tag = apply_filters( 'wphelper/settings_page/input_checkbox', $input_tag, $field, $this->option_name, $options );
