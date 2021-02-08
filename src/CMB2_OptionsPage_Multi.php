@@ -18,4 +18,4 @@ if ( ! class_exists( 'WPHelper\CMB2_OptionsPage_Multi' ) ):
 class CMB2_OptionsPage_Multi extends CMB2_OptionsPage{
 	use CMB2_Override_Meta;
 }
-endif;	
+endif;
