@@ -19,7 +19,6 @@ use CMB2_Options_Hook;
 
 if ( ! class_exists( 'WPHelper\CMB2_OptionsPage' ) ):
 class CMB2_OptionsPage{
-	// use CMB2_Override_Meta;
 
 	/**
 	 * @var AdminPage $admin_page
@@ -65,7 +64,6 @@ class CMB2_OptionsPage{
 		 * 
 		 * @todo account for all menu slugs.
 		 */
-		// wp_die_arr($settings['parent_slug']);
 		switch ( $settings['parent_slug'] ) {
 			case 'options':
 				$settings['parent_slug'] = 'options-general.php';
@@ -95,9 +93,17 @@ class CMB2_OptionsPage{
 
 		if ( isset( $settings['fields'] ) ){
 			$this->fields = $settings['fields'];
+			/**
+			 * @todo revisit this - might not need to unset fields
+			 */
 			unset( $settings['fields'] );
 		}
 
+		/**
+		 * If args are formatted for SettingsPage we convert to CMB2 options format
+		 * 
+		 * @todo export this to dedicated method
+		 */
 		if ( isset( $settings['sections'] ) ){
 			$this->fields = [];
 			foreach ( $settings['sections'] as $section ){
@@ -139,7 +145,8 @@ class CMB2_OptionsPage{
 			);
 		}
 
-		
+		// re-insert fields back into settings
+		$settings['fields'] = $this->fields;
 
 		$this->cmb2_options = $settings;
 
@@ -150,12 +157,7 @@ class CMB2_OptionsPage{
 	}
 
 	public function register_metabox(){
-
 		$this->cmb = new CMB2( $this->cmb2_options );
-
-		foreach( $this->fields as $field ){
-			$this->cmb->add_field( $field );
-		}
 	}
 
 	/**
@@ -171,14 +173,13 @@ class CMB2_OptionsPage{
 
 
 	private function convert_field_to_cmb2_field( $field ){
-		$field['id'] =   $field['id'] ?? $field['slug'];
+		$field['id']   = $field['id']   ?? $field['slug'];
 		$field['name'] = $field['name'] ?? $field['title'];
 		$field['desc'] = $field['desc'] ?? $field['description'];
 		
 		unset( $field['slug'] );
 		unset( $field['title'] );
 		unset( $field['description'] );
-
 
 		return $field;
 	}

@@ -1,6 +1,16 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.16
+
+### Fixed
+
+- Fix CMB2 "multi" options page to actually override fields.
+
+### Changed
+
+- Add CMB2 fields directly in options array instead of using `add_field` method.
+
 ## 0.15
 
 ### Changed
