@@ -387,7 +387,7 @@ class AdminPage
 		// if ( $this->delegate_hookup ){
 		if ( 'cmb2' == $this->render || 'cmb2-tabs' == $this->render ){
 
-			if ($this->settings['options_type'] == 'multi'){
+			if ( isset( $this->settings['options_type'] ) && $this->settings['options_type'] == 'multi' ) {
 				$this->cmb2_page = new CMB2_OptionsPage_Multi( $this );
 			}else{
 				$this->cmb2_page = new CMB2_OptionsPage( $this );
