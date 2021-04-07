@@ -23,7 +23,7 @@ class PluginInfoMetaBox{
 	/**
 	 * PLUGIN INFO BOX
 	 * 
-	 * Display plguin info meta-box on admin pages
+	 * Display plugin info meta-box on admin pages
 	 * 
 	 * @since iac_engine 1.1.0
 	 * @since iac_engine 1.2.0 plugin_info_box now a function

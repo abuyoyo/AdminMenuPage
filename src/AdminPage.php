@@ -252,19 +252,19 @@ class AdminPage
 		}
 	}
 
-	function icon_url($icon_url){
+	function icon_url( $icon_url ){
 		$this->icon_url = $icon_url;
 	}
 
-	function position($position){
+	function position( $position ){
 		$this->position = $position;
 	}
 
 	function render($render=null){
-		if ( 'settings-page' == $render ){
+		if ( 'settings-page' == $render ) {
 			$this->render_tpl(__DIR__ . '/tpl/settings_page.php');
 			$this->render = $this->render ?? $render;
-		}else if ( 'cmb2' == $render || 'cmb2-tabs' == $render ){
+		} else if ( 'cmb2' == $render || 'cmb2-tabs' == $render ) {
 
 			$this->delegate_hookup = true;
 
@@ -277,13 +277,13 @@ class AdminPage
 
 			$this->render = $this->render ?? $render;
 
-		}else if( is_callable( $render ) ){
+		} else if( is_callable( $render ) ) {
 			$this->render_cb($render);
 			$this->render = $this->render ?? 'render_cb';
-		}else if ( is_readable($render) ){
+		} else if ( is_readable($render) ) {
 			$this->render_tpl($render);
 			$this->render = $this->render ?? 'render_tpl';
-		}else{
+		} else {
 			$this->render_tpl(__DIR__ . '/tpl/default.php');
 			$this->render = $this->render ?? 'render_tpl';
 		}
@@ -292,7 +292,7 @@ class AdminPage
 	function render_cb($render_cb){
 
 		// we already have it
-		if ($this->render_cb)
+		if ( $this->render_cb )
 			return;
 
 		if( is_callable( $render_cb ) )
@@ -389,7 +389,7 @@ class AdminPage
 
 			if ( isset( $this->settings['options_type'] ) && $this->settings['options_type'] == 'multi' ) {
 				$this->cmb2_page = new CMB2_OptionsPage_Multi( $this );
-			}else{
+			} else {
 				$this->cmb2_page = new CMB2_OptionsPage( $this );
 			}
 			
