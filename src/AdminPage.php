@@ -183,6 +183,10 @@ class AdminPage
 		if ( isset( $options->slug ) )
 			$this->slug( $options->slug );
 
+		if ( isset( $options->plugin_info ) ){ // before render()
+			$this->plugin_info( $options->plugin_info );
+		}
+
 		if ( isset( $options->render ) ) // dev
 			$this->render( $options->render );
 
@@ -268,7 +272,7 @@ class AdminPage
 
 			$this->delegate_hookup = true;
 
-			if ( ! empty( $this->plugin_core ) ){
+			if ( ! empty( $this->plugin_core ) || ! empty( $this->plugin_info ) ){
 				$this->render_tpl( __DIR__ . '/tpl/cmb2_options_page-plugin_info.php' );
 			} else {
 				$this->render_tpl(__DIR__ . '/tpl/cmb2_options_page.php');
@@ -308,6 +312,16 @@ class AdminPage
 		if( is_readable( $render_tpl ) )
 			$this->render_tpl = $render_tpl;
 
+	}
+
+	function plugin_info( $plugin_info ){
+
+		// we already have it
+		if ( $this->plugin_info )
+			return;
+
+		if( is_callable( $plugin_info ) )
+			$this->plugin_info = $plugin_info;
 	}
 
 	function scripts($scripts){
@@ -640,10 +654,14 @@ class AdminPage
 	 */
 	public function render_plugin_info_box(){
 
-		if ( ! empty( $this->plugin_core ) && empty( $this->plugin_info_meta_box ) ){
-			$this->plugin_info_meta_box = new PluginInfoMetaBox( $this->plugin_core );
+		if ( isset( $this->plugin_info ) && is_callable( $this->plugin_info ) ) {
+			call_user_func( $this->plugin_info );
+		} else {
+			if ( ! empty( $this->plugin_core ) && empty( $this->plugin_info_meta_box ) ){
+				$this->plugin_info_meta_box = new PluginInfoMetaBox( $this->plugin_core );
+			}
+			$this->plugin_info_meta_box->plugin_info_box();
 		}
-		$this->plugin_info_meta_box->plugin_info_box();
 
 	}
 }
