@@ -1,6 +1,19 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.17
+
+### Changed
+
+- Various improvements to CMB2 settings pages.
+- Make use of CMB2 2.9.0's `options_page_tab_nav_output()` to render tabs on non-CMB2 pages.
+- Plugins can provide their own plugin info-box render callback.
+- Parent item's first sub-menu page (itself) uses item's `tab_title` instead of `menu_title`
+
+### Added
+- Add action `wphelper/adminpage/plugin_info_box/$slug` to render plugin info-box.
+- Add `Last Update` and `Release Date` optional headers to WordPress plugin headers (Used in plugin info-box).
+
 ## 0.16
 
 ### Fixed
