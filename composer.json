@@ -9,6 +9,9 @@
 	"autoload": {
 		"psr-4": {
 			"WPHelper\\" : "src/"
-		}
+		},
+		"files": [
+			"wph_admin_page.php"
+		]
 	}
 }
