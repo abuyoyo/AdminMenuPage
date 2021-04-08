@@ -34,7 +34,7 @@ class PluginInfoMetaBox{
 		$plugin_data = get_plugin_data( $this->plugin_core->file() , false ); // false = no markup (i think)
 
 
-		$last_update = $plugin_data['Last Update'];
+		$last_update = $plugin_data['Last Update'] ?: $plugin_data['Release Date'];
 		$last_update = DateTime::createFromFormat('Y_m_d', $last_update);
 
 		// $last_update = new DateTime('now');
