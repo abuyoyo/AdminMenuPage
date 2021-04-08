@@ -5,13 +5,16 @@
  * @var WPHelper\CMB2_Options_Page $this
  * @var CMB2_Options_Hook $hookup
  * @global array $tabs
- * @global string $hookup_static - class name of $this
  */
 
-$hookup_static = get_class($hookup);
 $tabs = $hookup->get_tab_group_tabs();
- ?>
+
+?>
  <style>
+ /* 
+	fix top container alignment issues when using 2 columns
+	This assumes first item is a title item
+  */
  .cmb2-options-page .cmb2-wrap .cmb-type-title:first-of-type {
     margin-top: 0;
 }
@@ -22,11 +25,7 @@ $tabs = $hookup->get_tab_group_tabs();
 	<?php endif; ?>
 
 	<?php if ( count( $tabs ) > 1 ) : ?>
-		<h2 class="nav-tab-wrapper">
-			<?php foreach ( $tabs as $option_key => $tab_title ) : ?>
-				<a class="nav-tab<?php if ( $hookup_static::is_page( $option_key ) ) : ?> nav-tab-active<?php endif; ?>" href="<?php menu_page_url( $option_key ); ?>"><?php echo wp_kses_post( $tab_title ); ?></a>
-			<?php endforeach; ?>
-		</h2>
+		<?php $hookup->options_page_tab_nav_output(); ?>
 	<?php endif; ?>
 
 	<div id="poststuff">
@@ -46,7 +45,7 @@ $tabs = $hookup->get_tab_group_tabs();
 			<!-- sidebar -->
 			<div id="postbox-container-1" class="postbox-container">
 				<div class="meta-box-sortables">
-					<?php $this->admin_page->plugin_info->plugin_info_box(); ?>
+					<?php $this->admin_page->render_plugin_info_box(); ?>
 				</div><!-- .meta-box-sortables -->
 			</div><!-- #postbox-container-1 .postbox-container -->
 		</div><!-- #post-body -->

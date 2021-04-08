@@ -42,7 +42,7 @@ class CMB2_OptionsPage{
 		$settings = $admin_options['settings'];
 
 		$settings['object_types'] = array( 'options-page' );
-		$settings['display_cb'] = $settings['display_cb'] ?: [ $this, 'options_page_output' ];
+		$settings['display_cb'] = $settings['display_cb'] ?? [ $this, 'options_page_output' ];
 
 		$settings['option_key']  = $settings['option_key']  ?? ( $settings['option_name'] ?? ( $settings['id'] ?? $admin_options['slug'] ) );
 		$settings['title']       = $settings['title']       ?? $admin_options['title'];
@@ -154,6 +154,11 @@ class CMB2_OptionsPage{
 		$priority = empty( $settings['parent_slug'] ) ? 9 : 10;
 
 		add_action( 'cmb2_admin_init', [ $this, 'register_metabox' ], $priority );
+
+		if ( empty( $settings['parent_slug'] ) && $settings['menu_title'] != $settings['tab_title'] ){
+			add_action('admin_menu', [ $this, 'replace_submenu_title'], 11 );
+		}
+
 	}
 
 	public function register_metabox(){
@@ -182,6 +187,24 @@ class CMB2_OptionsPage{
 		unset( $field['description'] );
 
 		return $field;
+	}
+
+
+	/**
+	 * Replace submenu title of parent item with tab title
+	 */
+	public function replace_submenu_title(){
+
+		remove_submenu_page( $this->cmb2_options['id'], $this->cmb2_options['id'] );// Remove the default submenu so we can add our customized version.
+		add_submenu_page(
+			$this->cmb2_options['id'],
+			$this->cmb2_options['title'],
+			$this->cmb2_options['tab_title'],
+			$this->cmb2_options['capability'],
+			$this->cmb2_options['id'],
+			'',
+			0,
+		);
 	}
 }
 endif;

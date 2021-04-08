@@ -6,7 +6,7 @@
  * Create WordPress admin pages easily
  * 
  * @author  abuyoyo
- * @version 0.16
+ * @version 0.17
  * 
  * @todo add 'menu_location' - settings. tools, toplevel etc. (extend 'parent' option)
  * @todo add add_screen_option( 'per_page', $args );
@@ -183,6 +183,10 @@ class AdminPage
 		if ( isset( $options->slug ) )
 			$this->slug( $options->slug );
 
+		if ( isset( $options->plugin_info ) ){ // before render()
+			$this->plugin_info( $options->plugin_info );
+		}
+
 		if ( isset( $options->render ) ) // dev
 			$this->render( $options->render );
 
@@ -252,38 +256,37 @@ class AdminPage
 		}
 	}
 
-	function icon_url($icon_url){
+	function icon_url( $icon_url ){
 		$this->icon_url = $icon_url;
 	}
 
-	function position($position){
+	function position( $position ){
 		$this->position = $position;
 	}
 
 	function render($render=null){
-		if ( 'settings-page' == $render ){
+		if ( 'settings-page' == $render ) {
 			$this->render_tpl(__DIR__ . '/tpl/settings_page.php');
 			$this->render = $this->render ?? $render;
-		}else if ( 'cmb2' == $render || 'cmb2-tabs' == $render ){
+		} else if ( 'cmb2' == $render || 'cmb2-tabs' == $render ) {
 
 			$this->delegate_hookup = true;
 
-			if ( ! empty( $this->plugin_core ) ){
-				$this->plugin_info = new PluginInfoMetaBox( $this->plugin_core );
-				$this->render_tpl(__DIR__ . '/tpl/cmb2_options_page-plugin_info.php');
-			}else{
+			if ( ! empty( $this->plugin_core ) || ! empty( $this->plugin_info ) ){
+				$this->render_tpl( __DIR__ . '/tpl/cmb2_options_page-plugin_info.php' );
+			} else {
 				$this->render_tpl(__DIR__ . '/tpl/cmb2_options_page.php');
 			}
 
 			$this->render = $this->render ?? $render;
 
-		}else if( is_callable( $render ) ){
+		} else if( is_callable( $render ) ) {
 			$this->render_cb($render);
 			$this->render = $this->render ?? 'render_cb';
-		}else if ( is_readable($render) ){
+		} else if ( is_readable($render) ) {
 			$this->render_tpl($render);
 			$this->render = $this->render ?? 'render_tpl';
-		}else{
+		} else {
 			$this->render_tpl(__DIR__ . '/tpl/default.php');
 			$this->render = $this->render ?? 'render_tpl';
 		}
@@ -292,7 +295,7 @@ class AdminPage
 	function render_cb($render_cb){
 
 		// we already have it
-		if ($this->render_cb)
+		if ( $this->render_cb )
 			return;
 
 		if( is_callable( $render_cb ) )
@@ -309,6 +312,16 @@ class AdminPage
 		if( is_readable( $render_tpl ) )
 			$this->render_tpl = $render_tpl;
 
+	}
+
+	function plugin_info( $plugin_info ){
+
+		// we already have it
+		if ( $this->plugin_info )
+			return;
+
+		if( is_callable( $plugin_info ) )
+			$this->plugin_info = $plugin_info;
 	}
 
 	function scripts($scripts){
@@ -387,9 +400,9 @@ class AdminPage
 		// if ( $this->delegate_hookup ){
 		if ( 'cmb2' == $this->render || 'cmb2-tabs' == $this->render ){
 
-			if ($this->settings['options_type'] == 'multi'){
+			if ( isset( $this->settings['options_type'] ) && $this->settings['options_type'] == 'multi' ) {
 				$this->cmb2_page = new CMB2_OptionsPage_Multi( $this );
-			}else{
+			} else {
 				$this->cmb2_page = new CMB2_OptionsPage( $this );
 			}
 			
@@ -406,6 +419,8 @@ class AdminPage
 		// if ( ! $this->delegate_hookup ){
 		add_action ( 'admin_menu' , [ $this , 'add_menu_page' ], 11 );
 		add_action ( 'admin_menu' , [ $this , '_bootstrap_admin_page' ], 12 );
+
+		add_action( "wphelper/adminpage/plugin_info_box/{$this->slug}" , [ $this , 'render_plugin_info_box' ] );
 	}
 
 	/**
@@ -634,6 +649,22 @@ class AdminPage
 		}else if ( isset( $this->render_tpl ) && is_readable($this->render_tpl)) {
 			include $this->render_tpl;
 		}
+	}
+
+	/**
+	 * Render plugin info metabox
+	 */
+	public function render_plugin_info_box(){
+
+		if ( isset( $this->plugin_info ) && is_callable( $this->plugin_info ) ) {
+			call_user_func( $this->plugin_info );
+		} else {
+			if ( ! empty( $this->plugin_core ) && empty( $this->plugin_info_meta_box ) ){
+				$this->plugin_info_meta_box = new PluginInfoMetaBox( $this->plugin_core );
+			}
+			$this->plugin_info_meta_box->plugin_info_box();
+		}
+
 	}
 }
 endif;
