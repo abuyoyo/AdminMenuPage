@@ -269,9 +269,8 @@ class AdminPage
 			$this->delegate_hookup = true;
 
 			if ( ! empty( $this->plugin_core ) ){
-				$this->plugin_info = new PluginInfoMetaBox( $this->plugin_core );
-				$this->render_tpl(__DIR__ . '/tpl/cmb2_options_page-plugin_info.php');
-			}else{
+				$this->render_tpl( __DIR__ . '/tpl/cmb2_options_page-plugin_info.php' );
+			} else {
 				$this->render_tpl(__DIR__ . '/tpl/cmb2_options_page.php');
 			}
 
@@ -634,6 +633,18 @@ class AdminPage
 		}else if ( isset( $this->render_tpl ) && is_readable($this->render_tpl)) {
 			include $this->render_tpl;
 		}
+	}
+
+	/**
+	 * Render plugin info metabox
+	 */
+	public function render_plugin_info_box(){
+
+		if ( ! empty( $this->plugin_core ) && empty( $this->plugin_info_meta_box ) ){
+			$this->plugin_info_meta_box = new PluginInfoMetaBox( $this->plugin_core );
+		}
+		$this->plugin_info_meta_box->plugin_info_box();
+
 	}
 }
 endif;

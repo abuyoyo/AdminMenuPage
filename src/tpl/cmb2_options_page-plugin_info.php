@@ -45,7 +45,7 @@ $tabs = $hookup->get_tab_group_tabs();
 			<!-- sidebar -->
 			<div id="postbox-container-1" class="postbox-container">
 				<div class="meta-box-sortables">
-					<?php $this->admin_page->plugin_info->plugin_info_box(); ?>
+					<?php $this->admin_page->render_plugin_info_box(); ?>
 				</div><!-- .meta-box-sortables -->
 			</div><!-- #postbox-container-1 .postbox-container -->
 		</div><!-- #post-body -->
