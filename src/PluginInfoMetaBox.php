@@ -3,6 +3,8 @@ namespace WPHelper;
 
 use DateTime;
 use function get_plugin_data;
+
+if ( ! class_exists( 'WPHelper\PluginInfoMetaBox' ) ):
 /**
  * Plugin Info Metabox
  * 
@@ -60,3 +62,4 @@ class PluginInfoMetaBox{
 		include __DIR__ . $this->tpl;
 	}
 }
+endif;

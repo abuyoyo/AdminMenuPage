@@ -1,6 +1,7 @@
 <?php
 namespace WPHelper;
 
+if ( ! trait_exists('CMB2_Override_Meta') ):
 /**
  * CMB2 Options page override meta
  * 
@@ -50,3 +51,4 @@ trait CMB2_Override_Meta{
 	}
 
 }
+endif;
