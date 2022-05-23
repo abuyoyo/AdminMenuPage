@@ -2,6 +2,8 @@
 /**
  * Plugin Name: WPHelper/Admin-Page
  */
+defined( 'ABSPATH' ) || die( 'No soup for you!' );
+
 
 /**
  * WPHelper Extra Plugin Headers

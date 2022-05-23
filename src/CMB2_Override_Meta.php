@@ -1,6 +1,8 @@
 <?php
 namespace WPHelper;
 
+defined( 'ABSPATH' ) || die( 'No soup for you!' );
+
 if ( ! trait_exists('CMB2_Override_Meta') ):
 /**
  * CMB2 Options page override meta

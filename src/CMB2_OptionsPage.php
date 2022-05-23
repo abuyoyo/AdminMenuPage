@@ -1,6 +1,8 @@
 <?php
 namespace WPHelper;
 
+defined( 'ABSPATH' ) || die( 'No soup for you!' );
+
 use CMB2;
 use CMB2_Options_Hook;
 

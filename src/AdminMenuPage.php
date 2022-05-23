@@ -1,6 +1,8 @@
 <?php
 namespace WPHelper;
 
+defined( 'ABSPATH' ) || die( 'No soup for you!' );
+
 if ( ! class_exists( 'WPHelper\AdminMenuPage' ) ):
 /**
  * AdminMenuPage

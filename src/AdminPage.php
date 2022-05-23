@@ -1,6 +1,8 @@
 <?php
 namespace WPHelper;
 
+defined( 'ABSPATH' ) || die( 'No soup for you!' );
+
 use function add_menu_page;
 use function add_options_page;
 use function add_submenu_page;

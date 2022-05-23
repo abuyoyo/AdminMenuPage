@@ -1,6 +1,8 @@
 <?php
 namespace WPHelper;
 
+defined( 'ABSPATH' ) || die( 'No soup for you!' );
+
 include_once __DIR__ . '/CMB2_Override_Meta.php';
 
 if ( ! class_exists( 'WPHelper\CMB2_OptionsPage_Multi' ) ):

@@ -1,6 +1,8 @@
 <?php
 namespace WPHelper;
 
+defined( 'ABSPATH' ) || die( 'No soup for you!' );
+
 use function register_setting;
 use function add_settings_section;
 use function add_settings_field;
