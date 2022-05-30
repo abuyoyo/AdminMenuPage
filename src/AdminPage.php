@@ -1,4 +1,11 @@
 <?php
+namespace WPHelper;
+
+use function add_menu_page;
+use function add_options_page;
+use function add_submenu_page;
+
+if ( ! class_exists( 'WPHelper\AdminPage' ) ):
 /**
  * AdminPage
  * 
@@ -14,13 +21,6 @@
  * @todo fix is_readable() PHP error when sending callback array
  * @todo is_readable() + is_callable() called twice - on register and on render
  */
-namespace WPHelper;
-
-use function add_menu_page;
-use function add_options_page;
-use function add_submenu_page;
-
-if ( ! class_exists( 'WPHelper\AdminPage' ) ):
 class AdminPage
 {
 	/**
@@ -99,6 +99,13 @@ class AdminPage
 	 * @var string filename
 	 */
 	protected $render_tpl;
+
+	/**
+	 * Render callback function.
+	 *
+	 * @var callable | boolean
+	 */
+	protected $plugin_info;
 
 	/**
 	 * Scripts
@@ -227,23 +234,53 @@ class AdminPage
 		add_action( 'init', [ $this, 'bootstrap' ] );
 	}
 
-	function title($title){
+	/**
+	 * Setter - title
+	 * WordPress admin menu param
+	 * 
+	 * @access private
+	 */
+	private function title($title){
 		$this->title = $title;
 	}
 
-	function menu_title($menu_title){
+	/**
+	 * Setter - menu_title
+	 * WordPress admin menu param
+	 * 
+	 * @access private
+	 */
+	private function menu_title($menu_title){
 		$this->menu_title = $menu_title;
 	}
 
-	function capability($capability){
+	/**
+	 * Setter - capability
+	 * WordPress admin menu param
+	 * 
+	 * @access private
+	 */
+	private function capability($capability){
 		$this->capability = $capability;
 	}
 
-	function slug($slug){
+	/**
+	 * Setter - slug
+	 * WordPress admin menu param
+	 * 
+	 * @access private
+	 */
+	private function slug($slug){
 		$this->slug = $slug;
 	}
 
-	function parent($parent){
+	/**
+	 * Setter - parent
+	 * WordPress admin menu param
+	 * 
+	 * @access private
+	 */
+	private function parent($parent){
 		switch( $parent ) {
 			case 'options':
 			case 'settings':
@@ -256,18 +293,42 @@ class AdminPage
 		}
 	}
 
-	function icon_url( $icon_url ){
+	/**
+	 * Setter - icon_url
+	 * WordPress admin menu param
+	 * 
+	 * @access private
+	 */
+	private function icon_url( $icon_url ){
 		$this->icon_url = $icon_url;
 	}
 
-	function position( $position ){
+	
+	/**
+	 * Setter - position
+	 * WordPress admin menu param
+	 * 
+	 * @access private
+	 */
+	private function position( $position ){
 		$this->position = $position;
 	}
 
-	function render($render=null){
+	/**
+	 * Setter - render
+	 * Sets render cb or tpl
+	 * 
+	 * accepts:
+	 *     presets: 'settings-page', 'cmb2', 'cmb2-tabs', 'render_cb', 'render_tpl'
+	 *     callback: A callable function that prints page.
+	 *     readable: A template file
+	 * 
+	 * @access private
+	 */
+	private function render($render=null){
 		if ( 'settings-page' == $render ) {
 			$this->render_tpl(__DIR__ . '/tpl/settings_page.php');
-			$this->render = $this->render ?? $render;
+			$this->render = $this->render ?? $render; // 'settings-page'
 		} else if ( 'cmb2' == $render || 'cmb2-tabs' == $render ) {
 
 			$this->delegate_hookup = true;
@@ -278,7 +339,7 @@ class AdminPage
 				$this->render_tpl(__DIR__ . '/tpl/cmb2_options_page.php');
 			}
 
-			$this->render = $this->render ?? $render;
+			$this->render = $this->render ?? $render; // 'cmb2' || 'cmb2-tabs'
 
 		} else if( is_callable( $render ) ) {
 			$this->render_cb($render);
@@ -292,7 +353,15 @@ class AdminPage
 		}
 	}
 
-	function render_cb($render_cb){
+	/**
+	 * Setter - render_cb
+	 * 
+	 * if $this->render == 'render_cb'
+	 * set callback funtion in $this->render_cb
+	 * 
+	 * @access private
+	 */
+	private function render_cb($render_cb){
 
 		// we already have it
 		if ( $this->render_cb )
@@ -303,7 +372,15 @@ class AdminPage
 
 	}
 
-	function render_tpl($render_tpl){
+	/**
+	 * Setter - render_tpl
+	 * 
+	 * if $this->render == 'render_tpl'
+	 * save template filename to $this->render_tpl
+	 * 
+	 * @access private
+	 */
+	private function render_tpl($render_tpl){
 
 		// we already have it
 		if ($this->render_tpl)
@@ -314,7 +391,16 @@ class AdminPage
 
 	}
 
-	function plugin_info( $plugin_info ){
+	/**
+	 * Setter - plugin_info
+	 * 
+	 * accepts:
+	 *     callable: Function that prints plugin info box
+	 *     boolean true (or non-empty value): print default 
+	 * 
+	 * @access private
+	 */
+	private function plugin_info( $plugin_info ){
 
 		// we already have it
 		if ( $this->plugin_info )
@@ -324,14 +410,32 @@ class AdminPage
 			$this->plugin_info = $plugin_info;
 	}
 
-	function scripts($scripts){
+	/**
+	 * Setter - scripts
+	 * Scripts to enqueue on admin page
+	 * 
+	 * @access private
+	 */
+	private function scripts($scripts){
 		$this->scripts = $scripts;
 	}
 
-	function styles($styles){
+	/**
+	 * Setter - styles
+	 * Styles to enqueue on admin page
+	 * 
+	 * @access private
+	 */
+	private function styles($styles){
 		$this->styles = $styles;
 	}
 
+	/**
+	 * Setter - methods
+	 * Callables to run on 'load-{$hook_suffix}'
+	 * 
+	 * @access private
+	 */
 	function methods($methods){
 		$this->methods = $methods;
 	}
@@ -344,6 +448,14 @@ class AdminPage
 		$this->settings = $settings;
 	}
 
+	/**
+	 * Getter - Options
+	 * Array representation of $this object.
+	 * 
+	 * @return array options
+	 * 
+	 * @todo add new properties (like plugin_info)
+	 */
 	public function options(){
 		$options = [
 			'title' => $this->title,
@@ -384,9 +496,15 @@ class AdminPage
 	/**
 	 * Set default user capability if none provided
 	 * 
+	 * Finish constructing object after all info is available
+	 * 
+	 * @hook 'init'
+	 * @access private
+	 * 
 	 * @return void
 	 */
 	public function bootstrap(){
+
 		if ( ! $this->capability )
 			$this->capability = 'manage_options';
 
@@ -411,7 +529,7 @@ class AdminPage
 			 * @todo CMB2 options-page does not return page_hook/hook_suffix - MUST validate
 			 */
 			add_action ( 'admin_menu' , [ $this , '_bootstrap_admin_page' ], 12 );
-			
+
 			// skip add_menu_page
 			return;
 		}
@@ -496,6 +614,7 @@ class AdminPage
 	 * AdminNotice->onPage() works
 	 * 
 	 * @hook admin_menu priority 12
+	 * @access private
 	 * 
 	 * @todo move this function to admin_init - after admin_menu has finished
 	 */
@@ -522,6 +641,9 @@ class AdminPage
 	 * 
 	 * Only runs on actual screen showing
 	 * AdminNotice->onPage() redundant
+	 * 
+	 * @hook load-{$hook_suffix}
+	 * @access private
 	 */
 	public function _admin_page_setup(){
 
@@ -532,6 +654,13 @@ class AdminPage
 			add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_styles' ] );
 	}
 
+	/**
+	 * admin_enqueue_scripts
+	 * Enqueue user-provided scripts on admin page.
+	 * 
+	 * @hook admin_enqueue_scripts
+	 * @access private
+	 */
 	public function admin_enqueue_scripts($hook) {
 
 		// redundant
@@ -549,6 +678,13 @@ class AdminPage
 
 	}
 
+	/**
+	 * admin_enqueue_styles
+	 * Enqueue user-provided styles on admin page.
+	 * 
+	 * @hook admin_enqueue_styles
+	 * @access private
+	 */
 	public function admin_enqueue_styles($hook) {
 
 		// redundant
@@ -567,6 +703,7 @@ class AdminPage
 	}
 
 	/**
+	 * Getter - capability
 	 * Get the capability required to view the admin page.
 	 *
 	 * @return string
@@ -577,6 +714,7 @@ class AdminPage
 	}
 
 	/**
+	 * Getter - menu_title
 	 * Get the title of the admin page in the WordPress admin menu.
 	 *
 	 * @return string
@@ -587,6 +725,7 @@ class AdminPage
 	}
 
 	/**
+	 * Getter - title
 	 * Get the title of the admin page.
 	 *
 	 * @return string
@@ -597,6 +736,7 @@ class AdminPage
 	}
 
 	/**
+	 * Getter - parent / parent_slug
 	 * Get the parent slug of the admin page.
 	 *
 	 * @return string
@@ -607,9 +747,12 @@ class AdminPage
 	}
 
 	/**
-	 * Get the parent slug of the admin page.
+	 * Getter - hook_suffix
+	 * Get the hook suffix provided by WordPress when registering menu page..
 	 *
 	 * @return string
+	 * 
+	 * @todo Throw Exception|WP_Error if called before 'current_screen' hook.
 	 */
 	public function get_hook_suffix()
 	{
@@ -617,6 +760,7 @@ class AdminPage
 	}
 
 	/**
+	 * Getter - slug
 	 * Get the slug used by the admin page.
 	 *
 	 * @return string
@@ -627,6 +771,7 @@ class AdminPage
 	}
 
 	/**
+	 * Getter - render_tpl
 	 * Get the render template.
 	 *
 	 * @return string
@@ -637,7 +782,12 @@ class AdminPage
 	}
 
 	/**
+	 * Render Admin Page
 	 * Render the top section of the plugin's admin page.
+	 * 
+	 * This callback function used as $callback parameter in add_menu_page()
+	 * 
+	 * @access public
 	 */
 	public function render_admin_page()
 	{
@@ -653,6 +803,14 @@ class AdminPage
 
 	/**
 	 * Render plugin info metabox
+	 * 
+	 * Call user-provided callable.
+	 * Or else attempt to create PluginInfoMetaBox class from $this->plugin_core and call its render function.
+	 * 
+	 * @access private?
+	 * 
+	 * @todo See if this function should be public API or only run on action hook
+	 * @todo deprecate public use - use wphelper/adminpage/plugin_info_box/{$this->slug} instead
 	 */
 	public function render_plugin_info_box(){
 

@@ -10,14 +10,14 @@
 $tabs = $hookup->get_tab_group_tabs();
 
 ?>
- <style>
- /* 
-	fix top container alignment issues when using 2 columns
-	This assumes first item is a title item
-  */
- .cmb2-options-page .cmb2-wrap .cmb-type-title:first-of-type {
-    margin-top: 0;
-}
+<style>
+	/* 
+	 * fix top container alignment issues when using 2 columns
+	 * This assumes first item is a title item
+	 */
+	.cmb2-options-page .cmb2-wrap .cmb-type-title:first-of-type {
+		margin-top: 0;
+	}
 </style>
 <div class="wrap cmb2-options-page option-<?php echo esc_attr( sanitize_html_class( $hookup->option_key ) ); ?>">
 	<?php if ( $this->cmb->prop( 'title' ) ) : ?>
@@ -45,7 +45,12 @@ $tabs = $hookup->get_tab_group_tabs();
 			<!-- sidebar -->
 			<div id="postbox-container-1" class="postbox-container">
 				<div class="meta-box-sortables">
-					<?php $this->admin_page->render_plugin_info_box(); ?>
+					<?php
+						/**
+						 * @todo maybe use 'wphelper/adminpage/plugin_info_box/{$this->slug}'
+						 */
+						$this->admin_page->render_plugin_info_box();
+					?>
 				</div><!-- .meta-box-sortables -->
 			</div><!-- #postbox-container-1 .postbox-container -->
 		</div><!-- #post-body -->

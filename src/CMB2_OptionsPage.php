@@ -1,23 +1,22 @@
 <?php
-/**
- * SettingsPage
- * 
- * Helper class
- * Create WordPress Setting page.
- * 
- * @author  abuyoyo
- * 
- * @todo fix parent_slug - don't override when given - test against wp-head-cleaner and iac-prefs
- * @todo to manipulate tabs see CMB2_Options_Hookup::options_page_output and 'display_cb'
- */
 namespace WPHelper;
 
 use CMB2;
 use CMB2_Options_Hook;
 
-// include_once __DIR__ . '/CMB2_Override_Meta.php';
-
 if ( ! class_exists( 'WPHelper\CMB2_OptionsPage' ) ):
+/**
+ * CMB2_OptionsPage
+ * 
+ * Helper class
+ * Create WordPress Setting page using CMB2 Options Hookup.
+ * 
+ * @author  abuyoyo
+ * 
+ * @see CMB2_Options_Hookup::options_page_output and 'display_cb' - to manipulate tabs
+ * 
+ * @todo add 'submenu' field and functionality to WPHelper\PluginCore
+ */
 class CMB2_OptionsPage{
 
 	/**
@@ -155,6 +154,10 @@ class CMB2_OptionsPage{
 
 		add_action( 'cmb2_admin_init', [ $this, 'register_metabox' ], $priority );
 
+		/**
+		 * @todo add 'submenu' field and functionality to WPHelper\PluginCore
+		 * @todo reverse control/flow - so 'tab title' inherits/defaults to PluginCore 'submenu' field if exists.
+		 */
 		if ( empty( $settings['parent_slug'] ) && $settings['menu_title'] != $settings['tab_title'] ){
 			add_action('admin_menu', [ $this, 'replace_submenu_title'], 11 );
 		}
@@ -192,6 +195,8 @@ class CMB2_OptionsPage{
 
 	/**
 	 * Replace submenu title of parent item with tab title
+	 * 
+	 * @todo add 'submenu' field and functionality to WPHelper\PluginCore
 	 */
 	public function replace_submenu_title(){
 

@@ -5,6 +5,9 @@ use DateTime;
 use function get_plugin_data;
 /**
  * Plugin Info Metabox
+ * 
+ * Get instance of PluginCore
+ * Render default plugin info box template.
  */
 class PluginInfoMetaBox{
 

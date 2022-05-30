@@ -1,12 +1,4 @@
 <?php
-/**
- * SettingsPage
- * 
- * Helper class
- * Create WordPress Setting page.
- * 
- * @author  abuyoyo
- */
 namespace WPHelper;
 
 use function register_setting;
@@ -16,6 +8,14 @@ use function checked;
 use function get_option;
 
 if ( ! class_exists( 'WPHelper\SettingsPage' ) ):
+/**
+ * SettingsPage
+ * 
+ * Helper class
+ * Create WordPress Setting page.
+ * 
+ * @author  abuyoyo
+ */
 class SettingsPage{
 
 	/**

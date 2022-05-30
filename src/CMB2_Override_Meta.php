@@ -1,12 +1,12 @@
 <?php
 namespace WPHelper;
+
 /**
  * CMB2 Options page override meta
  * 
  * Override default cmb2 meta.
  * Saves each field as separate option in wp_options table
  */
-
 trait CMB2_Override_Meta{
 
 	function cmb2_override_fields( $fields ){

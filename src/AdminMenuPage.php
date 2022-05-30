@@ -1,4 +1,7 @@
 <?php
+namespace WPHelper;
+
+if ( ! class_exists( 'WPHelper\AdminMenuPage' ) ):
 /**
  * AdminMenuPage
  * 
@@ -8,9 +11,6 @@
  * @since 0.12
  * 
  */
-namespace WPHelper;
-
-if ( ! class_exists( 'WPHelper\AdminMenuPage' ) ):
 class AdminMenuPage extends AdminPage{
 
 }
