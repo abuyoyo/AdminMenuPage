@@ -410,6 +410,10 @@ class AdminPage
 
 		if( is_callable( $plugin_info ) )
 			$this->plugin_info = $plugin_info;
+
+		// if true-y value passed and PluginCore class exists - set to true
+		else if (!empty($plugin_info) && class_exists('WPHelper\PluginCore'))
+			$this->plugin_info = true;
 	}
 
 	/**
