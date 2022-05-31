@@ -1,6 +1,18 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.18
+
+### Added
+
+- Add `wrap` parameter to output WordPress admin `.wrap` template. Accepts `simple` and `sidebar`.
+- Accept `plugin_info = true` to output default plugin info meta box and wrap.
+- Add `Last Update` and `Release Date` optional headers to WordPress theme headers (Used in plugin info-box).
+
+### Changed
+- All classes are pluggable.
+- Prevent direct access if not withing WordPress environment.
+
 ## 0.17
 
 ### Changed

@@ -14,9 +14,6 @@ if ( ! class_exists( 'WPHelper\AdminPage' ) ):
  * Helper class
  * Create WordPress admin pages easily
  * 
- * @author  abuyoyo
- * @version 0.17
- * 
  * @todo add 'menu_location' - settings. tools, toplevel etc. (extend 'parent' option)
  * @todo add add_screen_option( 'per_page', $args );
  * @todo accept WPHelper\PluginCore instance (get title slug etc. from there)
