@@ -103,6 +103,13 @@ class AdminPage
 	protected $render_tpl;
 
 	/**
+	 * Should library print WordPress 'wrap'
+	 *
+	 * @var string wrap type
+	 */
+	protected $wrap;
+
+	/**
 	 * Render callback function.
 	 *
 	 * @var callable | boolean
@@ -196,6 +203,10 @@ class AdminPage
 			$this->plugin_info( $options->plugin_info );
 		}
 
+		if ( isset( $options->wrap ) ){ // before render()
+			$this->wrap( $options->wrap );
+		}
+
 		if ( isset( $options->render ) ) // dev
 			$this->render( $options->render );
 
@@ -207,6 +218,9 @@ class AdminPage
 
 		if (true)
 			$this->render(); // render anyway - will use default tpl if render is empty
+
+		if (true)
+			$this->wrap(); // set wrap anyway - will set to 'none' if empty
 
 		if ( isset( $options->parent ) )
 			$this->parent( $options->parent );
@@ -329,7 +343,7 @@ class AdminPage
 	 */
 	private function render($render=null){
 		if ( 'settings-page' == $render ) {
-			$this->render_tpl(__DIR__ . '/tpl/settings_page.php');
+			$this->render_tpl(__DIR__ . '/tpl/settings-form.php');
 			$this->render = $this->render ?? $render; // 'settings-page'
 		} else if ( 'cmb2' == $render || 'cmb2-tabs' == $render ) {
 
@@ -390,6 +404,43 @@ class AdminPage
 
 		if( is_readable( $render_tpl ) )
 			$this->render_tpl = $render_tpl;
+
+	}
+
+	/**
+	 * Setter - wrap
+	 * 
+	 * Set wrap type.
+	 * Default: none
+	 * 
+	 * @access private
+	 */
+	private function wrap($wrap=null){
+
+		// we already have it
+		if ($this->wrap)
+			return;
+
+		if ( ! empty($wrap) ){
+			$this->wrap = 'simple';
+		} else {
+			$this->wrap = 'none';
+		}
+
+		if ( 'sidebar' == $wrap ){
+			$this->wrap = 'sidebar';
+		}
+
+		// if plugin_info == true we set to sidebar regardless of passed $wrap parameter
+		if ( ! empty($this->plugin_info) ){
+			$this->wrap = 'sidebar';
+		}
+
+		if ( 'settings-page' == $this->render ){
+			if ( empty($this->plugin_info) ){
+				$this->wrap = 'simple';
+			}
+		}
 
 	}
 
@@ -800,10 +851,27 @@ class AdminPage
 		// @todo if render callback supplied - add shortcircuit hook here
 		// execute render callback and return early
 
+		if ( 'none' != $this->wrap ){
+			ob_start();
+		}
+
 		if ( isset( $this->render_cb ) && is_callable($this->render_cb)) {
 			call_user_func( $this->render_cb );
 		}else if ( isset( $this->render_tpl ) && is_readable($this->render_tpl)) {
 			include $this->render_tpl;
+		}
+
+		if ( 'none' != $this->wrap ){
+			$ob_content = ob_get_clean();
+
+			if ('simple' == $this->wrap ){
+				include 'tpl/wrap-simple.php';
+			}
+
+			if ('sidebar' == $this->wrap ){
+				include 'tpl/wrap-sidebar.php';
+			}
+
 		}
 	}
 
