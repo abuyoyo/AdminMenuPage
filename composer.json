@@ -6,6 +6,9 @@
 	"require": {
 		"cmb2/cmb2": "~2.9"
 	},
+	"suggest": {
+		"abuyoyo/plugincore": "~0.18"
+	},
 	"autoload": {
 		"psr-4": {
 			"WPHelper\\" : "src/"
