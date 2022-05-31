@@ -33,12 +33,7 @@
 			<!-- sidebar -->
 			<div id="postbox-container-1" class="postbox-container">
 				<div class="meta-box-sortables">
-					<?php
-						/**
-						 * @todo maybe use 'wphelper/adminpage/plugin_info_box/{$this->slug}'
-						 */
-						$this->admin_page->render_plugin_info_box();
-					?>
+					<?php do_action("wphelper/adminpage/plugin_info_box/{$this->admin_page->get_slug()}"); ?>
 				</div><!-- .meta-box-sortables -->
 			</div><!-- #postbox-container-1 .postbox-container -->
 		</div><!-- #post-body -->

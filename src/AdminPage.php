@@ -572,6 +572,8 @@ class AdminPage
 
 		}
 
+		add_action( "wphelper/adminpage/plugin_info_box/{$this->slug}" , [ $this , 'render_plugin_info_box' ] );
+
 		// if ( $this->delegate_hookup ){
 		if ( 'cmb2' == $this->render || 'cmb2-tabs' == $this->render ){
 
@@ -595,7 +597,6 @@ class AdminPage
 		add_action ( 'admin_menu' , [ $this , 'add_menu_page' ], 11 );
 		add_action ( 'admin_menu' , [ $this , '_bootstrap_admin_page' ], 12 );
 
-		add_action( "wphelper/adminpage/plugin_info_box/{$this->slug}" , [ $this , 'render_plugin_info_box' ] );
 	}
 
 	/**
