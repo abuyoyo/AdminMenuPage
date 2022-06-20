@@ -498,7 +498,9 @@ class AdminPage
 	}
 
 	function plugin_core($plugin_core){
-		$this->plugin_core = $plugin_core;
+		if ( is_a( $plugin_core, 'WPHelper\PluginCore') ){
+			$this->plugin_core = $plugin_core;
+		}
 	}
 
 	function settings($settings){
