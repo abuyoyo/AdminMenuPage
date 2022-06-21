@@ -1,13 +1,7 @@
 <?php
-/**
- * SettingsPage
- * 
- * Helper class
- * Create WordPress Setting page.
- * 
- * @author  abuyoyo
- */
 namespace WPHelper;
+
+defined( 'ABSPATH' ) || die( 'No soup for you!' );
 
 use function register_setting;
 use function add_settings_section;
@@ -16,6 +10,14 @@ use function checked;
 use function get_option;
 
 if ( ! class_exists( 'WPHelper\SettingsPage' ) ):
+/**
+ * SettingsPage
+ * 
+ * Helper class
+ * Create WordPress Setting page.
+ * 
+ * @author  abuyoyo
+ */
 class SettingsPage{
 
 	/**

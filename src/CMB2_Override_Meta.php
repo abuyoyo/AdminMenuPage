@@ -1,12 +1,15 @@
 <?php
 namespace WPHelper;
+
+defined( 'ABSPATH' ) || die( 'No soup for you!' );
+
+if ( ! trait_exists('CMB2_Override_Meta') ):
 /**
  * CMB2 Options page override meta
  * 
  * Override default cmb2 meta.
  * Saves each field as separate option in wp_options table
  */
-
 trait CMB2_Override_Meta{
 
 	function cmb2_override_fields( $fields ){
@@ -50,3 +53,4 @@ trait CMB2_Override_Meta{
 	}
 
 }
+endif;
