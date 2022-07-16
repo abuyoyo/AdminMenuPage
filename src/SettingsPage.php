@@ -202,9 +202,7 @@ class SettingsPage{
 
 	function section_description_cb($section){
 		if (! empty($section['description'])){
-			return function() use ($section){
-				echo "<p>{$section['description']}</p>";
-			};
+			return fn() => printf( '<p>%s</p>', $section['description'] );
 		}
 	}
 }
