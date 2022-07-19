@@ -85,15 +85,9 @@ class SettingsPage{
 
 		$this->page = $admin_options['slug'];
 
-		if ( ! empty($settings['option_name']) )
-			$this->option_name = $settings['option_name'];
-		else
-			$this->option_name = str_replace( '-', '_' , strtolower( $this->page ) );
+		$this->option_name = $settings['option_name'] ?: str_replace( '-', '_' , strtolower( $this->page ) );
 
-		if ( ! empty($settings['option_group']) )
-			$this->option_group = $settings['option_group'];
-		else
-			$this->option_group = $this->page . '_option_group';
+		$this->option_group = $settings['option_group'] ?: $this->page . '_option_group';
 
 		foreach ($settings['sections'] as $section){
 			// extract fields
