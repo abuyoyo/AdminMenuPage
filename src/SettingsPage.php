@@ -165,6 +165,41 @@ class SettingsPage{
 	}
 
 	/**
+	 * Print text input field
+	 * Support field type 'text'
+	 * 
+	 * @since 0.19
+	 */
+	function print_text( $field ){
+		extract($field);
+
+		$options = get_option( $this->option_name );
+
+		$input_tag = sprintf(
+			'<input name="%2$s[%1$s]" type="text" id="%1$s" value="%3$s" class="regular-text">',
+			$id,
+			$this->option_name,
+			$default
+		);
+
+		if (! empty($description)){
+			$input_tag .= sprintf(
+				'<p class="description" id="%1$s-description">%2$s</p>',
+				$id,
+				$description
+			);
+		}
+
+		/**
+		 * Allow plugins to directly manipulate field HTML
+		 */
+		$input_tag = apply_filters( 'wphelper/settings_page/input_text', $input_tag, $field, $this->option_name, $options );
+
+		echo $input_tag;
+
+	}
+
+	/**
 	 * Sanitizes entire $options array.
 	 * WordPress is horrible.
 	 * 
