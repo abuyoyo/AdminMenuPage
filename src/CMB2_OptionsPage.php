@@ -17,7 +17,7 @@ if ( ! class_exists( 'WPHelper\CMB2_OptionsPage' ) ):
  * 
  * @see CMB2_Options_Hookup::options_page_output and 'display_cb' - to manipulate tabs
  * 
- * @todo add 'submenu' field and functionality to WPHelper\PluginCore
+ * @todo add 'submenu' field and functionality (rename first submenu item) to WPHelper\AdminPage
  */
 class CMB2_OptionsPage{
 
@@ -64,6 +64,7 @@ class CMB2_OptionsPage{
 		 * CMB2 only accepts url slug
 		 * 
 		 * @todo account for all menu slugs.
+		 * @todo export parent_slug convertion to dedicated method
 		 */
 		switch ( $settings['parent_slug'] ) {
 			case 'options':
@@ -102,6 +103,7 @@ class CMB2_OptionsPage{
 
 		/**
 		 * If args are formatted for SettingsPage we convert to CMB2 options format
+		 * Convert nested sections=>fields to straight title, fields, title, fields.
 		 * 
 		 * @todo export this to dedicated method
 		 */
@@ -157,8 +159,8 @@ class CMB2_OptionsPage{
 		add_action( 'cmb2_admin_init', [ $this, 'register_metabox' ], $priority );
 
 		/**
-		 * @todo add 'submenu' field and functionality to WPHelper\PluginCore
-		 * @todo reverse control/flow - so 'tab title' inherits/defaults to PluginCore 'submenu' field if exists.
+		 * @todo add 'submenu' field and functionality to WPHelper\AdminPage
+		 * @todo reverse control/flow - so 'tab title' inherits/defaults to AdminPage 'submenu' field if exists.
 		 */
 		if ( empty( $settings['parent_slug'] ) && $settings['menu_title'] != $settings['tab_title'] ){
 			add_action('admin_menu', [ $this, 'replace_submenu_title'], 11 );

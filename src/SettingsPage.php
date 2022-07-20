@@ -17,6 +17,8 @@ if ( ! class_exists( 'WPHelper\SettingsPage' ) ):
  * Create WordPress Setting page.
  * 
  * @author  abuyoyo
+ * 
+ * @since 0.11
  */
 class SettingsPage{
 
@@ -96,7 +98,7 @@ class SettingsPage{
 		foreach ($settings['sections'] as $section){
 			// extract fields
 			foreach ($section['fields'] as $field){
-				$field['section_id'] = $section['id'];
+				$field['section_id'] = $section['id']; // create back-reference in field to section. ( @see add_settings_field() )
 				$this->fields[] = $field;
 			}
 			unset($section['fields']);
@@ -138,6 +140,12 @@ class SettingsPage{
 
 	}
 
+	/**
+	 * Print text input field
+	 * Support field type 'text'
+	 * 
+	 * @since 0.11
+	 */
 	function print_checkbox( $field ){
 		extract($field);
 
@@ -153,6 +161,9 @@ class SettingsPage{
 			checked( ( $options[$id] ?? false ), '1', false)
 		);
 
+		/**
+		 * Allow plugins to directly manipulate field HTML
+		 */
 		$input_tag = apply_filters( 'wphelper/settings_page/input_checkbox', $input_tag, $field, $this->option_name, $options );
 
 		echo $input_tag;
