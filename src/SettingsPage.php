@@ -235,6 +235,41 @@ class SettingsPage{
 	}
 
 	/**
+	 * Print email input field
+	 * Support field type 'email'
+	 * 
+	 * @since 0.19
+	 */
+	function print_email( $field ){
+		extract($field);
+
+		$options = get_option( $this->option_name );
+
+		$input_tag = sprintf(
+			'<input name="%2$s[%1$s]" type="email" id="%1$s" aria-describedby="%1$s-description" value="%3$s" class="regular-text ltr">',
+			$id,
+			$this->option_name,
+			$default
+		);
+
+		if (! empty($description)){
+			$input_tag .= sprintf(
+				'<p class="description" id="%1$s-description">%2$s</p>',
+				$id,
+				$description
+			);
+		}
+
+		/**
+		 * Allow plugins to directly manipulate field HTML
+		 */
+		$input_tag = apply_filters( 'wphelper/settings_page/input_email', $input_tag, $field, $this->option_name, $options );
+
+		echo $input_tag;
+
+	}
+
+	/**
 	 * Sanitizes entire $options array.
 	 * WordPress is horrible.
 	 * 
