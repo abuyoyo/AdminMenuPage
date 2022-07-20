@@ -63,21 +63,52 @@ class CMB2_OptionsPage{
 		/**
 		 * CMB2 only accepts url slug
 		 * 
-		 * @todo account for all menu slugs.
 		 * @todo export parent_slug convertion to dedicated method
 		 */
 		switch ( $settings['parent_slug'] ) {
+			case 'dashboard':
+				$settings['parent_slug'] = 'index.php';
+				break;
+			case 'posts':
+				$settings['parent_slug'] = 'edit.php';
+				break;
+			case 'media':
+				$settings['parent_slug'] = 'upload.php';
+				break;
+			case 'pages':
+				$settings['parent_slug'] = 'edit.php?post_type=page';
+				break;
+			case 'comments':
+				$settings['parent_slug'] = 'edit-comments.php';
+				break;
+			case 'themes':
+			case 'appearance': // Official WordPress designation 
+				$settings['parent_slug'] = 'themes.php';
+				break;
+			case 'plugins':
+				$settings['parent_slug'] = 'plugins.php';
+				break;
+			case 'users':
+				$settings['parent_slug'] = 'users.php';
+				break;
 			case 'options':
+			case 'settings': // Official WordPress designation
 				$settings['parent_slug'] = 'options-general.php';
-			break;
+				break;
 			case 'tools':
 				$settings['parent_slug'] = 'tools.php';
-			break;
+				break;
+			case 'network':
+			case 'network_settings':
+				$settings['parent_slug'] = 'settings.php';
+				break;
 			case null:
-			break;
+				break;
 			default:
-				// $settings['parent_slug'] = 'admin.php';
-			break;
+				if ( post_type_exists( $settings['parent_slug'] ) ){
+					$settings['parent_slug'] = "edit.php?post_type={$settings['parent_slug']}";
+				}
+				break;
 		}
 		
 		if ( $admin_options['render'] == 'cmb2-tabs' ){
