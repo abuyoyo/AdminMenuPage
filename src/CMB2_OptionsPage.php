@@ -42,16 +42,16 @@ class CMB2_OptionsPage{
 
 		$settings = $admin_options['settings'];
 
-		$settings['object_types'] = array( 'options-page' );
-		$settings['display_cb'] = $settings['display_cb'] ?? [ $this, 'options_page_output' ];
+		$settings['object_types'] = [ 'options-page' ];
+		$settings['display_cb'] ??= [ $this, 'options_page_output' ];
 
-		$settings['option_key']  = $settings['option_key']  ?? ( $settings['option_name'] ?? ( $settings['id'] ?? $admin_options['slug'] ) );
-		$settings['title']       = $settings['title']       ?? $admin_options['title'];
-		$settings['menu_title']  = $settings['menu_title']  ?? $admin_options['menu_title'];
-		$settings['parent_slug'] = $settings['parent_slug'] ?? $admin_options['parent'];
-		$settings['position']    = $settings['position']    ?? $admin_options['position'];
-		$settings['icon_url']    = $settings['icon_url']    ?? $admin_options['icon_url'];
-		$settings['capability']  = $settings['capability']  ?? $admin_options['capability'];
+		$settings['option_key']  ??= ( $settings['option_name'] ?? ( $settings['id'] ?? $admin_options['slug'] ) );
+		$settings['title']       ??= $admin_options['title'];
+		$settings['menu_title']  ??= $admin_options['menu_title'];
+		$settings['parent_slug'] ??= $admin_options['parent'];
+		$settings['position']    ??= $admin_options['position'];
+		$settings['icon_url']    ??= $admin_options['icon_url'];
+		$settings['capability']  ??= $admin_options['capability'];
 
 		/**
 		 * CMB2 must have admin menu page slug same as option key :(
@@ -81,16 +81,8 @@ class CMB2_OptionsPage{
 		}
 		
 		if ( $admin_options['render'] == 'cmb2-tabs' ){
-			if ( ! isset($settings['tab_group'] ) ){
-				if ( isset($settings['parent_slug'] ) ){
-					$settings['tab_group'] = $settings['parent_slug'];
-				}else{
-					$settings['tab_group'] = $settings['id'];
-				}
-			}
-			if ( ! isset($settings['tab_title'] ) ){
-				$settings['tab_title'] = $settings['menu_title'];
-			}
+			$settings['tab_group'] ??= $settings['parent_slug'] ?? $settings['id'];
+			$settings['tab_title'] ??= $settings['menu_title'];
 		}
 
 		if ( isset( $settings['fields'] ) ){
@@ -185,15 +177,16 @@ class CMB2_OptionsPage{
 
 
 	private function convert_field_to_cmb2_field( $field ){
-		$field['id']   = $field['id']   ?? $field['slug'];
-		$field['name'] = $field['name'] ?? $field['title'];
-		$field['desc'] = $field['desc'] ?? $field['description'];
+
+		$field['id']   ??= $field['slug']        ?? null;
+		$field['name'] ??= $field['title']       ?? null;
+		$field['desc'] ??= $field['description'] ?? null;
 		
 		unset( $field['slug'] );
 		unset( $field['title'] );
 		unset( $field['description'] );
 
-		return $field;
+		return array_filter($field);
 	}
 
 
