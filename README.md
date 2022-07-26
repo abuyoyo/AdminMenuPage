@@ -3,13 +3,13 @@
 > Helper class for simple admin menu page registration in WordPress.
 
 ## Requirements
-* PHP >=5.6
+* PHP >= 7.4
 * [Composer](https://getcomposer.org/)
 * [WordPress](https://wordpress.org)
 
 ## Installation
 
-Install with [Composer](https://getcomposer.org/) or just drop AdminPage.php into your plugin folder and require it.
+Install with [Composer](https://getcomposer.org/) as a library.
 
 ```PHP
 // Require the Composer autoloader anywhere in your code.
@@ -17,16 +17,11 @@ require __DIR__ . '/vendor/autoload.php';
 
 ```
 
-OR
-
-```PHP
-// Require the class file directly from your plugin.
-require_once __DIR__ . 'AdminPage.php';
-
-```
-
-
 WPHelper\AdminMenuPage uses [PSR-4](https://www.php-fig.org/psr/psr-4/) to autoload.
+
+OR 
+
+Install as WordPress plugin and activate.
 
 ## Basic Usage
 

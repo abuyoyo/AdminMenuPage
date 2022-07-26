@@ -1,6 +1,18 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.19
+
+### Added
+- SettingPage supports `text`, `url`, `email` fields.
+- CMB2_OptionsPage supports all admin menu top-level slugs.
+
+### Fixed
+- Fixed PHP fatal error: cannot redeclare function `wph_extra_plugin_headers()`.
+
+### Changed
+- If CMB2 plugin is not activated - show missing plugin card on `cmb2` and `cmb2-tabs` pages.
+
 ## 0.18
 
 ### Added
