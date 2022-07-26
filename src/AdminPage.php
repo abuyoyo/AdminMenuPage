@@ -344,15 +344,21 @@ class AdminPage
 			$this->render = $this->render ?? $render; // 'settings-page'
 		} else if ( 'cmb2' == $render || 'cmb2-tabs' == $render ) {
 
-			$this->delegate_hookup = true;
-
-			if ( ! empty( $this->plugin_core ) || ! empty( $this->plugin_info ) ){
-				$this->render_tpl( __DIR__ . '/tpl/cmb2_options_page-plugin_info.php' );
+			// validate
+			if ( ! defined( 'CMB2_LOADED' ) ){
+				$this->render_tpl( __DIR__ . '/tpl/cmb2-unavailable.php' );
+				$this->render = $this->render ?? 'render_tpl';
 			} else {
-				$this->render_tpl(__DIR__ . '/tpl/cmb2_options_page.php');
-			}
+				$this->delegate_hookup = true;
 
-			$this->render = $this->render ?? $render; // 'cmb2' || 'cmb2-tabs'
+				if ( ! empty( $this->plugin_core ) || ! empty( $this->plugin_info ) ){
+					$this->render_tpl( __DIR__ . '/tpl/cmb2_options_page-plugin_info.php' );
+				} else {
+					$this->render_tpl( __DIR__ . '/tpl/cmb2_options_page.php' );
+				}
+
+				$this->render = $this->render ?? $render; // 'cmb2' || 'cmb2-tabs'
+			}
 
 		} else if( is_callable( $render ) ) {
 			$this->render_cb( $render );
