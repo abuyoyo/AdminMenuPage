@@ -56,7 +56,7 @@ class PluginInfoMetaBox{
 				$update_message = human_time_diff($last_update->format('U')) . ' ago';
 			}
 		else:
-			$update_message = "A long, long time ago";
+			$update_message = '';
 		endif;
 
 		include __DIR__ . $this->tpl;

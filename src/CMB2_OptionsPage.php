@@ -17,7 +17,7 @@ if ( ! class_exists( 'WPHelper\CMB2_OptionsPage' ) ):
  * 
  * @see CMB2_Options_Hookup::options_page_output and 'display_cb' - to manipulate tabs
  * 
- * @todo add 'submenu' field and functionality to WPHelper\PluginCore
+ * @todo add 'submenu' field and functionality (rename first submenu item) to WPHelper\AdminPage
  */
 class CMB2_OptionsPage{
 
@@ -42,16 +42,16 @@ class CMB2_OptionsPage{
 
 		$settings = $admin_options['settings'];
 
-		$settings['object_types'] = array( 'options-page' );
-		$settings['display_cb'] = $settings['display_cb'] ?? [ $this, 'options_page_output' ];
+		$settings['object_types'] = [ 'options-page' ];
+		$settings['display_cb'] ??= [ $this, 'options_page_output' ];
 
-		$settings['option_key']  = $settings['option_key']  ?? ( $settings['option_name'] ?? ( $settings['id'] ?? $admin_options['slug'] ) );
-		$settings['title']       = $settings['title']       ?? $admin_options['title'];
-		$settings['menu_title']  = $settings['menu_title']  ?? $admin_options['menu_title'];
-		$settings['parent_slug'] = $settings['parent_slug'] ?? $admin_options['parent'];
-		$settings['position']    = $settings['position']    ?? $admin_options['position'];
-		$settings['icon_url']    = $settings['icon_url']    ?? $admin_options['icon_url'];
-		$settings['capability']  = $settings['capability']  ?? $admin_options['capability'];
+		$settings['option_key']  ??= ( $settings['option_name'] ?? ( $settings['id'] ?? $admin_options['slug'] ) );
+		$settings['title']       ??= $admin_options['title'];
+		$settings['menu_title']  ??= $admin_options['menu_title'];
+		$settings['parent_slug'] ??= $admin_options['parent'];
+		$settings['position']    ??= $admin_options['position'];
+		$settings['icon_url']    ??= $admin_options['icon_url'];
+		$settings['capability']  ??= $admin_options['capability'];
 
 		/**
 		 * CMB2 must have admin menu page slug same as option key :(
@@ -63,33 +63,57 @@ class CMB2_OptionsPage{
 		/**
 		 * CMB2 only accepts url slug
 		 * 
-		 * @todo account for all menu slugs.
+		 * @todo export parent_slug convertion to dedicated method
 		 */
 		switch ( $settings['parent_slug'] ) {
+			case 'dashboard':
+				$settings['parent_slug'] = 'index.php';
+				break;
+			case 'posts':
+				$settings['parent_slug'] = 'edit.php';
+				break;
+			case 'media':
+				$settings['parent_slug'] = 'upload.php';
+				break;
+			case 'pages':
+				$settings['parent_slug'] = 'edit.php?post_type=page';
+				break;
+			case 'comments':
+				$settings['parent_slug'] = 'edit-comments.php';
+				break;
+			case 'themes':
+			case 'appearance': // Official WordPress designation 
+				$settings['parent_slug'] = 'themes.php';
+				break;
+			case 'plugins':
+				$settings['parent_slug'] = 'plugins.php';
+				break;
+			case 'users':
+				$settings['parent_slug'] = 'users.php';
+				break;
 			case 'options':
+			case 'settings': // Official WordPress designation
 				$settings['parent_slug'] = 'options-general.php';
-			break;
+				break;
 			case 'tools':
 				$settings['parent_slug'] = 'tools.php';
-			break;
+				break;
+			case 'network':
+			case 'network_settings':
+				$settings['parent_slug'] = 'settings.php';
+				break;
 			case null:
-			break;
+				break;
 			default:
-				// $settings['parent_slug'] = 'admin.php';
-			break;
+				if ( post_type_exists( $settings['parent_slug'] ) ){
+					$settings['parent_slug'] = "edit.php?post_type={$settings['parent_slug']}";
+				}
+				break;
 		}
 		
 		if ( $admin_options['render'] == 'cmb2-tabs' ){
-			if ( ! isset($settings['tab_group'] ) ){
-				if ( isset($settings['parent_slug'] ) ){
-					$settings['tab_group'] = $settings['parent_slug'];
-				}else{
-					$settings['tab_group'] = $settings['id'];
-				}
-			}
-			if ( ! isset($settings['tab_title'] ) ){
-				$settings['tab_title'] = $settings['menu_title'];
-			}
+			$settings['tab_group'] ??= $settings['parent_slug'] ?? $settings['id'];
+			$settings['tab_title'] ??= $settings['menu_title'];
 		}
 
 		if ( isset( $settings['fields'] ) ){
@@ -102,6 +126,7 @@ class CMB2_OptionsPage{
 
 		/**
 		 * If args are formatted for SettingsPage we convert to CMB2 options format
+		 * Convert nested sections=>fields to straight title, fields, title, fields.
 		 * 
 		 * @todo export this to dedicated method
 		 */
@@ -157,8 +182,8 @@ class CMB2_OptionsPage{
 		add_action( 'cmb2_admin_init', [ $this, 'register_metabox' ], $priority );
 
 		/**
-		 * @todo add 'submenu' field and functionality to WPHelper\PluginCore
-		 * @todo reverse control/flow - so 'tab title' inherits/defaults to PluginCore 'submenu' field if exists.
+		 * @todo add 'submenu' field and functionality to WPHelper\AdminPage
+		 * @todo reverse control/flow - so 'tab title' inherits/defaults to AdminPage 'submenu' field if exists.
 		 */
 		if ( empty( $settings['parent_slug'] ) && $settings['menu_title'] != $settings['tab_title'] ){
 			add_action('admin_menu', [ $this, 'replace_submenu_title'], 11 );
@@ -183,15 +208,16 @@ class CMB2_OptionsPage{
 
 
 	private function convert_field_to_cmb2_field( $field ){
-		$field['id']   = $field['id']   ?? $field['slug'];
-		$field['name'] = $field['name'] ?? $field['title'];
-		$field['desc'] = $field['desc'] ?? $field['description'];
+
+		$field['id']   ??= $field['slug']        ?? null;
+		$field['name'] ??= $field['title']       ?? null;
+		$field['desc'] ??= $field['description'] ?? null;
 		
 		unset( $field['slug'] );
 		unset( $field['title'] );
 		unset( $field['description'] );
 
-		return $field;
+		return array_filter($field);
 	}
 
 

@@ -4,7 +4,7 @@
  */
 defined( 'ABSPATH' ) || die( 'No soup for you!' );
 
-
+if ( ! function_exists( 'wph_extra_plugin_headers' ) ):
 /**
  * WPHelper Extra Plugin Headers
  *
@@ -31,3 +31,4 @@ function wph_extra_plugin_headers( $headers ){
 }
 add_filter( 'extra_plugin_headers', 'wph_extra_plugin_headers' );
 add_filter( 'extra_theme_headers',  'wph_extra_plugin_headers' );
+endif;

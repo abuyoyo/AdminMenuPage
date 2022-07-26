@@ -20,7 +20,7 @@
 			Version: <?= $plugin_data['Version'] ?><br/>
 			Author: <a href="<?= $plugin_data['AuthorURI'] ?>"><?= $plugin_data['Author'] ?></a><br/>
 			GitHub: <a href="<?= $plugin_data['PluginURI'] ?>"><?= $plugin_data['TextDomain'] ?></a><br/>
-			Last Updated: <?= $update_message ?>
+			<?php if ( ! empty( $update_message ) ): ?>Last Updated: <?= $update_message ?><?php endif; ?>
 		</p>
 	</div><!-- .inside -->
 

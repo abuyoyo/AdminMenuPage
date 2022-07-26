@@ -17,6 +17,8 @@ if ( ! class_exists( 'WPHelper\SettingsPage' ) ):
  * Create WordPress Setting page.
  * 
  * @author  abuyoyo
+ * 
+ * @since 0.11
  */
 class SettingsPage{
 
@@ -83,20 +85,14 @@ class SettingsPage{
 
 		$this->page = $admin_options['slug'];
 
-		if ( ! empty($settings['option_name']) )
-			$this->option_name = $settings['option_name'];
-		else
-			$this->option_name = str_replace( '-', '_' , strtolower( $this->page ) );
+		$this->option_name = $settings['option_name'] ?: str_replace( '-', '_' , strtolower( $this->page ) );
 
-		if ( ! empty($settings['option_group']) )
-			$this->option_group = $settings['option_group'];
-		else
-			$this->option_group = $this->page . '_option_group';
+		$this->option_group = $settings['option_group'] ?: $this->page . '_option_group';
 
 		foreach ($settings['sections'] as $section){
 			// extract fields
 			foreach ($section['fields'] as $field){
-				$field['section_id'] = $section['id'];
+				$field['section_id'] = $section['id']; // create back-reference in field to section. ( @see add_settings_field() )
 				$this->fields[] = $field;
 			}
 			unset($section['fields']);
@@ -138,6 +134,12 @@ class SettingsPage{
 
 	}
 
+	/**
+	 * Print text input field
+	 * Support field type 'text'
+	 * 
+	 * @since 0.11
+	 */
 	function print_checkbox( $field ){
 		extract($field);
 
@@ -153,7 +155,115 @@ class SettingsPage{
 			checked( ( $options[$id] ?? false ), '1', false)
 		);
 
+		/**
+		 * Allow plugins to directly manipulate field HTML
+		 */
 		$input_tag = apply_filters( 'wphelper/settings_page/input_checkbox', $input_tag, $field, $this->option_name, $options );
+
+		echo $input_tag;
+
+	}
+
+	/**
+	 * Print text input field
+	 * Support field type 'text'
+	 * 
+	 * @since 0.19
+	 */
+	function print_text( $field ){
+		extract($field);
+
+		$options = get_option( $this->option_name );
+
+		$input_tag = sprintf(
+			'<input name="%2$s[%1$s]" type="text" id="%1$s" value="%3$s" class="regular-text">',
+			$id,
+			$this->option_name,
+			$default
+		);
+
+		if (! empty($description)){
+			$input_tag .= sprintf(
+				'<p class="description" id="%1$s-description">%2$s</p>',
+				$id,
+				$description
+			);
+		}
+
+		/**
+		 * Allow plugins to directly manipulate field HTML
+		 */
+		$input_tag = apply_filters( 'wphelper/settings_page/input_text', $input_tag, $field, $this->option_name, $options );
+
+		echo $input_tag;
+
+	}
+
+	/**
+	 * Print url input field
+	 * Support field type 'url'
+	 * 
+	 * @since 0.19
+	 */
+	function print_url( $field ){
+		extract($field);
+
+		$options = get_option( $this->option_name );
+
+		$input_tag = sprintf(
+			'<input name="%2$s[%1$s]" type="url" id="%1$s" value="%3$s" class="regular-text code ">',
+			$id,
+			$this->option_name,
+			$default
+		);
+
+		if (! empty($description)){
+			$input_tag .= sprintf(
+				'<p class="description" id="%1$s-description">%2$s</p>',
+				$id,
+				$description
+			);
+		}
+
+		/**
+		 * Allow plugins to directly manipulate field HTML
+		 */
+		$input_tag = apply_filters( 'wphelper/settings_page/input_url', $input_tag, $field, $this->option_name, $options );
+
+		echo $input_tag;
+
+	}
+
+	/**
+	 * Print email input field
+	 * Support field type 'email'
+	 * 
+	 * @since 0.19
+	 */
+	function print_email( $field ){
+		extract($field);
+
+		$options = get_option( $this->option_name );
+
+		$input_tag = sprintf(
+			'<input name="%2$s[%1$s]" type="email" id="%1$s" aria-describedby="%1$s-description" value="%3$s" class="regular-text ltr">',
+			$id,
+			$this->option_name,
+			$default
+		);
+
+		if (! empty($description)){
+			$input_tag .= sprintf(
+				'<p class="description" id="%1$s-description">%2$s</p>',
+				$id,
+				$description
+			);
+		}
+
+		/**
+		 * Allow plugins to directly manipulate field HTML
+		 */
+		$input_tag = apply_filters( 'wphelper/settings_page/input_email', $input_tag, $field, $this->option_name, $options );
 
 		echo $input_tag;
 
@@ -191,9 +301,7 @@ class SettingsPage{
 
 	function section_description_cb($section){
 		if (! empty($section['description'])){
-			return function() use ($section){
-				echo "<p>{$section['description']}</p>";
-			};
+			return fn() => printf( '<p>%s</p>', $section['description'] );
 		}
 	}
 }

@@ -253,7 +253,7 @@ class AdminPage
 	 * 
 	 * @access private
 	 */
-	private function title($title){
+	private function title( $title ) {
 		$this->title = $title;
 	}
 
@@ -263,7 +263,7 @@ class AdminPage
 	 * 
 	 * @access private
 	 */
-	private function menu_title($menu_title){
+	private function menu_title( $menu_title ) {
 		$this->menu_title = $menu_title;
 	}
 
@@ -273,7 +273,7 @@ class AdminPage
 	 * 
 	 * @access private
 	 */
-	private function capability($capability){
+	private function capability( $capability ) {
 		$this->capability = $capability;
 	}
 
@@ -283,7 +283,7 @@ class AdminPage
 	 * 
 	 * @access private
 	 */
-	private function slug($slug){
+	private function slug( $slug ) {
 		$this->slug = $slug;
 	}
 
@@ -293,7 +293,7 @@ class AdminPage
 	 * 
 	 * @access private
 	 */
-	private function parent($parent){
+	private function parent( $parent ) {
 		switch( $parent ) {
 			case 'options':
 			case 'settings':
@@ -312,7 +312,7 @@ class AdminPage
 	 * 
 	 * @access private
 	 */
-	private function icon_url( $icon_url ){
+	private function icon_url( $icon_url ) {
 		$this->icon_url = $icon_url;
 	}
 
@@ -323,7 +323,7 @@ class AdminPage
 	 * 
 	 * @access private
 	 */
-	private function position( $position ){
+	private function position( $position ) {
 		$this->position = $position;
 	}
 
@@ -338,30 +338,36 @@ class AdminPage
 	 * 
 	 * @access private
 	 */
-	private function render($render=null){
+	private function render( $render=null ) {
 		if ( 'settings-page' == $render ) {
-			$this->render_tpl(__DIR__ . '/tpl/settings-form.php');
+			$this->render_tpl( __DIR__ . '/tpl/settings-form.php' );
 			$this->render = $this->render ?? $render; // 'settings-page'
 		} else if ( 'cmb2' == $render || 'cmb2-tabs' == $render ) {
 
-			$this->delegate_hookup = true;
-
-			if ( ! empty( $this->plugin_core ) || ! empty( $this->plugin_info ) ){
-				$this->render_tpl( __DIR__ . '/tpl/cmb2_options_page-plugin_info.php' );
+			// validate
+			if ( ! defined( 'CMB2_LOADED' ) ){
+				$this->render_tpl( __DIR__ . '/tpl/cmb2-unavailable.php' );
+				$this->render = $this->render ?? 'render_tpl';
 			} else {
-				$this->render_tpl(__DIR__ . '/tpl/cmb2_options_page.php');
+				$this->delegate_hookup = true;
+
+				if ( ! empty( $this->plugin_core ) || ! empty( $this->plugin_info ) ){
+					$this->render_tpl( __DIR__ . '/tpl/cmb2_options_page-plugin_info.php' );
+				} else {
+					$this->render_tpl( __DIR__ . '/tpl/cmb2_options_page.php' );
+				}
+
+				$this->render = $this->render ?? $render; // 'cmb2' || 'cmb2-tabs'
 			}
 
-			$this->render = $this->render ?? $render; // 'cmb2' || 'cmb2-tabs'
-
 		} else if( is_callable( $render ) ) {
-			$this->render_cb($render);
+			$this->render_cb( $render );
 			$this->render = $this->render ?? 'render_cb';
-		} else if ( is_readable($render) ) {
-			$this->render_tpl($render);
+		} else if ( is_readable( $render ) ) {
+			$this->render_tpl( $render );
 			$this->render = $this->render ?? 'render_tpl';
 		} else {
-			$this->render_tpl(__DIR__ . '/tpl/default.php');
+			$this->render_tpl( __DIR__ . '/tpl/default.php' );
 			$this->render = $this->render ?? 'render_tpl';
 		}
 	}
@@ -603,40 +609,40 @@ class AdminPage
 	 */
 	public function add_menu_page(){
 
-		if ( ! $this->parent ){
-			$this->hook_suffix = add_menu_page( 
-				$this->title, 
-				$this->menu_title, 
-				$this->capability, 
-				$this->slug, 
-				[ $this , 'render_admin_page' ],
-				$this->icon_url, 
-				$this->position
-			);
-		}else{
-			switch ($this->parent){
-				case 'options':
-				case 'settings':
-				case 'options-general.php':
-					$this->hook_suffix = add_options_page(
-						$this->title, 
-						$this->menu_title, 
-						$this->capability, 
-						$this->slug, 
-						[ $this , 'render_admin_page' ]
-					);
-					break;
-				default:
-					$this->hook_suffix = add_submenu_page(
-						$this->parent, 
-						$this->title, 
-						$this->menu_title, 
-						$this->capability, 
-						$this->slug, 
-						[ $this , 'render_admin_page' ]
-					);
-					break;
-			}
+		switch ( $this->parent ){
+			case null:
+			case '':
+				$this->hook_suffix = add_menu_page(
+					$this->title,
+					$this->menu_title,
+					$this->capability,
+					$this->slug,
+					[ $this , 'render_admin_page' ],
+					$this->icon_url,
+					$this->position
+				);
+				break;
+			case 'options':
+			case 'settings':
+			case 'options-general.php':
+				$this->hook_suffix = add_options_page(
+					$this->title,
+					$this->menu_title,
+					$this->capability,
+					$this->slug,
+					[ $this , 'render_admin_page' ]
+				);
+				break;
+			default:
+				$this->hook_suffix = add_submenu_page(
+					$this->parent,
+					$this->title,
+					$this->menu_title,
+					$this->capability,
+					$this->slug,
+					[ $this , 'render_admin_page' ]
+				);
+				break;
 		}
 
 	}
@@ -686,7 +692,7 @@ class AdminPage
 
 		foreach ( $this->methods as $method ){
 			if( is_callable( $method ) ){
-				add_action ( 'load-'.$this->hook_suffix , $method );
+				add_action ( 'load-' . $this->hook_suffix , $method );
 			}
 		}
 	}
@@ -704,10 +710,10 @@ class AdminPage
 	 */
 	public function _admin_page_setup(){
 
-		if ($this->scripts)
+		if ( $this->scripts )
 			add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_scripts' ] );
 
-		if ($this->styles)
+		if ( $this->styles )
 			add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_styles' ] );
 	}
 
@@ -718,7 +724,7 @@ class AdminPage
 	 * @hook admin_enqueue_scripts
 	 * @access private
 	 */
-	public function admin_enqueue_scripts($hook) {
+	public function admin_enqueue_scripts( $hook ) {
 
 		// redundant
 		// this only gets called on load-{$this->hook_suffix} anyway
@@ -729,7 +735,7 @@ class AdminPage
 		if ( ! $this->scripts)
 			return;
 
-		foreach ($this->scripts as $script_args){
+		foreach ( $this->scripts as $script_args ){
 			wp_enqueue_script( ...$script_args );
 		}
 
@@ -742,7 +748,7 @@ class AdminPage
 	 * @hook admin_enqueue_styles
 	 * @access private
 	 */
-	public function admin_enqueue_styles($hook) {
+	public function admin_enqueue_styles( $hook ) {
 
 		// redundant
 		// this only gets called on load-{$this->hook_suffix} anyway
@@ -753,7 +759,7 @@ class AdminPage
 		if ( ! $this->styles)
 			return;
 
-		foreach ($this->styles as $style_args){
+		foreach ( $this->styles as $style_args ){
 			wp_enqueue_style( ...$style_args );
 		}
 
@@ -855,21 +861,24 @@ class AdminPage
 			ob_start();
 		}
 
-		if ( isset( $this->render_cb ) && is_callable($this->render_cb)) {
+		if ( isset( $this->render_cb ) && is_callable( $this->render_cb ) ) {
 			call_user_func( $this->render_cb );
-		}else if ( isset( $this->render_tpl ) && is_readable($this->render_tpl)) {
+		} else if ( isset( $this->render_tpl ) && is_readable( $this->render_tpl ) ) {
 			include $this->render_tpl;
 		}
 
 		if ( 'none' != $this->wrap ){
 			$ob_content = ob_get_clean();
 
-			if ('simple' == $this->wrap ){
-				include 'tpl/wrap-simple.php';
-			}
-
-			if ('sidebar' == $this->wrap ){
-				include 'tpl/wrap-sidebar.php';
+			switch ( $this->wrap ){
+				case ( 'simple' ):
+					include 'tpl/wrap-simple.php';
+					break;
+				case ( 'sidebar' ):
+					include 'tpl/wrap-sidebar.php';
+					break;
+				default:
+					break;
 			}
 
 		}
