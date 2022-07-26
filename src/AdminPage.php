@@ -603,40 +603,40 @@ class AdminPage
 	 */
 	public function add_menu_page(){
 
-		if ( ! $this->parent ){
-			$this->hook_suffix = add_menu_page( 
-				$this->title, 
-				$this->menu_title, 
-				$this->capability, 
-				$this->slug, 
-				[ $this , 'render_admin_page' ],
-				$this->icon_url, 
-				$this->position
-			);
-		}else{
-			switch ($this->parent){
-				case 'options':
-				case 'settings':
-				case 'options-general.php':
-					$this->hook_suffix = add_options_page(
-						$this->title, 
-						$this->menu_title, 
-						$this->capability, 
-						$this->slug, 
-						[ $this , 'render_admin_page' ]
-					);
-					break;
-				default:
-					$this->hook_suffix = add_submenu_page(
-						$this->parent, 
-						$this->title, 
-						$this->menu_title, 
-						$this->capability, 
-						$this->slug, 
-						[ $this , 'render_admin_page' ]
-					);
-					break;
-			}
+		switch ( $this->parent ){
+			case null:
+			case '':
+				$this->hook_suffix = add_menu_page(
+					$this->title,
+					$this->menu_title,
+					$this->capability,
+					$this->slug,
+					[ $this , 'render_admin_page' ],
+					$this->icon_url,
+					$this->position
+				);
+				break;
+			case 'options':
+			case 'settings':
+			case 'options-general.php':
+				$this->hook_suffix = add_options_page(
+					$this->title,
+					$this->menu_title,
+					$this->capability,
+					$this->slug,
+					[ $this , 'render_admin_page' ]
+				);
+				break;
+			default:
+				$this->hook_suffix = add_submenu_page(
+					$this->parent,
+					$this->title,
+					$this->menu_title,
+					$this->capability,
+					$this->slug,
+					[ $this , 'render_admin_page' ]
+				);
+				break;
 		}
 
 	}
@@ -864,12 +864,15 @@ class AdminPage
 		if ( 'none' != $this->wrap ){
 			$ob_content = ob_get_clean();
 
-			if ('simple' == $this->wrap ){
-				include 'tpl/wrap-simple.php';
-			}
-
-			if ('sidebar' == $this->wrap ){
-				include 'tpl/wrap-sidebar.php';
+			switch ( $this->wrap ){
+				case ( 'simple' ):
+					include 'tpl/wrap-simple.php';
+					break;
+				case ( 'sidebar' ):
+					include 'tpl/wrap-sidebar.php';
+					break;
+				default:
+					break;
 			}
 
 		}
