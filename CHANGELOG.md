@@ -4,7 +4,7 @@ WPHelper\AdminMenuPage
 ## 0.19
 
 ### Added
-- SettingPage supports `text`, `url`, `email` fields.
+- SettingsPage supports `text`, `url`, `email` fields.
 - CMB2_OptionsPage supports all admin menu top-level slugs.
 
 ### Fixed
