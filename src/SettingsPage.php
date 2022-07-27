@@ -85,9 +85,9 @@ class SettingsPage{
 
 		$this->page = $admin_options['slug'];
 
-		$this->option_name = $settings['option_name'] ?: str_replace( '-', '_' , strtolower( $this->page ) );
+		$this->option_name = $settings['option_name'] ?? str_replace( '-', '_' , strtolower( $this->page ) );
 
-		$this->option_group = $settings['option_group'] ?: $this->page . '_option_group';
+		$this->option_group = $settings['option_group'] ?? $this->page . '_option_group';
 
 		foreach ( $settings['sections'] as $section ) {
 			// extract fields
@@ -279,9 +279,7 @@ class SettingsPage{
 			$field = reset(
 				array_filter(
 					$this->fields,
-					function($item)use($id){
-						return $item['id'] == $id;
-					}
+					fn($item) => $item['id'] == $id
 				)
 			);
 			switch ( $field['type'] ){
