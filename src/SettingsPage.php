@@ -305,7 +305,22 @@ class SettingsPage{
 
 	function section_description_cb( $section ) {
 		if ( ! empty( $section['description'] ) ) {
-			return fn() => printf( '<p>%s</p>', $section['description'] );
+			switch ( $section[ 'description_container' ] ?? '' ){
+				case 'card':
+					$container = '<div class="card">%s</div>';
+					break;
+				case 'notice':
+				case 'notice-info':
+					$container = '<div class="notice notice-info inline"><p>%s</p></div>';
+					break;
+				case 'none':
+					$container = '%s';
+					break;
+				default:
+					$container = '<p>%s</p>';
+					break;
+			}
+			return fn() => printf( $container, $section['description'] );
 		}
 	}
 }
