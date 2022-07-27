@@ -271,9 +271,6 @@ class SettingsPage{
 
 	/**
 	 * Sanitizes entire $options array.
-	 * WordPress is horrible.
-	 * 
-	 * 
 	 */
 	function sanitize_settings( $options ) {
 		$new_options = [];
