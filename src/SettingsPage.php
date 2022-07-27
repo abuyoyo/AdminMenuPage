@@ -286,6 +286,15 @@ class SettingsPage{
 				case 'checkbox':			
 					$new_options[$id] = $option == 1 ? 1 : 0;
 					break;
+				case 'text':			
+					$new_options[$id] = sanitize_text_field( $option );
+					break;
+				case 'email':			
+					$new_options[$id] = sanitize_email( $option );
+					break;
+				case 'url':			
+					$new_options[$id] = sanitize_url( $option );
+					break;
 				default:
 					break;
 			}
