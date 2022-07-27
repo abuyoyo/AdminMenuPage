@@ -1,6 +1,12 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.20
+
+### Added
+- Add SettingsPage section option `desciption-container`. Accepts `card` div, `notice`, `notice-info` and `none`.
+- Sanitize SettingsPage text, url and email fields.
+
 ## 0.19
 
 ### Added
