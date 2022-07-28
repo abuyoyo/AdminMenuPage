@@ -70,7 +70,7 @@ class SettingsPage{
 	 * @param AdminPage $admin_page instance
 	 * @param null $settings deprecated
 	 */
-	public function __construct($admin_page, $settings = null)
+	public function __construct( $admin_page, $settings = null )
 	{
 
 		if ( ! empty( $settings ) ) {
@@ -85,47 +85,47 @@ class SettingsPage{
 
 		$this->page = $admin_options['slug'];
 
-		$this->option_name = $settings['option_name'] ?: str_replace( '-', '_' , strtolower( $this->page ) );
+		$this->option_name = $settings['option_name'] ?? str_replace( '-', '_' , strtolower( $this->page ) );
 
-		$this->option_group = $settings['option_group'] ?: $this->page . '_option_group';
+		$this->option_group = $settings['option_group'] ?? $this->page . '_option_group';
 
-		foreach ($settings['sections'] as $section){
+		foreach ( $settings['sections'] as $section ) {
 			// extract fields
-			foreach ($section['fields'] as $field){
+			foreach ( $section['fields'] as $field ){
 				$field['section_id'] = $section['id']; // create back-reference in field to section. ( @see add_settings_field() )
 				$this->fields[] = $field;
 			}
-			unset($section['fields']);
+			unset( $section['fields'] );
 			$this->sections[] = $section; // save without fields
 		}
 	}
 
-	function setup(){
-		add_action( 'admin_init', [$this,'register_settings'] );
+	function setup() {
+		add_action( 'admin_init', [ $this, 'register_settings' ] );
 	}
 
-	public function register_settings(){
+	public function register_settings() {
 		register_setting(
 			$this->option_group, // $option_group - A settings group name. Must exist prior to the register_setting call. This must match the group name in settings_fields()
 			$this->option_name, // $option_name - The name of an option to sanitize and save.
-			[$this,'sanitize_settings'] // $sanitize_callback - A callback function that sanitizes the option's value. (see also: built-in php callbacks)
+			[ $this,'sanitize_settings' ] // $sanitize_callback - A callback function that sanitizes the option's value. (see also: built-in php callbacks)
 		);
 
-		foreach ($this->sections as $section){
+		foreach ( $this->sections as $section ){
 			add_settings_section(
 				$section['id'], // $id - Slug-name to identify the section. Used in the 'id' attribute of tags.
 				$section['title'] ?? null, // $title - Formatted title of the section. Shown as the heading for the section.
-				$this->section_description_cb($section), // $callback - Function that echos out any content at the top of the section (between heading and fields).
+				$this->section_description_cb( $section ), // $callback - Function that echos out any content at the top of the section (between heading and fields).
 				$this->page // $page - The slug-name of the settings page on which to show the section.
 											//Built-in pages include 'general', 'reading', 'writing', 'discussion', 'media', etc.
 			);
 		}
 
-		foreach ($this->fields as $field){
+		foreach ( $this->fields as $field ) {
 			add_settings_field(
 				$field['id'],
 				$field['title'],
-				[$this, "print_{$field['type']}"],
+				[ $this, "print_{$field['type']}" ],
 				$this->page, // can built-in pages: (general, reading, writing, ...)
 				$field['section_id'],
 				$field //send setting array as $args for print function
@@ -140,7 +140,7 @@ class SettingsPage{
 	 * 
 	 * @since 0.11
 	 */
-	function print_checkbox( $field ){
+	function print_checkbox( $field ) {
 		extract($field);
 
 		$options = get_option( $this->option_name );
@@ -170,7 +170,7 @@ class SettingsPage{
 	 * 
 	 * @since 0.19
 	 */
-	function print_text( $field ){
+	function print_text( $field ) {
 		extract($field);
 
 		$options = get_option( $this->option_name );
@@ -182,7 +182,7 @@ class SettingsPage{
 			$default
 		);
 
-		if (! empty($description)){
+		if ( ! empty( $description ) ) {
 			$input_tag .= sprintf(
 				'<p class="description" id="%1$s-description">%2$s</p>',
 				$id,
@@ -217,7 +217,7 @@ class SettingsPage{
 			$default
 		);
 
-		if (! empty($description)){
+		if ( ! empty( $description ) ) {
 			$input_tag .= sprintf(
 				'<p class="description" id="%1$s-description">%2$s</p>',
 				$id,
@@ -252,7 +252,7 @@ class SettingsPage{
 			$default
 		);
 
-		if (! empty($description)){
+		if ( ! empty( $description ) ) {
 			$input_tag .= sprintf(
 				'<p class="description" id="%1$s-description">%2$s</p>',
 				$id,
@@ -271,25 +271,29 @@ class SettingsPage{
 
 	/**
 	 * Sanitizes entire $options array.
-	 * WordPress is horrible.
-	 * 
-	 * 
 	 */
-	function sanitize_settings($options){
+	function sanitize_settings( $options ) {
 		$new_options = [];
 
-		foreach($options as $id => $option){
+		foreach( $options as $id => $option ) {
 			$field = reset(
 				array_filter(
 					$this->fields,
-					function($item)use($id){
-						return $item['id'] == $id;
-					}
+					fn($item) => $item['id'] == $id
 				)
 			);
-			switch ($field['type']){
+			switch ( $field['type'] ){
 				case 'checkbox':			
 					$new_options[$id] = $option == 1 ? 1 : 0;
+					break;
+				case 'text':			
+					$new_options[$id] = sanitize_text_field( $option );
+					break;
+				case 'email':			
+					$new_options[$id] = sanitize_email( $option );
+					break;
+				case 'url':			
+					$new_options[$id] = sanitize_url( $option );
 					break;
 				default:
 					break;
@@ -299,9 +303,24 @@ class SettingsPage{
 		return $new_options;
 	}
 
-	function section_description_cb($section){
-		if (! empty($section['description'])){
-			return fn() => printf( '<p>%s</p>', $section['description'] );
+	function section_description_cb( $section ) {
+		if ( ! empty( $section['description'] ) ) {
+			switch ( $section[ 'description_container' ] ?? '' ){
+				case 'card':
+					$container = '<div class="card">%s</div>';
+					break;
+				case 'notice':
+				case 'notice-info':
+					$container = '<div class="notice notice-info inline"><p>%s</p></div>';
+					break;
+				case 'none':
+					$container = '%s';
+					break;
+				default:
+					$container = '<p>%s</p>';
+					break;
+			}
+			return fn() => printf( $container, $section['description'] );
 		}
 	}
 }
