@@ -37,7 +37,7 @@ class AdminPage
 	protected $menu_title;
 
 	/**
-	 * User capabailty required to view page.
+	 * User capability required to view page.
 	 *
 	 * @var string
 	 */
@@ -130,7 +130,7 @@ class AdminPage
     /**
      * Methods
      *
-     * @var Callable[] arrays of Callbale methods to hook on `load-{$hook_suffix}` 
+     * @var Callable[] arrays of Callable methods to hook on `load-{$hook_suffix}` 
      */
 	protected $methods = [];
 
@@ -376,7 +376,7 @@ class AdminPage
 	 * Setter - render_cb
 	 * 
 	 * if $this->render == 'render_cb'
-	 * set callback funtion in $this->render_cb
+	 * set callback function in $this->render_cb
 	 * 
 	 * @access private
 	 */
@@ -589,7 +589,7 @@ class AdminPage
 			}
 			
 			/**
-			 * @todo Perhpaps this can hook on admin_init - right after admin_menu has finished
+			 * @todo Perhaps this can hook on admin_init - right after admin_menu has finished
 			 * @todo CMB2 options-page does not return page_hook/hook_suffix - MUST validate
 			 */
 			add_action ( 'admin_menu' , [ $this , '_bootstrap_admin_page' ], 12 );
