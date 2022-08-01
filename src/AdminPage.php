@@ -773,7 +773,7 @@ class AdminPage
 	 */
 	public function get_capability()
 	{
-		return $this->capabailty;
+		return $this->capability;
 	}
 
 	/**
