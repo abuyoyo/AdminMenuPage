@@ -1,6 +1,11 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.21
+
+### Fixed
+- Minor fixes.
+
 ## 0.20
 
 ### Added
