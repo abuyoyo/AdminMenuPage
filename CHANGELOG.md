@@ -1,6 +1,12 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.22
+Release date: Jan 1 2023
+
+### Fixed
+- Fix error when `plugin_info = true` but `plugin_core` is not set.
+
 ## 0.21
 
 ### Fixed
