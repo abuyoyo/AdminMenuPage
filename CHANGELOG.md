@@ -1,6 +1,12 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.22
+Release date: Jan 1 2023
+
+### Fixed
+- Fix error when `plugin_info = true` but `plugin_core` is not set.
+
 ## 0.21
 
 ### Fixed
@@ -19,7 +25,7 @@ WPHelper\AdminMenuPage
 - CMB2_OptionsPage supports all admin menu top-level slugs.
 
 ### Fixed
-- Fixed PHP fatal error: cannot redeclare function `wph_extra_plugin_headers()`.
+- Fix PHP fatal error: cannot redeclare function `wph_extra_plugin_headers()`.
 
 ### Changed
 - If CMB2 plugin is not activated - show missing plugin card on `cmb2` and `cmb2-tabs` pages.
