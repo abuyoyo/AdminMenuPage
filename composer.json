@@ -3,9 +3,10 @@
 	"description": "WordPress admin menu page helper class",
 	"type": "library",
 	"version": "0.21",
+	"time": "2023-01-01",
 	"license": "BSD-3-Clause",
 	"suggest": {
-		"abuyoyo/plugincore": "~0.18",
+		"abuyoyo/plugincore": "~0.23",
 		"cmb2/cmb2": "~2.9"
 	},
 	"autoload": {
