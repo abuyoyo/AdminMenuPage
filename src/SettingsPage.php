@@ -126,7 +126,7 @@ class SettingsPage{
 			add_settings_field(
 				$field['id'],
 				$field['title'],
-				[ $this, "print_{$field['type']}" ],
+				$field['render'] ?? [ $this, "print_{$field['type']}" ],
 				$this->page, // can built-in pages: (general, reading, writing, ...)
 				$field['section_id'],
 				$field //send setting array as $args for print function
