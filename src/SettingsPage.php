@@ -93,6 +93,7 @@ class SettingsPage{
 			// extract fields
 			foreach ( $section['fields'] as $field ){
 				$field['section_id'] = $section['id']; // create back-reference in field to section. ( @see add_settings_field() )
+				$field['name'] = $this->option_name . '[' . $field['id'] . ']';
 				$this->fields[] = $field;
 			}
 			unset( $section['fields'] );
@@ -135,8 +136,8 @@ class SettingsPage{
 	}
 
 	/**
-	 * Print text input field
-	 * Support field type 'text'
+	 * Print checkbox input field
+	 * Support field type 'checkbox'
 	 * 
 	 * @since 0.11
 	 */
@@ -147,10 +148,11 @@ class SettingsPage{
 
 		$input_tag = sprintf(
 			'<label for="%1$s">
-				<input name="%2$s[%1$s]" type="checkbox" id="%1$s" value="1"  %4$s />
-			%3$s</label>',
+				<input name="%2$s" type="checkbox" id="%1$s" value="1"  %4$s />
+				%3$s
+			</label>',
 			$id,
-			$this->option_name,
+			$name,
 			$description,
 			checked( ( $options[$id] ?? false ), '1', false)
 		);
@@ -176,9 +178,9 @@ class SettingsPage{
 		$options = get_option( $this->option_name );
 
 		$input_tag = sprintf(
-			'<input name="%2$s[%1$s]" type="text" id="%1$s" value="%3$s" class="regular-text">',
+			'<input name="%2$s" type="text" id="%1$s" value="%3$s" class="regular-text">',
 			$id,
-			$this->option_name,
+			$name,
 			$default
 		);
 
@@ -211,9 +213,9 @@ class SettingsPage{
 		$options = get_option( $this->option_name );
 
 		$input_tag = sprintf(
-			'<input name="%2$s[%1$s]" type="url" id="%1$s" value="%3$s" class="regular-text code ">',
+			'<input name="%2$s" type="url" id="%1$s" value="%3$s" class="regular-text code ">',
 			$id,
-			$this->option_name,
+			$name,
 			$default
 		);
 
@@ -246,9 +248,9 @@ class SettingsPage{
 		$options = get_option( $this->option_name );
 
 		$input_tag = sprintf(
-			'<input name="%2$s[%1$s]" type="email" id="%1$s" aria-describedby="%1$s-description" value="%3$s" class="regular-text ltr">',
+			'<input name="%2$s" type="email" id="%1$s" aria-describedby="%1$s-description" value="%3$s" class="regular-text ltr">',
 			$id,
-			$this->option_name,
+			$name,
 			$default
 		);
 
