@@ -65,6 +65,13 @@ class SettingsPage{
 	public $fields = [];
 
 	/**
+	 * Sanitize Callback
+	 * 
+	 * @var Callable $sanitize_callback
+	 */
+	public $sanitize_callback;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param AdminPage $admin_page instance
@@ -89,6 +96,8 @@ class SettingsPage{
 
 		$this->option_group = $settings['option_group'] ?? $this->page . '_option_group';
 
+		$this->sanitize_callback = $settings['sanitize_callback'] ?? null;
+
 		foreach ( $settings['sections'] as $section ) {
 			// extract fields
 			foreach ( $section['fields'] as $field ){
@@ -109,7 +118,7 @@ class SettingsPage{
 		register_setting(
 			$this->option_group, // $option_group - A settings group name. Must exist prior to the register_setting call. This must match the group name in settings_fields()
 			$this->option_name, // $option_name - The name of an option to sanitize and save.
-			[ $this,'sanitize_settings' ] // $sanitize_callback - A callback function that sanitizes the option's value. (see also: built-in php callbacks)
+			$this->sanitize_callback ?? [ $this,'sanitize_settings' ] // callback ?? fallback // $sanitize_callback - A callback function that sanitizes the option's value. (see also: built-in php callbacks)
 		);
 
 		foreach ( $this->sections as $section ){
