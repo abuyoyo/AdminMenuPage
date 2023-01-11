@@ -282,7 +282,7 @@ class SettingsPage{
 					fn($item) => $item['id'] == $id
 				)
 			);
-			switch ( $field['type'] ){
+			switch ( $field['type'] ) {
 				case 'checkbox':			
 					$new_options[$id] = $option == 1 ? 1 : 0;
 					break;
