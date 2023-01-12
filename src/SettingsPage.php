@@ -148,7 +148,7 @@ class SettingsPage{
 
 		$input_tag = sprintf(
 			'<label for="%1$s">
-				<input name="%2$s" type="checkbox" id="%1$s" value="1"  %4$s />
+				<input name="%2$s" type="checkbox" id="%1$s" aria-describedby="%1$s-description" value="1"  %4$s />
 				%3$s
 			</label>',
 			$id,
@@ -178,10 +178,11 @@ class SettingsPage{
 		$options = get_option( $this->option_name );
 
 		$input_tag = sprintf(
-			'<input name="%2$s" type="text" id="%1$s" value="%3$s" class="regular-text">',
+			'<input name="%2$s" type="text" id="%1$s" aria-describedby="%1$s-description" value="%3$s" placeholder="%4$s" class="regular-text">',
 			$id,
 			$name,
-			$default
+			$options[$id] ?: $default ?? '',
+			$placeholder ?? ''
 		);
 
 		if ( ! empty( $description ) ) {
@@ -213,10 +214,11 @@ class SettingsPage{
 		$options = get_option( $this->option_name );
 
 		$input_tag = sprintf(
-			'<input name="%2$s" type="url" id="%1$s" value="%3$s" class="regular-text code ">',
+			'<input name="%2$s" type="url" id="%1$s" aria-describedby="%1$s-description" placeholder="%4$s" value="%3$s" class="regular-text code ">',
 			$id,
 			$name,
-			$default
+			$options[$id] ?: $default ?? '',
+			$placeholder ?? ''
 		);
 
 		if ( ! empty( $description ) ) {
@@ -248,10 +250,11 @@ class SettingsPage{
 		$options = get_option( $this->option_name );
 
 		$input_tag = sprintf(
-			'<input name="%2$s" type="email" id="%1$s" aria-describedby="%1$s-description" value="%3$s" class="regular-text ltr">',
+			'<input name="%2$s" type="email" id="%1$s" aria-describedby="%1$s-description" placeholder="%4$s" value="%3$s" class="regular-text ltr">',
 			$id,
 			$name,
-			$default
+			$options[$id] ?: $default ?? '',
+			$placeholder ?? ''
 		);
 
 		if ( ! empty( $description ) ) {
