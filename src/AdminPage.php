@@ -225,14 +225,16 @@ class AdminPage
 			$this->wrap( $options->wrap );
 		}
 
-		if ( isset( $options->render ) ) // dev
-			$this->render( $options->render );
-
-		if ( isset( $options->render_cb ) ) // dev - deprecate?
+		if ( isset( $options->render_cb ) )
 			$this->render_cb( $options->render_cb );
 
-		if ( isset( $options->render_tpl ) ) // dev - deprecate?
+		if ( isset( $options->render_tpl ) ) // before render()
 			$this->render_tpl( $options->render_tpl );
+
+		// This runs last so we can have 'settings-page' with custom render_tpl
+		if ( isset( $options->render ) )
+			$this->render( $options->render );
+
 
 		if (true)
 			$this->render(); // render anyway - will use default tpl if render is empty
