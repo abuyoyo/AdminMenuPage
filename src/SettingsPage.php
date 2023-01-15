@@ -275,6 +275,42 @@ class SettingsPage{
 	}
 
 	/**
+	 * Print email input field
+	 * Support field type 'email'
+	 * 
+	 * @since 0.23
+	 */
+	function print_textarea( $field ){
+		extract($field);
+
+		$options = get_option( $this->option_name );
+
+		$textarea = sprintf(
+			'<textarea class="regular-text" rows="5" id="%1$s-description" name="%2$s" placeholder="%4$s">%3$s</textarea>',
+			$id,
+			$name,
+			$options[$id] ?: $default ?? '',
+			$placeholder ?? ''
+		);
+
+		if ( ! empty( $description ) ) {
+			$textarea .= sprintf(
+				'<p class="description" id="%1$s-description">%2$s</p>',
+				$id,
+				$description
+			);
+		}
+
+		/**
+		 * Allow plugins to directly manipulate field HTML
+		 */
+		$textarea = apply_filters( 'wphelper/settings_page/textarea', $textarea, $field, $this->option_name, $options );
+
+		echo $textarea;
+
+	}
+
+	/**
 	 * Sanitizes entire $options array.
 	 */
 	function sanitize_settings( $options ) {
@@ -292,6 +328,7 @@ class SettingsPage{
 					$new_options[$id] = $option == 1 ? 1 : 0;
 					break;
 				case 'text':			
+				case 'textarea':			
 					$new_options[$id] = sanitize_text_field( $option );
 					break;
 				case 'email':			
