@@ -24,6 +24,16 @@ class PluginInfoMetaBox{
 	function __construct( PluginCore $plugin_core )
 	{
 		$this->plugin_core = $plugin_core;
+
+		/**
+		 * Allow plugins to render or modify plugin info box
+		 * 
+		 * Call: do_action('wphelper/plugin_info_meta_box/{$slug}')
+		 * action used in AdminPage::render_plugin_info_box()
+		 * 
+		 * @since 0.23
+		 */
+		add_action( "wphelper/plugin_info_meta_box/{$this->plugin_core->slug()}", [ $this, 'plugin_info_box' ] );
 	}
 
 	/**

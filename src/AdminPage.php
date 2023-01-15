@@ -925,7 +925,7 @@ class AdminPage
 			if ( ! empty( $this->plugin_core ) && empty( $this->plugin_info_meta_box ) ){
 				$this->plugin_info_meta_box = new PluginInfoMetaBox( $this->plugin_core );
 			}
-			$this->plugin_info_meta_box->plugin_info_box();
+			do_action( "wphelper/plugin_info_meta_box/{$this->plugin_core->slug()}" );
 		}
 
 	}
