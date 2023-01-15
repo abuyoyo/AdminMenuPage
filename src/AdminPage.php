@@ -340,21 +340,21 @@ class AdminPage
 	 */
 	private function render( $render=null ) {
 		if ( 'settings-page' == $render ) {
-			$this->render_tpl( __DIR__ . '/tpl/settings-form.php' );
+			$this->render_tpl( __DIR__ . '/tpl/form-basic.php' );
 			$this->render = $this->render ?? $render; // 'settings-page'
 		} else if ( 'cmb2' == $render || 'cmb2-tabs' == $render ) {
 
 			// validate
 			if ( ! defined( 'CMB2_LOADED' ) ){
-				$this->render_tpl( __DIR__ . '/tpl/cmb2-unavailable.php' );
+				$this->render_tpl( __DIR__ . '/tpl/wrap-cmb2-unavailable.php' );
 				$this->render = $this->render ?? 'render_tpl';
 			} else {
 				$this->delegate_hookup = true;
 
 				if ( ! empty( $this->plugin_core ) || ! empty( $this->plugin_info ) ){
-					$this->render_tpl( __DIR__ . '/tpl/cmb2_options_page-plugin_info.php' );
+					$this->render_tpl( __DIR__ . '/tpl/wrap-cmb2-sidebar.php' );
 				} else {
-					$this->render_tpl( __DIR__ . '/tpl/cmb2_options_page.php' );
+					$this->render_tpl( __DIR__ . '/tpl/wrap-cmb2-simple.php' );
 				}
 
 				$this->render = $this->render ?? $render; // 'cmb2' || 'cmb2-tabs'
@@ -367,7 +367,7 @@ class AdminPage
 			$this->render_tpl( $render );
 			$this->render = $this->render ?? 'render_tpl';
 		} else {
-			$this->render_tpl( __DIR__ . '/tpl/default.php' );
+			$this->render_tpl( __DIR__ . '/tpl/wrap-default.php' );
 			$this->render = $this->render ?? 'render_tpl';
 		}
 	}

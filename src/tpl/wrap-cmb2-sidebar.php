@@ -17,8 +17,8 @@
 </style>
 <div class="wrap cmb2-options-page option-<?php echo esc_attr( sanitize_html_class( $hookup->option_key ) ); ?>">
 
-	<?php include 'cmb-title.php' ?>
-	<?php include 'tab-nav.php' ?>
+	<?php include 'title-cmb2.php' ?>
+	<?php include 'tab-nav-cmb2.php' ?>
 
 	<div id="poststuff">
 		<div id="post-body" class="metabox-holder columns-2">
@@ -26,7 +26,7 @@
 			<!-- main content -->
 			<div id="post-body-content">
 				<div class="meta-box-sortables ui-sortable tabs-content">
-					<?php include 'cmb-form.php' ?>
+					<?php include 'form-cmb2.php' ?>
 				</div><!-- .meta-box-sortables -->
 			</div><!-- #post-body-content -->
 
