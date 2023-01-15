@@ -19,7 +19,7 @@ class PluginInfoMetaBox{
 	/**
 	 * @var PluginCore
 	 */
-	private $plugin_core;
+	public $plugin_core;
 
 	function __construct( PluginCore $plugin_core )
 	{
