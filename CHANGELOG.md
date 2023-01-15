@@ -1,6 +1,23 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.23
+Release date: Jan 15 2023
+
+### Added
+- Add action hook `wphelper/plugin_info_meta_box/{$slug}` to modify and render plugin info meta box.
+- Add support for `textarea` input field in SettingsPage.
+- Add `sanitize_callback` option - allow plugins to supply their own sanitize function.
+- Add `render` to fields - allow plugins to supply their own render callback for fields.
+- Add `placeholder` to fields - allow plugins to supply placeholder values for fields.
+
+### Fixed
+- Fix default value handling for fields.
+
+### Internal
+- Rename `tpl/` template parts.
+- Minor changes and fixes.
+
 ## 0.22
 Release date: Jan 1 2023
 
