@@ -276,7 +276,7 @@ class SettingsPage{
 		$new_options = [];
 
 		foreach( $options as $id => $option ) {
-			$field = reset(
+			$field = current(
 				array_filter(
 					$this->fields,
 					fn($item) => $item['id'] == $id
