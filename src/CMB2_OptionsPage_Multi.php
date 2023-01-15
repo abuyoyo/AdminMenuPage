@@ -3,9 +3,13 @@ namespace WPHelper;
 
 defined( 'ABSPATH' ) || die( 'No soup for you!' );
 
-include_once __DIR__ . '/CMB2_Override_Meta.php';
-
 if ( ! class_exists( 'WPHelper\CMB2_OptionsPage_Multi' ) ):
+
+// Require dependency CMB2_Override_Meta
+if ( ! trait_exists( CMB2_Override_Meta::class ) ) {
+	require_once __DIR__ . '/CMB2_Override_Meta.php';
+}
+
 /**
  * CMB2_OptionsPage - MULTI
  * 
