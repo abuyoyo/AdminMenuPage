@@ -65,6 +65,13 @@ class SettingsPage{
 	public $fields = [];
 
 	/**
+	 * Sanitize Callback
+	 * 
+	 * @var Callable $sanitize_callback
+	 */
+	public $sanitize_callback;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param AdminPage $admin_page instance
@@ -89,10 +96,13 @@ class SettingsPage{
 
 		$this->option_group = $settings['option_group'] ?? $this->page . '_option_group';
 
+		$this->sanitize_callback = $settings['sanitize_callback'] ?? null;
+
 		foreach ( $settings['sections'] as $section ) {
 			// extract fields
 			foreach ( $section['fields'] as $field ){
 				$field['section_id'] = $section['id']; // create back-reference in field to section. ( @see add_settings_field() )
+				$field['name'] = $this->option_name . '[' . $field['id'] . ']';
 				$this->fields[] = $field;
 			}
 			unset( $section['fields'] );
@@ -108,7 +118,7 @@ class SettingsPage{
 		register_setting(
 			$this->option_group, // $option_group - A settings group name. Must exist prior to the register_setting call. This must match the group name in settings_fields()
 			$this->option_name, // $option_name - The name of an option to sanitize and save.
-			[ $this,'sanitize_settings' ] // $sanitize_callback - A callback function that sanitizes the option's value. (see also: built-in php callbacks)
+			$this->sanitize_callback ?? [ $this,'sanitize_settings' ] // callback ?? fallback // $sanitize_callback - A callback function that sanitizes the option's value. (see also: built-in php callbacks)
 		);
 
 		foreach ( $this->sections as $section ){
@@ -125,7 +135,7 @@ class SettingsPage{
 			add_settings_field(
 				$field['id'],
 				$field['title'],
-				[ $this, "print_{$field['type']}" ],
+				$field['render'] ?? [ $this, "print_{$field['type']}" ],
 				$this->page, // can built-in pages: (general, reading, writing, ...)
 				$field['section_id'],
 				$field //send setting array as $args for print function
@@ -135,8 +145,8 @@ class SettingsPage{
 	}
 
 	/**
-	 * Print text input field
-	 * Support field type 'text'
+	 * Print checkbox input field
+	 * Support field type 'checkbox'
 	 * 
 	 * @since 0.11
 	 */
@@ -147,10 +157,11 @@ class SettingsPage{
 
 		$input_tag = sprintf(
 			'<label for="%1$s">
-				<input name="%2$s[%1$s]" type="checkbox" id="%1$s" value="1"  %4$s />
-			%3$s</label>',
+				<input name="%2$s" type="checkbox" id="%1$s" aria-describedby="%1$s-description" value="1"  %4$s />
+				%3$s
+			</label>',
 			$id,
-			$this->option_name,
+			$name,
 			$description,
 			checked( ( $options[$id] ?? false ), '1', false)
 		);
@@ -176,10 +187,11 @@ class SettingsPage{
 		$options = get_option( $this->option_name );
 
 		$input_tag = sprintf(
-			'<input name="%2$s[%1$s]" type="text" id="%1$s" value="%3$s" class="regular-text">',
+			'<input name="%2$s" type="text" id="%1$s" aria-describedby="%1$s-description" value="%3$s" placeholder="%4$s" class="regular-text">',
 			$id,
-			$this->option_name,
-			$default
+			$name,
+			$options[$id] ?: $default ?? '',
+			$placeholder ?? ''
 		);
 
 		if ( ! empty( $description ) ) {
@@ -211,10 +223,11 @@ class SettingsPage{
 		$options = get_option( $this->option_name );
 
 		$input_tag = sprintf(
-			'<input name="%2$s[%1$s]" type="url" id="%1$s" value="%3$s" class="regular-text code ">',
+			'<input name="%2$s" type="url" id="%1$s" aria-describedby="%1$s-description" placeholder="%4$s" value="%3$s" class="regular-text code ">',
 			$id,
-			$this->option_name,
-			$default
+			$name,
+			$options[$id] ?: $default ?? '',
+			$placeholder ?? ''
 		);
 
 		if ( ! empty( $description ) ) {
@@ -246,10 +259,11 @@ class SettingsPage{
 		$options = get_option( $this->option_name );
 
 		$input_tag = sprintf(
-			'<input name="%2$s[%1$s]" type="email" id="%1$s" aria-describedby="%1$s-description" value="%3$s" class="regular-text ltr">',
+			'<input name="%2$s" type="email" id="%1$s" aria-describedby="%1$s-description" placeholder="%4$s" value="%3$s" class="regular-text ltr">',
 			$id,
-			$this->option_name,
-			$default
+			$name,
+			$options[$id] ?: $default ?? '',
+			$placeholder ?? ''
 		);
 
 		if ( ! empty( $description ) ) {
@@ -270,23 +284,60 @@ class SettingsPage{
 	}
 
 	/**
+	 * Print email input field
+	 * Support field type 'email'
+	 * 
+	 * @since 0.23
+	 */
+	function print_textarea( $field ){
+		extract($field);
+
+		$options = get_option( $this->option_name );
+
+		$textarea = sprintf(
+			'<textarea class="regular-text" rows="5" id="%1$s-description" name="%2$s" placeholder="%4$s">%3$s</textarea>',
+			$id,
+			$name,
+			$options[$id] ?: $default ?? '',
+			$placeholder ?? ''
+		);
+
+		if ( ! empty( $description ) ) {
+			$textarea .= sprintf(
+				'<p class="description" id="%1$s-description">%2$s</p>',
+				$id,
+				$description
+			);
+		}
+
+		/**
+		 * Allow plugins to directly manipulate field HTML
+		 */
+		$textarea = apply_filters( 'wphelper/settings_page/textarea', $textarea, $field, $this->option_name, $options );
+
+		echo $textarea;
+
+	}
+
+	/**
 	 * Sanitizes entire $options array.
 	 */
 	function sanitize_settings( $options ) {
 		$new_options = [];
 
 		foreach( $options as $id => $option ) {
-			$field = reset(
+			$field = current(
 				array_filter(
 					$this->fields,
 					fn($item) => $item['id'] == $id
 				)
 			);
-			switch ( $field['type'] ){
+			switch ( $field['type'] ) {
 				case 'checkbox':			
 					$new_options[$id] = $option == 1 ? 1 : 0;
 					break;
 				case 'text':			
+				case 'textarea':			
 					$new_options[$id] = sanitize_text_field( $option );
 					break;
 				case 'email':			

@@ -27,9 +27,19 @@ class CMB2_OptionsPage{
 	public $admin_page;
 
 	/**
+	 * @var array $fields
+	 */
+	protected $fields;
+
+	/**
 	 * @var CMB2 $cmb
 	 */
 	private $cmb;
+
+	/**
+	 * @var array $cmb2_options
+	 */
+	protected $cmb2_options;
 
 	/**
 	 * @param AdminPage $admin_page
@@ -63,7 +73,7 @@ class CMB2_OptionsPage{
 		/**
 		 * CMB2 only accepts url slug
 		 * 
-		 * @todo export parent_slug convertion to dedicated method
+		 * @todo export parent_slug conversion to dedicated method
 		 */
 		switch ( $settings['parent_slug'] ) {
 			case 'dashboard':

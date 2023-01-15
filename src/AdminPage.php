@@ -121,6 +121,13 @@ class AdminPage
 	protected $scripts;
 
 	/**
+	 * Settings
+	 *
+	 * @var array[] arrays of settings sections and fields
+	 */
+	protected $settings;
+
+	/**
 	 * Styles
 	 *
 	 * @var array[] arrays of script arguments passed to wp_enqueue_style()
@@ -154,6 +161,20 @@ class AdminPage
 	 * @var SettingsPage
 	 */
 	protected $settings_page;
+
+	/**
+	 * CMB2 custom settings page
+	 *
+	 * @var CMB2_OptionsPage|CMB2_OptionsPage_Multi
+	 */
+	protected $cmb2_page;
+
+	/**
+	 * Plugin Info Meta Box render object
+	 *
+	 * @var PluginInfoMetaBox
+	 */
+	protected $plugin_info_meta_box;
 
 	/**
 	 * Delegate admin_menu hookup to CMB2 implementation
@@ -204,14 +225,16 @@ class AdminPage
 			$this->wrap( $options->wrap );
 		}
 
-		if ( isset( $options->render ) ) // dev
-			$this->render( $options->render );
-
-		if ( isset( $options->render_cb ) ) // dev - deprecate?
+		if ( isset( $options->render_cb ) )
 			$this->render_cb( $options->render_cb );
 
-		if ( isset( $options->render_tpl ) ) // dev - deprecate?
+		if ( isset( $options->render_tpl ) ) // before render()
 			$this->render_tpl( $options->render_tpl );
+
+		// This runs last so we can have 'settings-page' with custom render_tpl
+		if ( isset( $options->render ) )
+			$this->render( $options->render );
+
 
 		if (true)
 			$this->render(); // render anyway - will use default tpl if render is empty
@@ -340,21 +363,21 @@ class AdminPage
 	 */
 	private function render( $render=null ) {
 		if ( 'settings-page' == $render ) {
-			$this->render_tpl( __DIR__ . '/tpl/settings-form.php' );
+			$this->render_tpl( __DIR__ . '/tpl/form-basic.php' );
 			$this->render = $this->render ?? $render; // 'settings-page'
 		} else if ( 'cmb2' == $render || 'cmb2-tabs' == $render ) {
 
 			// validate
 			if ( ! defined( 'CMB2_LOADED' ) ){
-				$this->render_tpl( __DIR__ . '/tpl/cmb2-unavailable.php' );
+				$this->render_tpl( __DIR__ . '/tpl/wrap-cmb2-unavailable.php' );
 				$this->render = $this->render ?? 'render_tpl';
 			} else {
 				$this->delegate_hookup = true;
 
 				if ( ! empty( $this->plugin_core ) || ! empty( $this->plugin_info ) ){
-					$this->render_tpl( __DIR__ . '/tpl/cmb2_options_page-plugin_info.php' );
+					$this->render_tpl( __DIR__ . '/tpl/wrap-cmb2-sidebar.php' );
 				} else {
-					$this->render_tpl( __DIR__ . '/tpl/cmb2_options_page.php' );
+					$this->render_tpl( __DIR__ . '/tpl/wrap-cmb2-simple.php' );
 				}
 
 				$this->render = $this->render ?? $render; // 'cmb2' || 'cmb2-tabs'
@@ -367,7 +390,7 @@ class AdminPage
 			$this->render_tpl( $render );
 			$this->render = $this->render ?? 'render_tpl';
 		} else {
-			$this->render_tpl( __DIR__ . '/tpl/default.php' );
+			$this->render_tpl( __DIR__ . '/tpl/wrap-default.php' );
 			$this->render = $this->render ?? 'render_tpl';
 		}
 	}
@@ -501,7 +524,7 @@ class AdminPage
 	}
 
 	function plugin_core($plugin_core){
-		if ( is_a( $plugin_core, 'WPHelper\PluginCore') ){
+		if ( $plugin_core instanceof PluginCore ){
 			$this->plugin_core = $plugin_core;
 		}
 	}
@@ -579,14 +602,11 @@ class AdminPage
 
 		add_action( "wphelper/adminpage/plugin_info_box/{$this->slug}" , [ $this , 'render_plugin_info_box' ] );
 
-		// if ( $this->delegate_hookup ){
-		if ( 'cmb2' == $this->render || 'cmb2-tabs' == $this->render ){
+		if ( in_array( $this->render, [ 'cmb2', 'cmb2-tabs' ] ) ){
 
-			if ( isset( $this->settings['options_type'] ) && $this->settings['options_type'] == 'multi' ) {
-				$this->cmb2_page = new CMB2_OptionsPage_Multi( $this );
-			} else {
-				$this->cmb2_page = new CMB2_OptionsPage( $this );
-			}
+			$this->cmb2_page = $this->settings['options_type'] ?? '' == 'multi'
+				? new CMB2_OptionsPage_Multi( $this )
+				: new CMB2_OptionsPage( $this );
 			
 			/**
 			 * @todo Perhaps this can hook on admin_init - right after admin_menu has finished
@@ -854,19 +874,21 @@ class AdminPage
 	 */
 	public function render_admin_page()
 	{
-		// @todo if render callback supplied - add shortcircuit hook here
-		// execute render callback and return early
 
+		// if wrap - 1. We collect output buffer
 		if ( 'none' != $this->wrap ){
 			ob_start();
 		}
 
+		//---------------------------[The McGuffin]---------------------------------//
 		if ( isset( $this->render_cb ) && is_callable( $this->render_cb ) ) {
 			call_user_func( $this->render_cb );
 		} else if ( isset( $this->render_tpl ) && is_readable( $this->render_tpl ) ) {
 			include $this->render_tpl;
 		}
+		//---------------------------[The McGuffin]---------------------------------//
 
+		// if wrap - 2. inlcude chosen wrap template
 		if ( 'none' != $this->wrap ){
 			$ob_content = ob_get_clean();
 
@@ -903,7 +925,7 @@ class AdminPage
 			if ( ! empty( $this->plugin_core ) && empty( $this->plugin_info_meta_box ) ){
 				$this->plugin_info_meta_box = new PluginInfoMetaBox( $this->plugin_core );
 			}
-			$this->plugin_info_meta_box->plugin_info_box();
+			do_action( "wphelper/plugin_info_meta_box/{$this->plugin_core->slug()}" );
 		}
 
 	}
