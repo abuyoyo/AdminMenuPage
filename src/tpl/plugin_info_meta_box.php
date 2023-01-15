@@ -20,8 +20,13 @@
 		<?php if ( ! empty( $plugin_data['Version'] ) ): ?>
 			Version: <?php echo $plugin_data['Version']; ?><br/>
 		<?php endif; ?>
-		<?php if ( ! empty( $plugin_data['AuthorURI'] ) ): ?>
-			Author: <a href="<?php echo $plugin_data['AuthorURI'] ?>"><?php echo $plugin_data['Author']; ?></a><br/>
+		<?php if ( ! empty( $plugin_data['Author'] ) ): ?>
+			Author: 
+			<?php if ( ! empty( $plugin_data['AuthorURI'] ) ): ?>
+				<a href="<?php echo $plugin_data['AuthorURI'] ?>"><?php echo $plugin_data['Author']; ?></a><br/>
+			<?php else: ?>
+				<?php echo $plugin_data['Author']; ?><br/>
+			<?php endif; ?>
 		<?php endif; ?>
 		<?php if ( ! empty( $plugin_data['UpdateURI'] ) || ! empty( $plugin_data['PluginURI'] ) ): ?>
 			Repo: <a href="<?php echo $plugin_data['UpdateURI'] ?? $plugin_data['PluginURI']; ?>">
