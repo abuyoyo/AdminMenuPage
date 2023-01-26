@@ -888,7 +888,7 @@ class AdminPage
 		}
 		//---------------------------[The McGuffin]---------------------------------//
 
-		// if wrap - 2. inlcude chosen wrap template
+		// if wrap - 2. include chosen wrap template
 		if ( 'none' != $this->wrap ){
 			$ob_content = ob_get_clean();
 
