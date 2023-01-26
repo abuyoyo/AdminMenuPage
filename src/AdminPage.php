@@ -386,7 +386,7 @@ class AdminPage
 		} else if( is_callable( $render ) ) {
 			$this->render_cb( $render );
 			$this->render = $this->render ?? 'render_cb';
-		} else if ( is_readable( $render ) ) {
+		} else if ( is_readable( $render ?? '' ) ) {
 			$this->render_tpl( $render );
 			$this->render = $this->render ?? 'render_tpl';
 		} else {
