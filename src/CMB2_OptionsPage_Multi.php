@@ -3,7 +3,7 @@ namespace WPHelper;
 
 defined( 'ABSPATH' ) || die( 'No soup for you!' );
 
-if ( ! class_exists( 'WPHelper\CMB2_OptionsPage_Multi' ) ):
+if ( ! class_exists( CMB2_OptionsPage_Multi::class ) ):
 
 // Require dependency CMB2_Override_Meta
 if ( ! trait_exists( CMB2_Override_Meta::class ) ) {

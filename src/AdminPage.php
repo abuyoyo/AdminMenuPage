@@ -7,7 +7,7 @@ use function add_menu_page;
 use function add_options_page;
 use function add_submenu_page;
 
-if ( ! class_exists( 'WPHelper\AdminPage' ) ):
+if ( ! class_exists( AdminPage::class ) ):
 /**
  * AdminPage
  * 
