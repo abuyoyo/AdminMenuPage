@@ -922,9 +922,21 @@ class AdminPage
 		if ( isset( $this->plugin_info ) && is_callable( $this->plugin_info ) ) {
 			call_user_func( $this->plugin_info );
 		} else {
-			if ( ! empty( $this->plugin_core ) && empty( $this->plugin_info_meta_box ) ){
+
+			if ( empty( $this->plugin_info_meta_box ) && ! empty( $this->plugin_core ) ){
 				$this->plugin_info_meta_box = new PluginInfoMetaBox( $this->plugin_core );
 			}
+
+			// If no plugin_info_meta_box - do nothing
+			if ( empty( $this->plugin_info_meta_box ) ) {
+				return;
+			}
+
+			/**
+			 * Allow plugins to modify plugin info meta box
+			 * 
+			 * @since 0.23
+			 */
 			do_action( "wphelper/plugin_info_meta_box/{$this->plugin_core->slug()}" );
 		}
 
