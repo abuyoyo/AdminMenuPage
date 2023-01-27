@@ -3,7 +3,7 @@ namespace WPHelper;
 
 use DateTime;
 
-if ( ! class_exists( 'WPHelper\PluginInfoMetaBox' ) ):
+if ( ! class_exists( PluginInfoMetaBox::class ) ):
 /**
  * Plugin Info Metabox
  * 

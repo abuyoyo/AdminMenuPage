@@ -6,7 +6,7 @@ defined( 'ABSPATH' ) || die( 'No soup for you!' );
 use CMB2;
 use CMB2_Options_Hook;
 
-if ( ! class_exists( 'WPHelper\CMB2_OptionsPage' ) ):
+if ( ! class_exists( CMB2_OptionsPage::class ) ):
 /**
  * CMB2_OptionsPage
  * 

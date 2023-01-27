@@ -9,7 +9,7 @@ use function add_settings_field;
 use function checked;
 use function get_option;
 
-if ( ! class_exists( 'WPHelper\SettingsPage' ) ):
+if ( ! class_exists( SettingsPage::class ) ):
 /**
  * SettingsPage
  * 
