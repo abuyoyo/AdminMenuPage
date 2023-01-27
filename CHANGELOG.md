@@ -1,6 +1,13 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.24
+Release date: Jan 28 2023
+
+### Fixed
+- Fix plugin info meta box when no PluginCore is available.
+- Fix PHP deprecated notice.
+
 ## 0.23
 Release date: Jan 15 2023
 

@@ -3,7 +3,7 @@ namespace WPHelper;
 
 defined( 'ABSPATH' ) || die( 'No soup for you!' );
 
-if ( ! class_exists( 'WPHelper\AdminMenuPage' ) ):
+if ( ! class_exists( AdminMenuPage::class ) ):
 /**
  * AdminMenuPage
  * 

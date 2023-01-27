@@ -7,7 +7,7 @@ use function add_menu_page;
 use function add_options_page;
 use function add_submenu_page;
 
-if ( ! class_exists( 'WPHelper\AdminPage' ) ):
+if ( ! class_exists( AdminPage::class ) ):
 /**
  * AdminPage
  * 
@@ -386,7 +386,7 @@ class AdminPage
 		} else if( is_callable( $render ) ) {
 			$this->render_cb( $render );
 			$this->render = $this->render ?? 'render_cb';
-		} else if ( is_readable( $render ) ) {
+		} else if ( is_readable( $render ?? '' ) ) {
 			$this->render_tpl( $render );
 			$this->render = $this->render ?? 'render_tpl';
 		} else {
@@ -888,7 +888,7 @@ class AdminPage
 		}
 		//---------------------------[The McGuffin]---------------------------------//
 
-		// if wrap - 2. inlcude chosen wrap template
+		// if wrap - 2. include chosen wrap template
 		if ( 'none' != $this->wrap ){
 			$ob_content = ob_get_clean();
 
@@ -922,9 +922,21 @@ class AdminPage
 		if ( isset( $this->plugin_info ) && is_callable( $this->plugin_info ) ) {
 			call_user_func( $this->plugin_info );
 		} else {
-			if ( ! empty( $this->plugin_core ) && empty( $this->plugin_info_meta_box ) ){
+
+			if ( empty( $this->plugin_info_meta_box ) && ! empty( $this->plugin_core ) ){
 				$this->plugin_info_meta_box = new PluginInfoMetaBox( $this->plugin_core );
 			}
+
+			// If no plugin_info_meta_box - do nothing
+			if ( empty( $this->plugin_info_meta_box ) ) {
+				return;
+			}
+
+			/**
+			 * Allow plugins to modify plugin info meta box
+			 * 
+			 * @since 0.23
+			 */
 			do_action( "wphelper/plugin_info_meta_box/{$this->plugin_core->slug()}" );
 		}
 
