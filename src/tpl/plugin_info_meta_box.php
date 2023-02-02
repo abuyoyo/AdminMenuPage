@@ -29,7 +29,7 @@
 			<?php endif; ?>
 		<?php endif; ?>
 		<?php if ( ! empty( $plugin_data['UpdateURI'] ) || ! empty( $plugin_data['PluginURI'] ) ): ?>
-			Repo: <a href="<?php echo $plugin_data['UpdateURI'] ?? $plugin_data['PluginURI']; ?>">
+			Repo: <a href="<?php echo $plugin_data['UpdateURI'] ?: $plugin_data['PluginURI']; ?>">
 				<?php echo $plugin_data['TextDomain'] ?? $this->$plugin_core->slug(); ?>
 			</a><br/>
 		<?php endif; ?>
