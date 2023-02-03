@@ -920,12 +920,7 @@ class AdminPage
 			call_user_func( $this->plugin_info );
 		} else {
 
-			if ( empty( $this->plugin_info_meta_box ) && ! empty( $this->plugin_core ) ){
-				$this->plugin_info_meta_box = new PluginInfoMetaBox( $this->plugin_core );
-			}
-
-			// If no plugin_info_meta_box - do nothing
-			if ( empty( $this->plugin_info_meta_box ) ) {
+			if (!$this->bootstrap_plugin_info_meta_box()){
 				return;
 			}
 
@@ -937,6 +932,20 @@ class AdminPage
 			do_action( "wphelper/plugin_info_meta_box/{$this->plugin_core->slug()}" );
 		}
 
+	/**
+	 * Bootstrap PluginInfoMetaBox
+	 */
+	private function bootstrap_plugin_info_meta_box() {
+		if ( empty( $this->plugin_info_meta_box ) && ! empty( $this->plugin_core ) ){
+			$this->plugin_info_meta_box = new PluginInfoMetaBox( $this->plugin_core );
+		}
+
+		// If no plugin_info_meta_box - return false
+		if ( empty( $this->plugin_info_meta_box ) ) {
+			return false;
+		}
+
+		return true;
 	}
 }
 endif;
