@@ -206,8 +206,7 @@ class AdminPage
 		if ( isset( $options->capability ) )
 			$this->capability( $options->capability );
 
-		if ( isset( $options->slug ) )
-			$this->slug( $options->slug );
+		$this->slug( $options->slug ?? null );
 
 		if ( isset( $options->plugin_info ) ){ // before render()
 			$this->plugin_info( $options->plugin_info );
@@ -299,7 +298,19 @@ class AdminPage
 	 * @access private
 	 */
 	private function slug( $slug ) {
-		$this->slug = $slug;
+
+		$this->slug = $slug // if not empty
+			?: $this->settings['option_key'] // if isset option_key
+			?? (
+				isset( $this->plugin_core )
+					? (
+						method_exists( PluginCore::class, 'token' )
+							? $this->plugin_core->token() // PluginCore ~0.25
+							: str_replace('-','_', strtolower( $this->plugin_core->slug() ) ) // PluginCore <= 0.24
+					)
+					: 'slug' . time() // unique slug
+				);
+
 	}
 
 	/**
@@ -659,14 +670,6 @@ class AdminPage
 	 * 
 	 */
 	public function validate_page_hook(){
-
-		/**
-		 * hack!
-		 * This is ad hoc validation - should do this earlier
-		 */
-		if ( empty( $this->slug ) ){
-			$this->slug = $this->settings['option_key'];
-		}
 
 		if ( empty( $this->hook_suffix ) ){
 			$this->hook_suffix = get_plugin_page_hookname( $this->slug, $this->parent );
