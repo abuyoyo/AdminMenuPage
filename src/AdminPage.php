@@ -192,14 +192,13 @@ class AdminPage
 		if ( isset( $options->plugin_core ) )
 			$this->plugin_core( $options->plugin_core );
 
-		if ( isset( $options->title ) )
-			$this->title( $options->title );
+		$this->title( $options->title ?? null );
 
 		/**
 		 * @todo move this to bootstrap()
 		 */
 		if ( ! isset( $options->menu_title ) )
-			$options->menu_title = $options->title;
+			$options->menu_title = $this->title;
 
 		if ( isset( $options->menu_title ) )
 			$this->menu_title( $options->menu_title );
@@ -269,8 +268,8 @@ class AdminPage
 	 * 
 	 * @access private
 	 */
-	private function title( $title ) {
-		$this->title = $title;
+	private function title( $title=null ) {
+		$this->title = $title ?? ( isset( $this->plugin_core ) ? $this->plugin_core->title() : __METHOD__ );
 	}
 
 	/**
