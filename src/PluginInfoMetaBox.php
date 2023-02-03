@@ -16,6 +16,8 @@ class PluginInfoMetaBox{
 
 	private $tpl = '/tpl/plugin_info_meta_box.php';
 
+	private $tpl_inside = '/tpl/plugin_info_meta_box-inside.php';
+
 	/**
 	 * @var PluginCore
 	 */
@@ -34,6 +36,8 @@ class PluginInfoMetaBox{
 		 * @since 0.23
 		 */
 		add_action( "wphelper/plugin_info_meta_box/{$this->plugin_core->slug()}", [ $this, 'plugin_info_box' ] );
+		
+		add_action( "wphelper/plugin_info_meta_box/inside/{$this->plugin_core->slug()}", [ $this, 'inside' ] );
 	}
 
 	/**
@@ -82,6 +86,17 @@ class PluginInfoMetaBox{
 		$args = $this->setup_template_args();
 		extract($args);
 		include __DIR__ . $this->tpl;
+	}
+
+
+	/**
+	 * Only print meta-box .inside
+	 * No header.
+	 */
+	function inside(){
+		$args = $this->setup_template_args();
+		extract($args);
+		include __DIR__ . $this->tpl_inside;
 	}
 }
 endif;

@@ -673,7 +673,7 @@ class AdminPage
 			'context' => 'side',
 			'screens' => [ $this->get_hook_suffix() ],
 			// 'template',
-			'render' => [ $this , 'render_plugin_info_box' ],
+			'render' => [ $this , 'render_plugin_info_meta_box_inside' ],
 		];
 		( new MetaBox($metabox_args) )->add();
 
@@ -947,6 +947,23 @@ class AdminPage
 			 */
 			do_action( "wphelper/plugin_info_meta_box/{$this->plugin_core->slug()}" );
 		}
+	}
+
+	/**
+	 * 
+	 */
+	public function render_plugin_info_meta_box_inside(){
+		if ( isset( $this->plugin_info ) && is_callable( $this->plugin_info ) ) {
+			call_user_func( $this->plugin_info );
+		} else {
+
+			if (!$this->bootstrap_plugin_info_meta_box()){
+				return;
+			}
+
+			do_action( "wphelper/plugin_info_meta_box/inside/{$this->plugin_core->slug()}" );
+		}
+	}
 
 	/**
 	 * Bootstrap PluginInfoMetaBox
