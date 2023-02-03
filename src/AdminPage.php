@@ -617,6 +617,7 @@ class AdminPage
 		}
 
 		add_action ( 'admin_menu' , [ $this , 'add_menu_page' ], 11 );
+		add_action ( 'admin_menu' , [ $this , 'add_plugin_info_meta_box' ], 11 );
 
 	}
 
@@ -660,6 +661,21 @@ class AdminPage
 				);
 				break;
 		}
+	}
+
+	/**
+	 * 
+	 */
+	public function add_plugin_info_meta_box() {
+		$metabox_args = [
+			'id' => $this->slug . '_plugin_info_meta_box', // id is unique (in case a plugin uses $this->slug)
+			'title' => 'Plugin Info',
+			'context' => 'side',
+			'screens' => [ $this->get_hook_suffix() ],
+			// 'template',
+			'render' => [ $this , 'render_plugin_info_box' ],
+		];
+		( new MetaBox($metabox_args) )->add();
 
 	}
 
