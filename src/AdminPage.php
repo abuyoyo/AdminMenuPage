@@ -593,10 +593,7 @@ class AdminPage
 			$this->capability = 'manage_options';
 
 		if ( $this->render == 'settings-page' ){
-
 			$this->settings_page = new SettingsPage($this);
-			$this->settings_page->setup();
-
 		}
 
 		add_action( "wphelper/adminpage/plugin_info_box/{$this->slug}" , [ $this , 'render_plugin_info_box' ] );

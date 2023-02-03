@@ -108,9 +108,7 @@ class SettingsPage{
 			unset( $section['fields'] );
 			$this->sections[] = $section; // save without fields
 		}
-	}
 
-	function setup() {
 		add_action( 'admin_init', [ $this, 'register_settings' ] );
 	}
 
