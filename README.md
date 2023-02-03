@@ -47,7 +47,6 @@ $args = [
 
 // Register the admin menu page.
 $admin_menu_page = new AdminPage( $args );
-$admin_menu_page->setup();
 
 // That's it. We're done.
 // This function can be called from anywhere. No need to wrap in any hook.
