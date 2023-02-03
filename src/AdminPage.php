@@ -594,7 +594,7 @@ class AdminPage
 		if ( ! $this->capability )
 			$this->capability = 'manage_options';
 
-		add_action( "wphelper/adminpage/plugin_info_box/{$this->slug}" , [ $this , 'render_plugin_info_box' ] );
+		add_action( "wphelper/adminpage/plugin_info_box/{$this->slug}" , [ $this , 'render_plugin_info_meta_box' ] );
 
 		/**
 		 * @todo Perhaps this can hook on admin_init - right after admin_menu has finished
@@ -890,7 +890,21 @@ class AdminPage
 	}
 
 	/**
-	 * Render plugin info metabox
+	 * 
+	 * @see render_plugin_info_meta_box()
+	 * @deprecated
+	 */
+	public function render_plugin_info_box(){
+
+		_doing_it_wrong( __METHOD__, 'Deprecated. Use render_plugin_info_meta_box() instead.', '0.26' );
+
+		$this->render_plugin_info_meta_box();
+	}
+
+
+
+	/**
+	 * Render plugin info meta-box
 	 * 
 	 * Call user-provided callable.
 	 * Or else attempt to create PluginInfoMetaBox class from $this->plugin_core and call its render function.
@@ -900,7 +914,7 @@ class AdminPage
 	 * @todo See if this function should be public API or only run on action hook
 	 * @todo deprecate public use - use wphelper/adminpage/plugin_info_box/{$this->slug} instead
 	 */
-	public function render_plugin_info_box(){
+	public function render_plugin_info_meta_box(){
 
 		if ( isset( $this->plugin_info ) && is_callable( $this->plugin_info ) ) {
 			call_user_func( $this->plugin_info );
