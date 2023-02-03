@@ -610,7 +610,7 @@ class AdminPage
 			 * @todo Perhaps this can hook on admin_init - right after admin_menu has finished
 			 * @todo CMB2 options-page does not return page_hook/hook_suffix - MUST validate
 			 */
-			add_action ( 'admin_menu' , [ $this , '_bootstrap_admin_page' ], 12 );
+			add_action ( 'admin_init' , [ $this , '_bootstrap_admin_page' ] );
 
 			// skip add_menu_page
 			return;
@@ -618,7 +618,7 @@ class AdminPage
 
 		// if ( ! $this->delegate_hookup ){
 		add_action ( 'admin_menu' , [ $this , 'add_menu_page' ], 11 );
-		add_action ( 'admin_menu' , [ $this , '_bootstrap_admin_page' ], 12 );
+		add_action ( 'admin_init' , [ $this , '_bootstrap_admin_page' ] );
 
 	}
 
@@ -688,14 +688,9 @@ class AdminPage
 	 * 
 	 * @hook admin_menu priority 12
 	 * @access private
-	 * 
-	 * @todo move this function to admin_init - after admin_menu has finished
 	 */
 	public function _bootstrap_admin_page(){
 
-		/**
-		 * @todo perhaps run this on 'admin_init'
-		 */
 		$this->validate_page_hook();
 
 		add_action ( 'load-' . $this->hook_suffix , [ $this , '_admin_page_setup' ] );
