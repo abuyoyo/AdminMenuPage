@@ -127,11 +127,11 @@ class CMB2_OptionsPage{
 			$settings['tab_title'] ??= $settings['menu_title'];
 		}
 
+		$this->fields = $settings['fields'] ?? [];
+		/**
+		 * @todo revisit this - might not need to unset fields
+		 */
 		if ( isset( $settings['fields'] ) ){
-			$this->fields = $settings['fields'];
-			/**
-			 * @todo revisit this - might not need to unset fields
-			 */
 			unset( $settings['fields'] );
 		}
 
