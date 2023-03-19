@@ -594,31 +594,29 @@ class AdminPage
 		if ( ! $this->capability )
 			$this->capability = 'manage_options';
 
-		if ( $this->render == 'settings-page' ){
-			$this->settings_page = new SettingsPage($this);
-		}
-
 		add_action( "wphelper/adminpage/plugin_info_box/{$this->slug}" , [ $this , 'render_plugin_info_box' ] );
+
+		/**
+		 * @todo Perhaps this can hook on admin_init - right after admin_menu has finished
+		 * @todo CMB2 options-page does not return page_hook/hook_suffix - MUST validate
+		 */
+		add_action ( 'admin_init' , [ $this , '_bootstrap_admin_page' ] );
 
 		if ( in_array( $this->render, [ 'cmb2', 'cmb2-tabs' ] ) ){
 
 			$this->cmb2_page = $this->settings['options_type'] ?? '' == 'multi'
 				? new CMB2_OptionsPage_Multi( $this )
 				: new CMB2_OptionsPage( $this );
-			
-			/**
-			 * @todo Perhaps this can hook on admin_init - right after admin_menu has finished
-			 * @todo CMB2 options-page does not return page_hook/hook_suffix - MUST validate
-			 */
-			add_action ( 'admin_init' , [ $this , '_bootstrap_admin_page' ] );
 
 			// skip add_menu_page
 			return;
 		}
 
-		// if ( ! $this->delegate_hookup ){
+		if ( $this->render == 'settings-page' ){
+			$this->settings_page = new SettingsPage($this);
+		}
+
 		add_action ( 'admin_menu' , [ $this , 'add_menu_page' ], 11 );
-		add_action ( 'admin_init' , [ $this , '_bootstrap_admin_page' ] );
 
 	}
 
