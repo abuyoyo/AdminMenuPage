@@ -177,13 +177,6 @@ class AdminPage
 	protected $plugin_info_meta_box;
 
 	/**
-	 * Delegate admin_menu hookup to CMB2 implementation
-	 *
-	 * @var boolean
-	 */
-	protected $delegate_hookup = false;
-
-	/**
 	 * Constructor.
 	 *
 	 * @param array $options
@@ -371,7 +364,6 @@ class AdminPage
 				$this->render_tpl( __DIR__ . '/tpl/wrap-cmb2-unavailable.php' );
 				$this->render = $this->render ?? 'render_tpl';
 			} else {
-				$this->delegate_hookup = true;
 
 				if ( ! empty( $this->plugin_core ) || ! empty( $this->plugin_info ) ){
 					$this->render_tpl( __DIR__ . '/tpl/wrap-cmb2-sidebar.php' );
