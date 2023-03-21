@@ -1,6 +1,24 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.25
+Release date: Jun 9 2023
+
+### Added
+- Non-CMB2 pages can be added to CMB2 tab groups. New options `tab_group` and `tab_title`
+
+### Changed
+- New method `render_plugin_info_meta_box`. Deprecate `render_plugin_info_box`.
+- Plugin info meta box rendered using `WPHelper\MetaBox`.
+
+### Fixed
+- Fix several PHP undefined variable warnings.
+
+### Internal
+- Setting pages/wrap temlate uses WordPress Core `do_meta_boxes` to render `side` meta boxes div.
+- Add variables to `AdminPage::options()` array.
+- Multiple code refactoring and template restructuring.
+
 ## 0.24
 Release date: Jan 28 2023
 
