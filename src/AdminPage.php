@@ -1,6 +1,8 @@
 <?php
 namespace WPHelper;
 
+use CMB2_Options_Hookup;
+
 defined( 'ABSPATH' ) || die( 'No soup for you!' );
 
 use function add_menu_page;
@@ -105,6 +107,20 @@ class AdminPage
 	 * @var string wrap type
 	 */
 	protected $wrap;
+
+	/**
+	 * Tab Group
+	 *
+	 * @var string CMB2 tab group
+	 */
+	protected $tab_group;
+
+	/**
+	 * Tab Title
+	 *
+	 * @var string CMB2 tab title
+	 */
+	protected $tab_title;
 
 	/**
 	 * Render callback function.
@@ -233,6 +249,7 @@ class AdminPage
 		if (true)
 			$this->wrap(); // set wrap anyway - will set to 'none' if empty
 
+
 		if ( isset( $options->parent ) )
 			$this->parent( $options->parent );
 
@@ -241,6 +258,11 @@ class AdminPage
 
 		if ( isset( $options->position ) )
 			$this->position( $options->position );
+
+		if ( isset( $options->tab_group ) ){
+			$this->tab_group( $options->tab_group );
+			$this->tab_title( $options->tab_title ?? $options->submenu_title ?? $options->menu_title );
+		}
 
 		if ( isset( $options->scripts ) )
 			$this->scripts( $options->scripts );
@@ -350,6 +372,44 @@ class AdminPage
 	 */
 	private function position( $position ) {
 		$this->position = $position;
+	}
+
+	/**
+	 * Setter - tab_group
+	 * CMB2 Tab Group - used by regular 'wrap' pages as well.
+	 * 
+	 * @access private
+	 */
+	private function tab_group( $tab_group ) {
+		$this->tab_group = $tab_group;
+
+		add_filter( 'cmb2_tab_group_tabs', [ $this, 'add_to_tab_group' ], 10, 2 );
+		add_action( 'cmb2_admin_init', function(){
+			/**
+			 * When deactivating CMB2 and reactivating - got this fatal error:
+			 * 
+			 * Fatal error: Uncaught Error: Argument 1 passed to CMB2_Options_Hookup::__construct()
+			 * must be an instance of CMB2, bool given,
+			 * called in \wp-content\plugins\cgv\inc\CGV.php on line 56
+			 * in \wp-content\plugins\cmb2\includes\CMB2_Options_Hookup.php on line 39
+			 * 
+			 * Validate cmb2_get_metabox did not return false.
+			 */
+			if ( $cmb = cmb2_get_metabox( $this->parent ) ){
+				$hookup = new CMB2_Options_Hookup( $cmb, $this->slug );
+				add_action ( 'wphelper/adminpage/tab_nav', [ $hookup, 'options_page_tab_nav_output' ] );
+			}
+		});
+	}
+
+	/**
+	 * Setter - tab_title
+	 * CMB2 Tab Title - only set if tab_group.
+	 * 
+	 * @access private
+	 */
+	private function tab_title( $tab_title ) {
+		$this->tab_title = $tab_title;
 	}
 
 	/**
@@ -492,6 +552,18 @@ class AdminPage
 		// if true-y value passed and plugin_core isset
 		else if ( ! empty( $plugin_info ) && ! empty( $this->plugin_core ) )
 			$this->plugin_info = true;
+	}
+
+	/**
+	 * Add to tab group
+	 * 
+	 * @hook cmb2_tab_group_tabs
+	 */
+	public function add_to_tab_group( $tabs, $tab_group ){
+		if ( $tab_group == $this->tab_group ){
+			$tabs[ $this->slug ] = $this->tab_title;
+		}
+		return $tabs;
 	}
 
 	/**
