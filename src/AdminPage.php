@@ -434,13 +434,10 @@ class AdminPage
 				$this->render_tpl( __DIR__ . '/tpl/wrap-cmb2-unavailable.php' );
 				$this->render = $this->render ?? 'render_tpl';
 			} else {
-
-				if ( ! empty( $this->plugin_core ) || ! empty( $this->plugin_info ) ){
-					$this->render_tpl( __DIR__ . '/tpl/wrap-cmb2-sidebar.php' );
-				} else {
-					$this->render_tpl( __DIR__ . '/tpl/wrap-cmb2-simple.php' );
-				}
-
+				/**
+				 * Render templates managed and included by CMB2_OptionsPage
+				 * @see CMB2_OptionsPage::options_page_output()
+				 */
 				$this->render = $this->render ?? $render; // 'cmb2' || 'cmb2-tabs'
 			}
 
