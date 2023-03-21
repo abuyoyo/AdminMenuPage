@@ -618,13 +618,18 @@ class AdminPage
 			'capability' => $this->capability,
 			'slug' => $this->slug,
 			'parent' => $this->parent,
+			'hook_suffix' => $this->hook_suffix,
 			'icon_url' => $this->icon_url,
 			'position' => $this->position,
 			'render' => $this->render, // render_cb | render_tpl | settings-page | cmb2 | cmb2-tabs
 			'render_cb' => $this->render_cb,
 			'render_tpl' => $this->render_tpl,
 			'settings' => $this->settings,
+			'wrap' => $this->wrap,
+			'tab_group' => $this->tab_group,
+			'tab_title' => $this->tab_title,
 			'plugin_core' => $this->plugin_core,
+			'plugin_info' => $this->plugin_info,
 		];
 
 		return $options;
