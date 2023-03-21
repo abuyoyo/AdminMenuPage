@@ -339,7 +339,6 @@ class AdminPage
 		$this->icon_url = $icon_url;
 	}
 
-	
 	/**
 	 * Setter - position
 	 * WordPress admin menu param
