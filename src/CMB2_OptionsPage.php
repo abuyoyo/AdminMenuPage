@@ -216,7 +216,15 @@ class CMB2_OptionsPage{
 	 * @see CMB2_Options_Hookup
 	 */
 	public function options_page_output( $hookup ) {
-		include $this->admin_page->get_render_tpl();
+		
+		$options = $this->admin_page->options();
+
+		if ( ! empty( $options['plugin_core'] ) || ! empty( $options['plugin_info'] ) ){
+			include  __DIR__ . '/tpl/wrap-cmb2-sidebar.php';
+		} else {
+			include __DIR__ . '/tpl/wrap-cmb2-simple.php';
+		}
+
 	}
 
 
