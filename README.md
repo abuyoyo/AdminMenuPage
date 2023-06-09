@@ -19,7 +19,7 @@ require __DIR__ . '/vendor/autoload.php';
 
 WPHelper\AdminMenuPage uses [PSR-4](https://www.php-fig.org/psr/psr-4/) to autoload.
 
-OR 
+OR
 
 Install as WordPress plugin and activate.
 
@@ -40,14 +40,13 @@ $args = [
     'icon_url' => $icon_url; // optional - icon url passed to add_menu_page/add_submenu_page
     'position' => 4; // optional - passed to add_menu_page
     'scripts' => [ // optional - script parameters passed to enqueue_scripts. Will only enqueue scripts on admin page
-        [ 'script_handle', 'js/myscript.js', ['jquery'], false, true ],
+        [ 'script_handle', 'js/my_script.js', ['jquery'], false, true ],
         [ 'another_script', 'js/my_other_script.js', ['jquery', 'script_handle'], false, true ]
     ];
 ];
 
 // Register the admin menu page.
 $admin_menu_page = new AdminPage( $args );
-$admin_menu_page->setup();
 
 // That's it. We're done.
 // This function can be called from anywhere. No need to wrap in any hook.

@@ -2,8 +2,8 @@
 /**
  * Template for CMB2 Options Page
  * 
- * @var WPHelper\CMB2_Options_Page $this
- * @var CMB2_Options_Hook $hookup
+ * @var WPHelper\CMB2_OptionsPage $this
+ * @var CMB2_Options_Hookup $hookup
  */
 ?>
 <style>

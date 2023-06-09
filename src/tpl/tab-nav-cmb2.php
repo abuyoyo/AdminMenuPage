@@ -4,7 +4,7 @@
  * 
  * Print tabs navigation row.
  * 
- * @var CMB2_Options_Hook $hookup
+ * @var CMB2_Options_Hookup $hookup
  */
 if ( ! isset( $hookup ) ){
 	return;

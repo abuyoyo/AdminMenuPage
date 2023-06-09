@@ -39,7 +39,7 @@ Release date: Jan 1 2023
 ## 0.20
 
 ### Added
-- Add SettingsPage section option `desciption-container`. Accepts `card` div, `notice`, `notice-info` and `none`.
+- Add SettingsPage section option `description-container`. Accepts `card` div, `notice`, `notice-info` and `none`.
 - Sanitize SettingsPage text, url and email fields.
 
 ## 0.19

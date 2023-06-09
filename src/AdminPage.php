@@ -177,13 +177,6 @@ class AdminPage
 	protected $plugin_info_meta_box;
 
 	/**
-	 * Delegate admin_menu hookup to CMB2 implementation
-	 *
-	 * @var boolean
-	 */
-	protected $delegate_hookup = false;
-
-	/**
 	 * Constructor.
 	 *
 	 * @param array $options
@@ -199,14 +192,13 @@ class AdminPage
 		if ( isset( $options->plugin_core ) )
 			$this->plugin_core( $options->plugin_core );
 
-		if ( isset( $options->title ) )
-			$this->title( $options->title );
+		$this->title( $options->title ?? null );
 
 		/**
 		 * @todo move this to bootstrap()
 		 */
 		if ( ! isset( $options->menu_title ) )
-			$options->menu_title = $options->title;
+			$options->menu_title = $this->title;
 
 		if ( isset( $options->menu_title ) )
 			$this->menu_title( $options->menu_title );
@@ -214,8 +206,7 @@ class AdminPage
 		if ( isset( $options->capability ) )
 			$this->capability( $options->capability );
 
-		if ( isset( $options->slug ) )
-			$this->slug( $options->slug );
+		$this->slug( $options->slug ?? null );
 
 		if ( isset( $options->plugin_info ) ){ // before render()
 			$this->plugin_info( $options->plugin_info );
@@ -276,8 +267,8 @@ class AdminPage
 	 * 
 	 * @access private
 	 */
-	private function title( $title ) {
-		$this->title = $title;
+	private function title( $title=null ) {
+		$this->title = $title ?? ( isset( $this->plugin_core ) ? $this->plugin_core->title() : __METHOD__ );
 	}
 
 	/**
@@ -307,7 +298,19 @@ class AdminPage
 	 * @access private
 	 */
 	private function slug( $slug ) {
-		$this->slug = $slug;
+
+		$this->slug = $slug // if not empty
+			?: $this->settings['option_key'] // if isset option_key
+			?? (
+				isset( $this->plugin_core )
+					? (
+						method_exists( PluginCore::class, 'token' )
+							? $this->plugin_core->token() // PluginCore ~0.25
+							: str_replace('-','_', strtolower( $this->plugin_core->slug() ) ) // PluginCore <= 0.24
+					)
+					: 'slug' . time() // unique slug
+				);
+
 	}
 
 	/**
@@ -339,7 +342,6 @@ class AdminPage
 		$this->icon_url = $icon_url;
 	}
 
-	
 	/**
 	 * Setter - position
 	 * WordPress admin menu param
@@ -372,7 +374,6 @@ class AdminPage
 				$this->render_tpl( __DIR__ . '/tpl/wrap-cmb2-unavailable.php' );
 				$this->render = $this->render ?? 'render_tpl';
 			} else {
-				$this->delegate_hookup = true;
 
 				if ( ! empty( $this->plugin_core ) || ! empty( $this->plugin_info ) ){
 					$this->render_tpl( __DIR__ . '/tpl/wrap-cmb2-sidebar.php' );
@@ -593,34 +594,29 @@ class AdminPage
 		if ( ! $this->capability )
 			$this->capability = 'manage_options';
 
-		if ( $this->render == 'settings-page' ){
-
-			$this->settings_page = new SettingsPage($this);
-			$this->settings_page->setup();
-
-		}
-
 		add_action( "wphelper/adminpage/plugin_info_box/{$this->slug}" , [ $this , 'render_plugin_info_box' ] );
+
+		/**
+		 * @todo Perhaps this can hook on admin_init - right after admin_menu has finished
+		 * @todo CMB2 options-page does not return page_hook/hook_suffix - MUST validate
+		 */
+		add_action ( 'admin_init' , [ $this , '_bootstrap_admin_page' ] );
 
 		if ( in_array( $this->render, [ 'cmb2', 'cmb2-tabs' ] ) ){
 
 			$this->cmb2_page = $this->settings['options_type'] ?? '' == 'multi'
 				? new CMB2_OptionsPage_Multi( $this )
 				: new CMB2_OptionsPage( $this );
-			
-			/**
-			 * @todo Perhaps this can hook on admin_init - right after admin_menu has finished
-			 * @todo CMB2 options-page does not return page_hook/hook_suffix - MUST validate
-			 */
-			add_action ( 'admin_menu' , [ $this , '_bootstrap_admin_page' ], 12 );
 
 			// skip add_menu_page
 			return;
 		}
 
-		// if ( ! $this->delegate_hookup ){
+		if ( $this->render == 'settings-page' ){
+			$this->settings_page = new SettingsPage($this);
+		}
+
 		add_action ( 'admin_menu' , [ $this , 'add_menu_page' ], 11 );
-		add_action ( 'admin_menu' , [ $this , '_bootstrap_admin_page' ], 12 );
 
 	}
 
@@ -673,14 +669,6 @@ class AdminPage
 	 */
 	public function validate_page_hook(){
 
-		/**
-		 * hack!
-		 * This is ad hoc validation - should do this earlier
-		 */
-		if ( empty( $this->slug ) ){
-			$this->slug = $this->settings['option_key'];
-		}
-
 		if ( empty( $this->hook_suffix ) ){
 			$this->hook_suffix = get_plugin_page_hookname( $this->slug, $this->parent );
 		}
@@ -698,14 +686,9 @@ class AdminPage
 	 * 
 	 * @hook admin_menu priority 12
 	 * @access private
-	 * 
-	 * @todo move this function to admin_init - after admin_menu has finished
 	 */
 	public function _bootstrap_admin_page(){
 
-		/**
-		 * @todo perhaps run this on 'admin_init'
-		 */
 		$this->validate_page_hook();
 
 		add_action ( 'load-' . $this->hook_suffix , [ $this , '_admin_page_setup' ] );

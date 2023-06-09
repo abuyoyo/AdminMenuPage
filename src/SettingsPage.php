@@ -98,7 +98,8 @@ class SettingsPage{
 
 		$this->sanitize_callback = $settings['sanitize_callback'] ?? null;
 
-		foreach ( $settings['sections'] as $section ) {
+		// PHP Warning: foreach() argument must be of type array|object
+		foreach ( $settings['sections'] ?? [] as $section ) {
 			// extract fields
 			foreach ( $section['fields'] as $field ){
 				$field['section_id'] = $section['id']; // create back-reference in field to section. ( @see add_settings_field() )
@@ -108,9 +109,7 @@ class SettingsPage{
 			unset( $section['fields'] );
 			$this->sections[] = $section; // save without fields
 		}
-	}
 
-	function setup() {
 		add_action( 'admin_init', [ $this, 'register_settings' ] );
 	}
 

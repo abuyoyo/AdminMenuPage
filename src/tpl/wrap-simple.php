@@ -1,6 +1,8 @@
 <?php
 /**
  * Simple wrap
+ * 
+ * @var string $ob_content - Render template or callback
  */
 ?>
 <div class="wrap">
