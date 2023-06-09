@@ -594,7 +594,7 @@ class AdminPage
 		if ( ! $this->capability )
 			$this->capability = 'manage_options';
 
-		add_action( "wphelper/adminpage/plugin_info_box/{$this->slug}" , [ $this , 'render_plugin_info_box' ] );
+		add_action( "wphelper/adminpage/plugin_info_box/{$this->slug}" , [ $this , 'render_plugin_info_meta_box' ] );
 
 		/**
 		 * @todo Perhaps this can hook on admin_init - right after admin_menu has finished
@@ -890,7 +890,21 @@ class AdminPage
 	}
 
 	/**
-	 * Render plugin info metabox
+	 * 
+	 * @see render_plugin_info_meta_box()
+	 * @deprecated
+	 */
+	public function render_plugin_info_box(){
+
+		_doing_it_wrong( __METHOD__, 'Deprecated. Use render_plugin_info_meta_box() instead.', '0.26' );
+
+		$this->render_plugin_info_meta_box();
+	}
+
+
+
+	/**
+	 * Render plugin info meta-box
 	 * 
 	 * Call user-provided callable.
 	 * Or else attempt to create PluginInfoMetaBox class from $this->plugin_core and call its render function.
@@ -900,18 +914,13 @@ class AdminPage
 	 * @todo See if this function should be public API or only run on action hook
 	 * @todo deprecate public use - use wphelper/adminpage/plugin_info_box/{$this->slug} instead
 	 */
-	public function render_plugin_info_box(){
+	public function render_plugin_info_meta_box(){
 
 		if ( isset( $this->plugin_info ) && is_callable( $this->plugin_info ) ) {
 			call_user_func( $this->plugin_info );
 		} else {
 
-			if ( empty( $this->plugin_info_meta_box ) && ! empty( $this->plugin_core ) ){
-				$this->plugin_info_meta_box = new PluginInfoMetaBox( $this->plugin_core );
-			}
-
-			// If no plugin_info_meta_box - do nothing
-			if ( empty( $this->plugin_info_meta_box ) ) {
+			if (!$this->bootstrap_plugin_info_meta_box()){
 				return;
 			}
 
@@ -923,6 +932,20 @@ class AdminPage
 			do_action( "wphelper/plugin_info_meta_box/{$this->plugin_core->slug()}" );
 		}
 
+	/**
+	 * Bootstrap PluginInfoMetaBox
+	 */
+	private function bootstrap_plugin_info_meta_box() {
+		if ( empty( $this->plugin_info_meta_box ) && ! empty( $this->plugin_core ) ){
+			$this->plugin_info_meta_box = new PluginInfoMetaBox( $this->plugin_core );
+		}
+
+		// If no plugin_info_meta_box - return false
+		if ( empty( $this->plugin_info_meta_box ) ) {
+			return false;
+		}
+
+		return true;
 	}
 }
 endif;

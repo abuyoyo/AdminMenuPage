@@ -29,7 +29,7 @@ class PluginInfoMetaBox{
 		 * Allow plugins to render or modify plugin info box
 		 * 
 		 * Call: do_action('wphelper/plugin_info_meta_box/{$slug}')
-		 * action used in AdminPage::render_plugin_info_box()
+		 * action used in AdminPage::render_plugin_info_meta_box()
 		 * 
 		 * @since 0.23
 		 */
