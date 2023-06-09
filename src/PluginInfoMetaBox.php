@@ -16,6 +16,8 @@ class PluginInfoMetaBox{
 
 	private $tpl = '/tpl/plugin_info_meta_box.php';
 
+	private $tpl_inside = '/tpl/plugin_info_meta_box-inside.php';
+
 	/**
 	 * @var PluginCore
 	 */
@@ -34,21 +36,16 @@ class PluginInfoMetaBox{
 		 * @since 0.23
 		 */
 		add_action( "wphelper/plugin_info_meta_box/{$this->plugin_core->slug()}", [ $this, 'plugin_info_box' ] );
+		
+		add_action( "wphelper/plugin_info_meta_box/inside/{$this->plugin_core->slug()}", [ $this, 'inside' ] );
 	}
 
 	/**
-	 * PLUGIN INFO BOX
+	 * Setup args used in template.
 	 * 
-	 * Display plugin info meta-box on admin pages
-	 * 
-	 * @since iac_engine 1.1.0
-	 * @since iac_engine 1.2.0 plugin_info_box now a function
-	 * @since iac_engine 1.3.0 use 'Last Update' header
-	 * @since 0.14             PluginInfoMetaBox::plugin_info_box()
-	 * 
-	 * @todo rename method render()
+	 * @todo move 'repo' setup to method from template
 	 */
-	function plugin_info_box(){
+	function setup_template_args() {
 
 		$plugin_data = $this->plugin_core->plugin_data();
 
@@ -69,8 +66,37 @@ class PluginInfoMetaBox{
 		} else {
 			$update_message = '';
 		}
+		return compact('plugin_data','update_message');
 
+	}
+
+	/**
+	 * PLUGIN INFO BOX
+	 * 
+	 * Display plugin info meta-box on admin pages
+	 * 
+	 * @since iac_engine 1.1.0
+	 * @since iac_engine 1.2.0 plugin_info_box now a function
+	 * @since iac_engine 1.3.0 use 'Last Update' header
+	 * @since 0.14             PluginInfoMetaBox::plugin_info_box()
+	 * 
+	 * @todo rename method render()
+	 */
+	function plugin_info_box(){
+		$args = $this->setup_template_args();
+		extract($args);
 		include __DIR__ . $this->tpl;
+	}
+
+
+	/**
+	 * Only print meta-box .inside
+	 * No header.
+	 */
+	function inside(){
+		$args = $this->setup_template_args();
+		extract($args);
+		include __DIR__ . $this->tpl_inside;
 	}
 }
 endif;
