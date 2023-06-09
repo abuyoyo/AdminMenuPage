@@ -1,6 +1,8 @@
 <?php
 namespace WPHelper;
 
+use CMB2_Options_Hookup;
+
 defined( 'ABSPATH' ) || die( 'No soup for you!' );
 
 use function add_menu_page;
@@ -107,6 +109,20 @@ class AdminPage
 	protected $wrap;
 
 	/**
+	 * Tab Group
+	 *
+	 * @var string CMB2 tab group
+	 */
+	protected $tab_group;
+
+	/**
+	 * Tab Title
+	 *
+	 * @var string CMB2 tab title
+	 */
+	protected $tab_title;
+
+	/**
 	 * Render callback function.
 	 *
 	 * @var callable | boolean
@@ -177,13 +193,6 @@ class AdminPage
 	protected $plugin_info_meta_box;
 
 	/**
-	 * Delegate admin_menu hookup to CMB2 implementation
-	 *
-	 * @var boolean
-	 */
-	protected $delegate_hookup = false;
-
-	/**
 	 * Constructor.
 	 *
 	 * @param array $options
@@ -199,14 +208,13 @@ class AdminPage
 		if ( isset( $options->plugin_core ) )
 			$this->plugin_core( $options->plugin_core );
 
-		if ( isset( $options->title ) )
-			$this->title( $options->title );
+		$this->title( $options->title ?? null );
 
 		/**
 		 * @todo move this to bootstrap()
 		 */
 		if ( ! isset( $options->menu_title ) )
-			$options->menu_title = $options->title;
+			$options->menu_title = $this->title;
 
 		if ( isset( $options->menu_title ) )
 			$this->menu_title( $options->menu_title );
@@ -214,8 +222,7 @@ class AdminPage
 		if ( isset( $options->capability ) )
 			$this->capability( $options->capability );
 
-		if ( isset( $options->slug ) )
-			$this->slug( $options->slug );
+		$this->slug( $options->slug ?? null );
 
 		if ( isset( $options->plugin_info ) ){ // before render()
 			$this->plugin_info( $options->plugin_info );
@@ -242,6 +249,7 @@ class AdminPage
 		if (true)
 			$this->wrap(); // set wrap anyway - will set to 'none' if empty
 
+
 		if ( isset( $options->parent ) )
 			$this->parent( $options->parent );
 
@@ -250,6 +258,11 @@ class AdminPage
 
 		if ( isset( $options->position ) )
 			$this->position( $options->position );
+
+		if ( isset( $options->tab_group ) ){
+			$this->tab_group( $options->tab_group );
+			$this->tab_title( $options->tab_title ?? $options->submenu_title ?? $options->menu_title );
+		}
 
 		if ( isset( $options->scripts ) )
 			$this->scripts( $options->scripts );
@@ -276,8 +289,8 @@ class AdminPage
 	 * 
 	 * @access private
 	 */
-	private function title( $title ) {
-		$this->title = $title;
+	private function title( $title=null ) {
+		$this->title = $title ?? ( isset( $this->plugin_core ) ? $this->plugin_core->title() : __METHOD__ );
 	}
 
 	/**
@@ -307,7 +320,19 @@ class AdminPage
 	 * @access private
 	 */
 	private function slug( $slug ) {
-		$this->slug = $slug;
+
+		$this->slug = $slug // if not empty
+			?: $this->settings['option_key'] // if isset option_key
+			?? (
+				isset( $this->plugin_core )
+					? (
+						method_exists( PluginCore::class, 'token' )
+							? $this->plugin_core->token() // PluginCore ~0.25
+							: str_replace('-','_', strtolower( $this->plugin_core->slug() ) ) // PluginCore <= 0.24
+					)
+					: 'slug' . time() // unique slug
+				);
+
 	}
 
 	/**
@@ -339,7 +364,6 @@ class AdminPage
 		$this->icon_url = $icon_url;
 	}
 
-	
 	/**
 	 * Setter - position
 	 * WordPress admin menu param
@@ -348,6 +372,44 @@ class AdminPage
 	 */
 	private function position( $position ) {
 		$this->position = $position;
+	}
+
+	/**
+	 * Setter - tab_group
+	 * CMB2 Tab Group - used by regular 'wrap' pages as well.
+	 * 
+	 * @access private
+	 */
+	private function tab_group( $tab_group ) {
+		$this->tab_group = $tab_group;
+
+		add_filter( 'cmb2_tab_group_tabs', [ $this, 'add_to_tab_group' ], 10, 2 );
+		add_action( 'cmb2_admin_init', function(){
+			/**
+			 * When deactivating CMB2 and reactivating - got this fatal error:
+			 * 
+			 * Fatal error: Uncaught Error: Argument 1 passed to CMB2_Options_Hookup::__construct()
+			 * must be an instance of CMB2, bool given,
+			 * called in \wp-content\plugins\cgv\inc\CGV.php on line 56
+			 * in \wp-content\plugins\cmb2\includes\CMB2_Options_Hookup.php on line 39
+			 * 
+			 * Validate cmb2_get_metabox did not return false.
+			 */
+			if ( $cmb = cmb2_get_metabox( $this->parent ) ){
+				$hookup = new CMB2_Options_Hookup( $cmb, $this->slug );
+				add_action ( 'wphelper/adminpage/tab_nav', [ $hookup, 'options_page_tab_nav_output' ] );
+			}
+		});
+	}
+
+	/**
+	 * Setter - tab_title
+	 * CMB2 Tab Title - only set if tab_group.
+	 * 
+	 * @access private
+	 */
+	private function tab_title( $tab_title ) {
+		$this->tab_title = $tab_title;
 	}
 
 	/**
@@ -372,14 +434,10 @@ class AdminPage
 				$this->render_tpl( __DIR__ . '/tpl/wrap-cmb2-unavailable.php' );
 				$this->render = $this->render ?? 'render_tpl';
 			} else {
-				$this->delegate_hookup = true;
-
-				if ( ! empty( $this->plugin_core ) || ! empty( $this->plugin_info ) ){
-					$this->render_tpl( __DIR__ . '/tpl/wrap-cmb2-sidebar.php' );
-				} else {
-					$this->render_tpl( __DIR__ . '/tpl/wrap-cmb2-simple.php' );
-				}
-
+				/**
+				 * Render templates managed and included by CMB2_OptionsPage
+				 * @see CMB2_OptionsPage::options_page_output()
+				 */
 				$this->render = $this->render ?? $render; // 'cmb2' || 'cmb2-tabs'
 			}
 
@@ -494,6 +552,18 @@ class AdminPage
 	}
 
 	/**
+	 * Add to tab group
+	 * 
+	 * @hook cmb2_tab_group_tabs
+	 */
+	public function add_to_tab_group( $tabs, $tab_group ){
+		if ( $tab_group == $this->tab_group ){
+			$tabs[ $this->slug ] = $this->tab_title;
+		}
+		return $tabs;
+	}
+
+	/**
 	 * Setter - scripts
 	 * Scripts to enqueue on admin page
 	 * 
@@ -548,13 +618,18 @@ class AdminPage
 			'capability' => $this->capability,
 			'slug' => $this->slug,
 			'parent' => $this->parent,
+			'hook_suffix' => $this->hook_suffix,
 			'icon_url' => $this->icon_url,
 			'position' => $this->position,
 			'render' => $this->render, // render_cb | render_tpl | settings-page | cmb2 | cmb2-tabs
 			'render_cb' => $this->render_cb,
 			'render_tpl' => $this->render_tpl,
 			'settings' => $this->settings,
+			'wrap' => $this->wrap,
+			'tab_group' => $this->tab_group,
+			'tab_title' => $this->tab_title,
 			'plugin_core' => $this->plugin_core,
+			'plugin_info' => $this->plugin_info,
 		];
 
 		return $options;
@@ -593,34 +668,30 @@ class AdminPage
 		if ( ! $this->capability )
 			$this->capability = 'manage_options';
 
-		if ( $this->render == 'settings-page' ){
+		add_action( "wphelper/adminpage/plugin_info_box/{$this->slug}" , [ $this , 'render_plugin_info_meta_box' ] );
 
-			$this->settings_page = new SettingsPage($this);
-			$this->settings_page->setup();
-
-		}
-
-		add_action( "wphelper/adminpage/plugin_info_box/{$this->slug}" , [ $this , 'render_plugin_info_box' ] );
+		/**
+		 * @todo Perhaps this can hook on admin_init - right after admin_menu has finished
+		 * @todo CMB2 options-page does not return page_hook/hook_suffix - MUST validate
+		 */
+		add_action ( 'admin_init' , [ $this , '_bootstrap_admin_page' ] );
 
 		if ( in_array( $this->render, [ 'cmb2', 'cmb2-tabs' ] ) ){
 
 			$this->cmb2_page = $this->settings['options_type'] ?? '' == 'multi'
 				? new CMB2_OptionsPage_Multi( $this )
 				: new CMB2_OptionsPage( $this );
-			
-			/**
-			 * @todo Perhaps this can hook on admin_init - right after admin_menu has finished
-			 * @todo CMB2 options-page does not return page_hook/hook_suffix - MUST validate
-			 */
-			add_action ( 'admin_menu' , [ $this , '_bootstrap_admin_page' ], 12 );
 
 			// skip add_menu_page
 			return;
 		}
 
-		// if ( ! $this->delegate_hookup ){
+		if ( $this->render == 'settings-page' ){
+			$this->settings_page = new SettingsPage($this);
+		}
+
 		add_action ( 'admin_menu' , [ $this , 'add_menu_page' ], 11 );
-		add_action ( 'admin_menu' , [ $this , '_bootstrap_admin_page' ], 12 );
+		add_action ( 'admin_menu' , [ $this , 'add_plugin_info_meta_box' ], 11 );
 
 	}
 
@@ -664,6 +735,21 @@ class AdminPage
 				);
 				break;
 		}
+	}
+
+	/**
+	 * 
+	 */
+	public function add_plugin_info_meta_box() {
+		$metabox_args = [
+			'id' => $this->slug . '_plugin_info_meta_box', // id is unique (in case a plugin uses $this->slug)
+			'title' => 'Plugin Info',
+			'context' => 'side',
+			'screens' => [ $this->get_hook_suffix() ],
+			// 'template',
+			'render' => [ $this , 'render_plugin_info_meta_box_inside' ],
+		];
+		( new MetaBox($metabox_args) )->add();
 
 	}
 
@@ -672,14 +758,6 @@ class AdminPage
 	 * 
 	 */
 	public function validate_page_hook(){
-
-		/**
-		 * hack!
-		 * This is ad hoc validation - should do this earlier
-		 */
-		if ( empty( $this->slug ) ){
-			$this->slug = $this->settings['option_key'];
-		}
 
 		if ( empty( $this->hook_suffix ) ){
 			$this->hook_suffix = get_plugin_page_hookname( $this->slug, $this->parent );
@@ -698,14 +776,9 @@ class AdminPage
 	 * 
 	 * @hook admin_menu priority 12
 	 * @access private
-	 * 
-	 * @todo move this function to admin_init - after admin_menu has finished
 	 */
 	public function _bootstrap_admin_page(){
 
-		/**
-		 * @todo perhaps run this on 'admin_init'
-		 */
 		$this->validate_page_hook();
 
 		add_action ( 'load-' . $this->hook_suffix , [ $this , '_admin_page_setup' ] );
@@ -907,7 +980,21 @@ class AdminPage
 	}
 
 	/**
-	 * Render plugin info metabox
+	 * 
+	 * @see render_plugin_info_meta_box()
+	 * @deprecated
+	 */
+	public function render_plugin_info_box(){
+
+		_doing_it_wrong( __METHOD__, 'Deprecated. Use render_plugin_info_meta_box() instead.', '0.26' );
+
+		$this->render_plugin_info_meta_box();
+	}
+
+
+
+	/**
+	 * Render plugin info meta-box
 	 * 
 	 * Call user-provided callable.
 	 * Or else attempt to create PluginInfoMetaBox class from $this->plugin_core and call its render function.
@@ -917,18 +1004,13 @@ class AdminPage
 	 * @todo See if this function should be public API or only run on action hook
 	 * @todo deprecate public use - use wphelper/adminpage/plugin_info_box/{$this->slug} instead
 	 */
-	public function render_plugin_info_box(){
+	public function render_plugin_info_meta_box(){
 
 		if ( isset( $this->plugin_info ) && is_callable( $this->plugin_info ) ) {
 			call_user_func( $this->plugin_info );
 		} else {
 
-			if ( empty( $this->plugin_info_meta_box ) && ! empty( $this->plugin_core ) ){
-				$this->plugin_info_meta_box = new PluginInfoMetaBox( $this->plugin_core );
-			}
-
-			// If no plugin_info_meta_box - do nothing
-			if ( empty( $this->plugin_info_meta_box ) ) {
+			if (!$this->bootstrap_plugin_info_meta_box()){
 				return;
 			}
 
@@ -939,7 +1021,38 @@ class AdminPage
 			 */
 			do_action( "wphelper/plugin_info_meta_box/{$this->plugin_core->slug()}" );
 		}
+	}
 
+	/**
+	 * 
+	 */
+	public function render_plugin_info_meta_box_inside(){
+		if ( isset( $this->plugin_info ) && is_callable( $this->plugin_info ) ) {
+			call_user_func( $this->plugin_info );
+		} else {
+
+			if (!$this->bootstrap_plugin_info_meta_box()){
+				return;
+			}
+
+			do_action( "wphelper/plugin_info_meta_box/inside/{$this->plugin_core->slug()}" );
+		}
+	}
+
+	/**
+	 * Bootstrap PluginInfoMetaBox
+	 */
+	private function bootstrap_plugin_info_meta_box() {
+		if ( empty( $this->plugin_info_meta_box ) && ! empty( $this->plugin_core ) ){
+			$this->plugin_info_meta_box = new PluginInfoMetaBox( $this->plugin_core );
+		}
+
+		// If no plugin_info_meta_box - return false
+		if ( empty( $this->plugin_info_meta_box ) ) {
+			return false;
+		}
+
+		return true;
 	}
 }
 endif;
