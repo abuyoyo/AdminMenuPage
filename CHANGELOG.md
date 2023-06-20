@@ -1,6 +1,13 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.26
+Release date: Jun 20 2023
+
+### Added
+- Add `allow_on_front` setting to CMB2 pages. Hooks metabox on `cmb2_init` instead of `cmb2_admin_init`.
+- If defined `WPH_DEBUG` add WPHelper classes debug information to plugin info meta box.
+
 ## 0.25
 Release date: Jun 9 2023
 
