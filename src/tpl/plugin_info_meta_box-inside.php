@@ -25,3 +25,10 @@
 	Last Updated: <?php echo $update_message; ?>
 <?php endif; ?>
 </p>
+<?php
+/**
+ * Print WPHelper debug info in plugin info meta box
+ */ 
+if ( defined('WPH_DEBUG') && WPH_DEBUG ) {
+	$this->wph_debug();
+}

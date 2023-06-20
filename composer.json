@@ -2,8 +2,8 @@
 	"name": "abuyoyo/adminmenupage",
 	"description": "WordPress admin menu page helper class",
 	"type": "library",
-	"version": "0.25",
-	"time": "2023-06-09",
+	"version": "0.26",
+	"time": "2023-06-20",
 	"license": "BSD-3-Clause",
 	"suggest": {
 		"abuyoyo/plugincore": "~0.26",

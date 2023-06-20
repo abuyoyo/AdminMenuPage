@@ -192,7 +192,11 @@ class CMB2_OptionsPage{
 		// register parent pages before sub-menu pages
 		$priority = empty( $settings['parent_slug'] ) ? 9 : 10;
 
-		add_action( 'cmb2_admin_init', [ $this, 'register_metabox' ], $priority );
+		if ( $settings['allow_on_front'] ?? false ){
+			add_action( 'cmb2_init', [ $this, 'register_metabox' ], $priority );
+		} else {
+			add_action( 'cmb2_admin_init', [ $this, 'register_metabox' ], $priority );
+		}
 
 		/**
 		 * @todo add 'submenu' field and functionality to WPHelper\AdminPage
