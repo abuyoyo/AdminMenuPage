@@ -32,35 +32,35 @@ class SettingsPage{
 	/**
 	 * Page slug to display sections
 	 * 
-	 * @var String $page
+	 * @var string $page
 	 */
 	protected $page;
 
 	/**
 	 * option_name key used in wp_options table
 	 * 
-	 * @var String $option_name
+	 * @var string $option_name
 	 */
 	protected $option_name;
 
 	/**
 	 * option_group used by register_setting() and settings_fields()
 	 * 
-	 * @var String $option_group
+	 * @var string $option_group
 	 */
 	public $option_group;
 
 	/**
 	 * Sections
 	 * 
-	 * @var Array[] $sections
+	 * @var array[] $sections
 	 */
 	public $sections = [];
 
 	/**
 	 * Fields
 	 * 
-	 * @var Array[] $fields
+	 * @var array[] $fields
 	 */
 	public $fields = [];
 
