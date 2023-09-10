@@ -28,6 +28,8 @@
 <?php
 /**
  * Print WPHelper debug info in plugin info meta box
+ * 
+ * @since 0.26
  */ 
 if ( defined('WPH_DEBUG') && WPH_DEBUG ) {
 	$this->wph_debug();
