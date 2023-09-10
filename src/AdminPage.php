@@ -397,7 +397,7 @@ class AdminPage
 			 */
 			if ( $cmb = cmb2_get_metabox( $this->parent ) ){
 				$hookup = new CMB2_Options_Hookup( $cmb, $this->slug );
-				add_action ( 'wphelper/adminpage/tab_nav', [ $hookup, 'options_page_tab_nav_output' ] );
+				add_action ( "wphelper/adminpage/tab_nav/{$this->tab_group}", [ $hookup, 'options_page_tab_nav_output' ] );
 			}
 		});
 	}

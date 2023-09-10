@@ -1,6 +1,8 @@
 <?php
 /**
  * Plugin Info Metabox - .wph-debug
+ * 
+ * @since 0.26
  */
 
 use WPHelper\AdminPage;
