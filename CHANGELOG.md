@@ -1,6 +1,12 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.27
+Release date: Sep 10 2023
+
+### Fixed
+- Fix nav-tabs appearing on pages without `tab_group`.
+
 ## 0.26
 Release date: Jun 20 2023
 
