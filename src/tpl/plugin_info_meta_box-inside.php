@@ -32,5 +32,6 @@
  * @since 0.26
  */ 
 if ( defined('WPH_DEBUG') && WPH_DEBUG ) {
+	/** @var WPHelper\PluginInfoMetaBox $this */
 	$this->wph_debug();
 }
