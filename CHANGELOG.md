@@ -1,6 +1,13 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.28
+Release date: Oct 4 2023
+
+### Added
+- Option `parent` accepts `tools` as shorthand for `tools.php`.
+- Add link to Install Plugin page in "CMB2 plugin missing" template. 
+
 ## 0.27
 Release date: Sep 10 2023
 
