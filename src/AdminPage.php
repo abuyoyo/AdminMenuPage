@@ -348,6 +348,10 @@ class AdminPage
 			case 'options-general.php':
 				$this->parent = 'options-general.php';
 			break;
+			case 'tools':
+			case 'tools.php':
+				$this->parent = 'tools.php';
+			break;
 			default:
 				$this->parent = $parent;
 			break;

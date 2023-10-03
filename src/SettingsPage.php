@@ -34,7 +34,7 @@ class SettingsPage{
 	 * 
 	 * @var string $page
 	 */
-	protected $page;
+	public $page;
 
 	/**
 	 * option_name key used in wp_options table
@@ -343,7 +343,7 @@ class SettingsPage{
 					$new_options[$id] = sanitize_email( $option );
 					break;
 				case 'url':			
-					$new_options[$id] = sanitize_url( $option );
+					$new_options[$id] = esc_url_raw( $option );
 					break;
 				default:
 					break;

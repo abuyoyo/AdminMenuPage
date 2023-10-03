@@ -1,6 +1,13 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.28
+Release date: Oct 4 2023
+
+### Added
+- Option `parent` accepts `tools` as shorthand for `tools.php`.
+- Add link to Install Plugin page in "CMB2 plugin missing" template. 
+
 ## 0.27
 Release date: Sep 10 2023
 
@@ -28,7 +35,7 @@ Release date: Jun 9 2023
 - Fix several PHP undefined variable warnings.
 
 ### Internal
-- Setting pages/wrap temlate uses WordPress Core `do_meta_boxes` to render `side` meta boxes div.
+- Setting pages/wrap template uses WordPress Core `do_meta_boxes` to render `side` meta boxes div.
 - Add variables to `AdminPage::options()` array.
 - Multiple code refactoring and template restructuring.
 
