@@ -28,7 +28,7 @@ Release date: Jun 9 2023
 - Fix several PHP undefined variable warnings.
 
 ### Internal
-- Setting pages/wrap temlate uses WordPress Core `do_meta_boxes` to render `side` meta boxes div.
+- Setting pages/wrap template uses WordPress Core `do_meta_boxes` to render `side` meta boxes div.
 - Add variables to `AdminPage::options()` array.
 - Multiple code refactoring and template restructuring.
 
