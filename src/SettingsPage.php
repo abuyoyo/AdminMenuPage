@@ -34,7 +34,7 @@ class SettingsPage{
 	 * 
 	 * @var string $page
 	 */
-	protected $page;
+	public $page;
 
 	/**
 	 * option_name key used in wp_options table
