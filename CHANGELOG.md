@@ -1,6 +1,15 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.29
+Release date: Oct 5 2023
+
+### Fixed
+- `composer.json` - Require `abuyoyo/metabox`. WPHelper\Metabox has been a required library since 0.25.
+
+### Dependencies
+- lib: WPHelper\Metabox (`abuyoyo/metabox`) ~0.8.
+
 ## 0.28
 Release date: Oct 4 2023
 
