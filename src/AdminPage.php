@@ -670,7 +670,7 @@ class AdminPage
 		if ( ! $this->capability )
 			$this->capability = 'manage_options';
 
-		add_action ( 'admin_init' , [ $this , '_bootstrap_admin_page' ] );
+		add_action ( 'admin_init' , [ $this , 'admin_init' ] );
 		add_action( "wphelper/adminpage/plugin_info_box/{$this->slug}" , [ $this , 'render_plugin_info_meta_box' ] );
 
 		if ( in_array( $this->render, [ 'cmb2', 'cmb2-tabs' ] ) ){
@@ -785,10 +785,13 @@ class AdminPage
 	 * Runs for EVERY AdminPage instance
 	 * AdminNotice->onPage() works
 	 * 
+	 * @since 0.2  _bootstrap_admin_page()
+	 * @since 0.32 Rename method admin_init()
+	 * 
 	 * @hook admin_init
 	 * @access private
 	 */
-	public function _bootstrap_admin_page(){
+	public function admin_init(){
 
 		// CMB2 options-page does not return page_hook/hook_suffix - MUST validate
 		$this->validate_page_hook();
