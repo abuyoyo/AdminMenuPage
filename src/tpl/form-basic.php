@@ -6,6 +6,18 @@
  */
 ?>
 <form method="post" action="options.php">
+	<style>
+		/** 
+		 * Restore common styling
+		 * We hijack #poststuff from Edit Post for our sidebar wrap.
+		 * Restore h2 formatting for non-#poststuff forms.
+		 */
+		#poststuff form h2 {
+			font-size: 1.3em;
+			padding: 0;
+			margin: 0;
+		}
+	</style>
 	<?php
 	/** @var WPHelper\AdminPage $this */
 	settings_fields( $this->settings_page->option_group );// Print hidden setting fields
