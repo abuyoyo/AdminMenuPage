@@ -279,7 +279,7 @@ class AdminPage
 		 * Bootstrap on init. Do not call directly from constructor.
 		 * That way setter functions can be called after instance is created.
 		 */
-		add_action( 'init', [ $this, 'bootstrap' ] );
+		add_action( 'init', [ $this, 'init' ] );
 	}
 
 	/**
@@ -657,12 +657,15 @@ class AdminPage
 	 * 
 	 * Finish constructing object after all info is available
 	 * 
+	 * @since 0.3  bootstrap()
+	 * @since 0.32 Rename method init()
+	 * 
 	 * @hook 'init'
 	 * @access private
 	 * 
 	 * @return void
 	 */
-	public function bootstrap(){
+	public function init(){
 
 		if ( ! $this->capability )
 			$this->capability = 'manage_options';
