@@ -232,11 +232,15 @@ class AdminPage
 			$this->wrap( $options->wrap );
 		}
 
-		if ( isset( $options->render_cb ) )
+		if ( isset( $options->render_cb ) ) {
+			_deprecated_argument( __METHOD__, '0.30', "Option 'render_cb' will be removed in version 1.0. Use 'render' instead." );
 			$this->render_cb( $options->render_cb );
+		}
 
-		if ( isset( $options->render_tpl ) ) // before render()
+		if ( isset( $options->render_tpl ) ) { // before render()
+			_deprecated_argument( __METHOD__, '0.30', "Option 'render_tpl' will be removed in version 1.0. Use 'render' instead." );
 			$this->render_tpl( $options->render_tpl );
+		}
 
 		// This runs last so we can have 'settings-page' with custom render_tpl
 		if ( isset( $options->render ) )
