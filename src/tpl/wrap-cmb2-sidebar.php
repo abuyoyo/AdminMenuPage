@@ -25,9 +25,7 @@
 
 			<!-- main content -->
 			<div id="post-body-content">
-				<div class="meta-box-sortables ui-sortable tabs-content">
-					<?php include 'form-cmb2.php' ?>
-				</div><!-- .meta-box-sortables -->
+				<?php include 'form-cmb2.php' ?>
 			</div><!-- #post-body-content -->
 
 			<!-- sidebar -->
