@@ -670,8 +670,6 @@ class AdminPage
 		if ( ! $this->capability )
 			$this->capability = 'manage_options';
 
-		add_action( "wphelper/adminpage/plugin_info_box/{$this->slug}" , [ $this , 'render_plugin_info_meta_box' ] );
-
 		add_action ( 'admin_init' , [ $this , '_bootstrap_admin_page' ] );
 
 		if ( in_array( $this->render, [ 'cmb2', 'cmb2-tabs' ] ) ){
@@ -696,7 +694,11 @@ class AdminPage
 		}
 
 		add_action ( 'admin_menu' , [ $this , 'add_menu_page' ], 11 );
-		add_action ( 'admin_menu' , [ $this , 'add_plugin_info_meta_box' ], 11 );
+
+		if ( ! empty( $this->plugin_info ) ) {
+			add_action ( 'admin_menu' , [ $this , 'add_plugin_info_meta_box' ], 11 );
+			add_action( "wphelper/adminpage/plugin_info_box/{$this->slug}" , [ $this , 'render_plugin_info_meta_box' ] );
+		}
 
 	}
 
