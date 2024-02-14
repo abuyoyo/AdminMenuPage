@@ -1,6 +1,12 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.31
+Release date: Feb 14 2024
+
+### Fixed
+- Fix plugin info box not appearing on CMB2 pages after last release.
+
 ## 0.30
 Release date: Feb 14 2024
 
