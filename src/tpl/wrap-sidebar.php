@@ -1,6 +1,6 @@
 <?php
 /**
- * Template for CMB2 Options Page
+ * Template for Settings Page with Sidebar.
  * 
  * @var string $ob_content - Render template or callback
  * @var WPHelper\AdminPage $this
