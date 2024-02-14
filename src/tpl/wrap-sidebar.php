@@ -15,9 +15,7 @@
 
 			<!-- main content -->
 			<div id="post-body-content">
-				<div class="meta-box-sortables ui-sortable tabs-content">
-					<?php echo $ob_content ?>
-				</div><!-- .meta-box-sortables -->
+				<?php echo $ob_content ?>
 			</div><!-- #post-body-content -->
 
 			<!-- sidebar -->
