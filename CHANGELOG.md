@@ -1,6 +1,18 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.30
+Release date: Feb 14 2024
+
+### Changed
+- Add `.wp-header-end` hr element to all templates.
+- Restore default h2 styling to forms inside `#poststuff` element.
+- Remove `.meta-box-sortables` wrapper from main content on sidebar templates using `#poststuff` element hijacked from Edit Post page.
+
+### Internal
+- Add `_deprecated_argument` message to `render_cb` and `render_tpl` options.
+- Only run `add_plugin_info_meta_box()` if `plugin_info` option is truthy.
+
 ## 0.29
 Release date: Oct 5 2023
 
