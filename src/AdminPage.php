@@ -17,10 +17,10 @@ if ( ! class_exists( AdminPage::class ) ):
  * Create WordPress admin pages easily
  * 
  * @todo add 'menu_location' - settings. tools, toplevel etc. (extend 'parent' option)
- * @todo add add_screen_option( 'per_page', $args );
- * @todo accept WPHelper\PluginCore instance (get title slug etc. from there)
+ * @todo add add_screen_option( 'per_page', $args )
  * @todo fix is_readable() PHP error when sending callback array
  * @todo is_readable() + is_callable() called twice - on register and on render
+ * @todo Merge methods validate_page_hook() + get_hook_suffix()
  */
 class AdminPage
 {
@@ -232,11 +232,15 @@ class AdminPage
 			$this->wrap( $options->wrap );
 		}
 
-		if ( isset( $options->render_cb ) )
+		if ( isset( $options->render_cb ) ) {
+			_deprecated_argument( __METHOD__, '0.30', "Option 'render_cb' will be removed in version 1.0. Use 'render' instead." );
 			$this->render_cb( $options->render_cb );
+		}
 
-		if ( isset( $options->render_tpl ) ) // before render()
+		if ( isset( $options->render_tpl ) ) { // before render()
+			_deprecated_argument( __METHOD__, '0.30', "Option 'render_tpl' will be removed in version 1.0. Use 'render' instead." );
 			$this->render_tpl( $options->render_tpl );
+		}
 
 		// This runs last so we can have 'settings-page' with custom render_tpl
 		if ( isset( $options->render ) )
@@ -612,8 +616,6 @@ class AdminPage
 	 * Array representation of $this object.
 	 * 
 	 * @return array options
-	 * 
-	 * @todo add new properties (like plugin_info)
 	 */
 	public function options(){
 		$options = [
@@ -672,16 +674,17 @@ class AdminPage
 		if ( ! $this->capability )
 			$this->capability = 'manage_options';
 
-		add_action( "wphelper/adminpage/plugin_info_box/{$this->slug}" , [ $this , 'render_plugin_info_meta_box' ] );
-
-		/**
-		 * @todo Perhaps this can hook on admin_init - right after admin_menu has finished
-		 * @todo CMB2 options-page does not return page_hook/hook_suffix - MUST validate
-		 */
 		add_action ( 'admin_init' , [ $this , '_bootstrap_admin_page' ] );
 
 		if ( in_array( $this->render, [ 'cmb2', 'cmb2-tabs' ] ) ){
 
+			/**
+			 * Option 'multi' is not well documented.
+			 * Default CMB2 Options pages save forms into single database option.
+			 * "Multi" pages allow creating CMB2 Option pages where every field is saved as separate option (ie. multi-option).
+			 * 
+			 * @todo Rename 'multi' option + class CMB2_OptionsPage_Multi.
+			 */
 			$this->cmb2_page = $this->settings['options_type'] ?? '' == 'multi'
 				? new CMB2_OptionsPage_Multi( $this )
 				: new CMB2_OptionsPage( $this );
@@ -695,7 +698,11 @@ class AdminPage
 		}
 
 		add_action ( 'admin_menu' , [ $this , 'add_menu_page' ], 11 );
-		add_action ( 'admin_menu' , [ $this , 'add_plugin_info_meta_box' ], 11 );
+
+		if ( ! empty( $this->plugin_info ) ) {
+			add_action ( 'admin_menu' , [ $this , 'add_plugin_info_meta_box' ], 11 );
+			add_action( "wphelper/adminpage/plugin_info_box/{$this->slug}" , [ $this , 'render_plugin_info_meta_box' ] );
+		}
 
 	}
 
@@ -759,7 +766,11 @@ class AdminPage
 
 
 	/**
+	 * CMB2 options-page does not return page_hook/hook_suffix
+	 * Generate hook_suffix ourselves.
 	 * 
+	 * @todo This method should probably be private.
+	 * @todo Merge methods validate_page_hook() + get_hook_suffix()
 	 */
 	public function validate_page_hook(){
 
@@ -778,11 +789,12 @@ class AdminPage
 	 * Runs for EVERY AdminPage instance
 	 * AdminNotice->onPage() works
 	 * 
-	 * @hook admin_menu priority 12
+	 * @hook admin_init
 	 * @access private
 	 */
 	public function _bootstrap_admin_page(){
 
+		// CMB2 options-page does not return page_hook/hook_suffix - MUST validate
 		$this->validate_page_hook();
 
 		add_action ( 'load-' . $this->hook_suffix , [ $this , '_admin_page_setup' ] );
@@ -913,6 +925,7 @@ class AdminPage
 	 * @return string
 	 * 
 	 * @todo Throw Exception|WP_Error if called before 'current_screen' hook.
+	 * @todo Merge methods validate_page_hook() + get_hook_suffix()
 	 */
 	public function get_hook_suffix()
 	{
