@@ -796,7 +796,7 @@ class AdminPage
 		// CMB2 options-page does not return page_hook/hook_suffix - MUST validate
 		$this->validate_page_hook();
 
-		add_action ( 'load-' . $this->hook_suffix , [ $this , '_admin_page_setup' ] );
+		add_action ( 'load-' . $this->hook_suffix , [ $this , 'load_page' ] );
 
 		foreach ( $this->methods as $method ){
 			if( is_callable( $method ) ){
@@ -813,10 +813,13 @@ class AdminPage
 	 * Only runs on actual screen showing
 	 * AdminNotice->onPage() redundant
 	 * 
+	 * @since 0.2  _admin_page_setup()
+	 * @since 0.32 Rename method load_page()
+	 * 
 	 * @hook load-{$hook_suffix}
 	 * @access private
 	 */
-	public function _admin_page_setup(){
+	public function load_page(){
 
 		if ( $this->scripts )
 			add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_scripts' ] );
