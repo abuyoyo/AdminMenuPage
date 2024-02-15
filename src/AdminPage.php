@@ -82,9 +82,9 @@ class AdminPage
 	protected $position;
 
 	/**
-	 * Render Type (callback, template, settings-page, cmb2-page etc.)
+	 * Render Type
 	 *
-	 * @var string
+	 * @var string custom-callback | custom-template | settings-page | cmb2-page | etc.
 	 */
 	protected $render;
 
@@ -417,14 +417,19 @@ class AdminPage
 
 	/**
 	 * Setter - render
-	 * Sets render cb or tpl
-	 * 
-	 * accepts:
-	 *     presets: 'settings-page', 'cmb2', 'cmb2-tabs', 'render_cb', 'render_tpl'
-	 *     callback: A callable function that prints page.
-	 *     readable: A template file
+	 * Sets $this->render string
+	 * Sets $this->render_cb or $this->render_tpl
 	 * 
 	 * @access private
+	 * 
+	 * @param string|Callable|Readable|null $render valid preset string ( `settings-page | cmb2 | cmb2-tabs` ),\
+	 * 										 or render callback function,\
+	 * 										 or PHP template file,\
+	 * 										 or null.
+	 * 
+	 * @return void Sets `$this->render` to ( `custom-callback | custom-template | default-template | settings-page | cmb2 | cmb2-tabs | cmb2-unavailable` )
+	 * 
+	 * @todo Revisit null coalescing $this->render. We should only call this once. We call it twice(second time with null).
 	 */
 	private function render( $render=null ) {
 		if ( 'settings-page' == $render ) {
@@ -435,7 +440,7 @@ class AdminPage
 			// validate
 			if ( ! defined( 'CMB2_LOADED' ) ){
 				$this->render_tpl( __DIR__ . '/tpl/wrap-cmb2-unavailable.php' );
-				$this->render = $this->render ?? 'render_tpl';
+				$this->render = $this->render ?? 'cmb2-unavailable';
 			} else {
 				/**
 				 * Render templates managed and included by CMB2_OptionsPage
@@ -446,13 +451,13 @@ class AdminPage
 
 		} else if( is_callable( $render ) ) {
 			$this->render_cb( $render );
-			$this->render = $this->render ?? 'render_cb';
+			$this->render = $this->render ?? 'custom-callback';
 		} else if ( is_readable( $render ?? '' ) ) {
 			$this->render_tpl( $render );
-			$this->render = $this->render ?? 'render_tpl';
+			$this->render = $this->render ?? 'custom-template';
 		} else {
 			$this->render_tpl( __DIR__ . '/tpl/wrap-default.php' );
-			$this->render = $this->render ?? 'render_tpl';
+			$this->render = $this->render ?? 'default-template';
 		}
 	}
 
@@ -620,7 +625,7 @@ class AdminPage
 			'hook_suffix' => $this->hook_suffix,
 			'icon_url' => $this->icon_url,
 			'position' => $this->position,
-			'render' => $this->render, // render_cb | render_tpl | settings-page | cmb2 | cmb2-tabs
+			'render' => $this->render, // string - custom-callback | custom-template | default-template | settings-page | cmb2 | cmb2-tabs | cmb2-unavailable
 			'render_cb' => $this->render_cb,
 			'render_tpl' => $this->render_tpl,
 			'settings' => $this->settings,
