@@ -826,6 +826,8 @@ class AdminPage
 	 */
 	public function load_page(){
 
+		add_filter( 'admin_body_class', [ $this, 'admin_body_class' ] );
+
 		if ( $this->scripts )
 			add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_scripts' ] );
 
@@ -879,6 +881,17 @@ class AdminPage
 			wp_enqueue_style( ...$style_args );
 		}
 
+	}
+
+	/**
+	 * Add .wphelper-admin-page classes to body
+	 * 
+	 * @since 0.32
+	 */
+	public function admin_body_class( $classes ) {
+		$classes .= ' wphelper-admin-page';
+		$classes .= " wphelper-admin-page-{$this->render}";
+		return $classes;
 	}
 
 	/**
