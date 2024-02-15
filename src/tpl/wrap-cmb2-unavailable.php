@@ -3,7 +3,7 @@
  * CMB2 plugin/library unavailable.
  */
 ?>
-<div class="wrap">
+<div class="wrap wph-wrap wph-wrap-cmb2-unavailable">
 	<h1><?= get_admin_page_title() ?></h1>
 	<hr class="wp-header-end">
 
