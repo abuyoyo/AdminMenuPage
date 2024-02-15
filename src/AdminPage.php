@@ -21,6 +21,7 @@ if ( ! class_exists( AdminPage::class ) ):
  * @todo fix is_readable() PHP error when sending callback array
  * @todo is_readable() + is_callable() called twice - on register and on render
  * @todo Merge methods validate_page_hook() + get_hook_suffix()
+ * @todo Add 'submenu_title' field and functionality (rename first submenu item) @see CMB2_OptionsPage::replace_submenu_title()
  */
 class AdminPage
 {
@@ -132,7 +133,7 @@ class AdminPage
 	/**
 	 * Scripts
 	 *
-	 * @var array[] arrays of script arguments passed to wp_enqueue_script()
+	 * @var array[] arrays of arguments passed to wp_enqueue_script()
 	 */
 	protected $scripts;
 
@@ -146,7 +147,7 @@ class AdminPage
 	/**
 	 * Styles
 	 *
-	 * @var array[] arrays of script arguments passed to wp_enqueue_style()
+	 * @var array[] arrays of arguments passed to wp_enqueue_style()
 	 */
 	protected $styles;
 
@@ -202,17 +203,11 @@ class AdminPage
 
 		$options = (object) $options;
 
-		/**
-		 * @todo - fallback to plugin_core on missing options (title, etc.) in bootstrap()
-		 */
 		if ( isset( $options->plugin_core ) )
 			$this->plugin_core( $options->plugin_core );
 
 		$this->title( $options->title ?? null );
 
-		/**
-		 * @todo move this to bootstrap()
-		 */
 		if ( ! isset( $options->menu_title ) )
 			$options->menu_title = $this->title;
 
@@ -464,8 +459,7 @@ class AdminPage
 	/**
 	 * Setter - render_cb
 	 * 
-	 * if $this->render == 'render_cb'
-	 * set callback function in $this->render_cb
+	 * Set callback function in $this->render_cb
 	 * 
 	 * @access private
 	 */
@@ -483,8 +477,7 @@ class AdminPage
 	/**
 	 * Setter - render_tpl
 	 * 
-	 * if $this->render == 'render_tpl'
-	 * save template filename to $this->render_tpl
+	 * Set template filename in $this->render_tpl
 	 * 
 	 * @access private
 	 */
