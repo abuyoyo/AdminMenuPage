@@ -17,7 +17,7 @@ if ( ! class_exists( CMB2_OptionsPage::class ) ):
  * 
  * @see CMB2_Options_Hookup::options_page_output and 'display_cb' - to manipulate tabs
  * 
- * @todo add 'submenu' field and functionality (rename first submenu item) to WPHelper\AdminPage
+ * @todo Add 'submenu_title' field and functionality (rename first submenu item) to WPHelper\AdminPage
  */
 class CMB2_OptionsPage{
 
@@ -199,8 +199,8 @@ class CMB2_OptionsPage{
 		}
 
 		/**
-		 * @todo add 'submenu' field and functionality to WPHelper\AdminPage
-		 * @todo reverse control/flow - so 'tab title' inherits/defaults to AdminPage 'submenu' field if exists.
+		 * @todo add 'submenu_title' field and functionality to WPHelper\AdminPage
+		 * @todo reverse control/flow - so 'tab title' inherits/defaults to AdminPage 'submenu_title' field if exists.
 		 */
 		if ( empty( $settings['parent_slug'] ) && $settings['menu_title'] != $settings['tab_title'] ){
 			add_action('admin_menu', [ $this, 'replace_submenu_title'], 11 );
@@ -249,7 +249,7 @@ class CMB2_OptionsPage{
 	/**
 	 * Replace submenu title of parent item with tab title
 	 * 
-	 * @todo add 'submenu' field and functionality to WPHelper\PluginCore
+	 * @todo add 'submenu_title' field and functionality to WPHelper\PluginCore
 	 */
 	public function replace_submenu_title(){
 
