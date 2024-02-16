@@ -1,6 +1,24 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.32
+Release date: Feb 16 2024
+
+### Added
+- Add `.wphelper-admin-page` classes to HTML body tag.
+- Add `.wph-wrap` classes to `.wrap` element.
+
+### Changed
+- Remove `.meta-box-sortables` wrapper from main content on CMB2 sidebar templates using `#poststuff` element hijacked from Edit Post page.
+
+### Internal
+- Rename methods to the WordPress action handle they are hooked on:
+  - `bootstrap()` => `init()`
+  - `_bootstrap_admin_page()` => `admin_init()`
+  - `_admin_page_setup()` => `load_page()`
+- WPH_Debug - add location of WPHelper\Utility functions directory.
+- Option `render` render type strings (callback, template or presets) are more descriptive and precise. Used in `.wphelper-admin-page-{$render}` body class.
+
 ## 0.31
 Release date: Feb 14 2024
 
