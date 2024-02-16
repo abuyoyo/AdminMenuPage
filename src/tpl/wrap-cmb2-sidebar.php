@@ -15,7 +15,7 @@
 		margin-top: 0;
 	}
 </style>
-<div class="wrap cmb2-options-page option-<?php echo esc_attr( sanitize_html_class( $hookup->option_key ) ); ?>">
+<div class="wrap cmb2-options-page option-<?php echo esc_attr( sanitize_html_class( $hookup->option_key ) ); ?> wph-wrap wph-wrap-cmb2-sidebar">
 
 	<?php include 'title-cmb2.php' ?>
 	<?php include 'tab-nav-cmb2.php' ?>
@@ -25,9 +25,7 @@
 
 			<!-- main content -->
 			<div id="post-body-content">
-				<div class="meta-box-sortables ui-sortable tabs-content">
-					<?php include 'form-cmb2.php' ?>
-				</div><!-- .meta-box-sortables -->
+				<?php include 'form-cmb2.php' ?>
 			</div><!-- #post-body-content -->
 
 			<!-- sidebar -->

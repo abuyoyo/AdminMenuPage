@@ -21,6 +21,7 @@ if ( ! class_exists( AdminPage::class ) ):
  * @todo fix is_readable() PHP error when sending callback array
  * @todo is_readable() + is_callable() called twice - on register and on render
  * @todo Merge methods validate_page_hook() + get_hook_suffix()
+ * @todo Add 'submenu_title' field and functionality (rename first submenu item) @see CMB2_OptionsPage::replace_submenu_title()
  */
 class AdminPage
 {
@@ -81,9 +82,9 @@ class AdminPage
 	protected $position;
 
 	/**
-	 * Render Type (callback, template, settings-page, cmb2-page etc.)
+	 * Render Type
 	 *
-	 * @var string
+	 * @var string custom-callback | custom-template | settings-page | cmb2-page | etc.
 	 */
 	protected $render;
 
@@ -132,7 +133,7 @@ class AdminPage
 	/**
 	 * Scripts
 	 *
-	 * @var array[] arrays of script arguments passed to wp_enqueue_script()
+	 * @var array[] arrays of arguments passed to wp_enqueue_script()
 	 */
 	protected $scripts;
 
@@ -146,7 +147,7 @@ class AdminPage
 	/**
 	 * Styles
 	 *
-	 * @var array[] arrays of script arguments passed to wp_enqueue_style()
+	 * @var array[] arrays of arguments passed to wp_enqueue_style()
 	 */
 	protected $styles;
 
@@ -202,17 +203,11 @@ class AdminPage
 
 		$options = (object) $options;
 
-		/**
-		 * @todo - fallback to plugin_core on missing options (title, etc.) in bootstrap()
-		 */
 		if ( isset( $options->plugin_core ) )
 			$this->plugin_core( $options->plugin_core );
 
 		$this->title( $options->title ?? null );
 
-		/**
-		 * @todo move this to bootstrap()
-		 */
 		if ( ! isset( $options->menu_title ) )
 			$options->menu_title = $this->title;
 
@@ -284,7 +279,7 @@ class AdminPage
 		 * Bootstrap on init. Do not call directly from constructor.
 		 * That way setter functions can be called after instance is created.
 		 */
-		add_action( 'init', [ $this, 'bootstrap' ] );
+		add_action( 'init', [ $this, 'init' ] );
 	}
 
 	/**
@@ -422,14 +417,19 @@ class AdminPage
 
 	/**
 	 * Setter - render
-	 * Sets render cb or tpl
-	 * 
-	 * accepts:
-	 *     presets: 'settings-page', 'cmb2', 'cmb2-tabs', 'render_cb', 'render_tpl'
-	 *     callback: A callable function that prints page.
-	 *     readable: A template file
+	 * Sets $this->render string
+	 * Sets $this->render_cb or $this->render_tpl
 	 * 
 	 * @access private
+	 * 
+	 * @param string|Callable|Readable|null $render valid preset string ( `settings-page | cmb2 | cmb2-tabs` ),\
+	 * 										 or render callback function,\
+	 * 										 or PHP template file,\
+	 * 										 or null.
+	 * 
+	 * @return void Sets `$this->render` to ( `custom-callback | custom-template | default-template | settings-page | cmb2 | cmb2-tabs | cmb2-unavailable` )
+	 * 
+	 * @todo Revisit null coalescing $this->render. We should only call this once. We call it twice(second time with null).
 	 */
 	private function render( $render=null ) {
 		if ( 'settings-page' == $render ) {
@@ -440,7 +440,7 @@ class AdminPage
 			// validate
 			if ( ! defined( 'CMB2_LOADED' ) ){
 				$this->render_tpl( __DIR__ . '/tpl/wrap-cmb2-unavailable.php' );
-				$this->render = $this->render ?? 'render_tpl';
+				$this->render = $this->render ?? 'cmb2-unavailable';
 			} else {
 				/**
 				 * Render templates managed and included by CMB2_OptionsPage
@@ -451,21 +451,20 @@ class AdminPage
 
 		} else if( is_callable( $render ) ) {
 			$this->render_cb( $render );
-			$this->render = $this->render ?? 'render_cb';
+			$this->render = $this->render ?? 'custom-callback';
 		} else if ( is_readable( $render ?? '' ) ) {
 			$this->render_tpl( $render );
-			$this->render = $this->render ?? 'render_tpl';
+			$this->render = $this->render ?? 'custom-template';
 		} else {
 			$this->render_tpl( __DIR__ . '/tpl/wrap-default.php' );
-			$this->render = $this->render ?? 'render_tpl';
+			$this->render = $this->render ?? 'default-template';
 		}
 	}
 
 	/**
 	 * Setter - render_cb
 	 * 
-	 * if $this->render == 'render_cb'
-	 * set callback function in $this->render_cb
+	 * Set callback function in $this->render_cb
 	 * 
 	 * @access private
 	 */
@@ -483,8 +482,7 @@ class AdminPage
 	/**
 	 * Setter - render_tpl
 	 * 
-	 * if $this->render == 'render_tpl'
-	 * save template filename to $this->render_tpl
+	 * Set template filename in $this->render_tpl
 	 * 
 	 * @access private
 	 */
@@ -627,7 +625,7 @@ class AdminPage
 			'hook_suffix' => $this->hook_suffix,
 			'icon_url' => $this->icon_url,
 			'position' => $this->position,
-			'render' => $this->render, // render_cb | render_tpl | settings-page | cmb2 | cmb2-tabs
+			'render' => $this->render, // string - custom-callback | custom-template | default-template | settings-page | cmb2 | cmb2-tabs | cmb2-unavailable
 			'render_cb' => $this->render_cb,
 			'render_tpl' => $this->render_tpl,
 			'settings' => $this->settings,
@@ -664,17 +662,20 @@ class AdminPage
 	 * 
 	 * Finish constructing object after all info is available
 	 * 
+	 * @since 0.3  bootstrap()
+	 * @since 0.32 Rename method init()
+	 * 
 	 * @hook 'init'
 	 * @access private
 	 * 
 	 * @return void
 	 */
-	public function bootstrap(){
+	public function init(){
 
 		if ( ! $this->capability )
 			$this->capability = 'manage_options';
 
-		add_action ( 'admin_init' , [ $this , '_bootstrap_admin_page' ] );
+		add_action ( 'admin_init' , [ $this , 'admin_init' ] );
 		add_action( "wphelper/adminpage/plugin_info_box/{$this->slug}" , [ $this , 'render_plugin_info_meta_box' ] );
 
 		if ( in_array( $this->render, [ 'cmb2', 'cmb2-tabs' ] ) ){
@@ -789,15 +790,18 @@ class AdminPage
 	 * Runs for EVERY AdminPage instance
 	 * AdminNotice->onPage() works
 	 * 
+	 * @since 0.2  _bootstrap_admin_page()
+	 * @since 0.32 Rename method admin_init()
+	 * 
 	 * @hook admin_init
 	 * @access private
 	 */
-	public function _bootstrap_admin_page(){
+	public function admin_init(){
 
 		// CMB2 options-page does not return page_hook/hook_suffix - MUST validate
 		$this->validate_page_hook();
 
-		add_action ( 'load-' . $this->hook_suffix , [ $this , '_admin_page_setup' ] );
+		add_action ( 'load-' . $this->hook_suffix , [ $this , 'load_page' ] );
 
 		foreach ( $this->methods as $method ){
 			if( is_callable( $method ) ){
@@ -814,10 +818,15 @@ class AdminPage
 	 * Only runs on actual screen showing
 	 * AdminNotice->onPage() redundant
 	 * 
+	 * @since 0.2  _admin_page_setup()
+	 * @since 0.32 Rename method load_page()
+	 * 
 	 * @hook load-{$hook_suffix}
 	 * @access private
 	 */
-	public function _admin_page_setup(){
+	public function load_page(){
+
+		add_filter( 'admin_body_class', [ $this, 'admin_body_class' ] );
 
 		if ( $this->scripts )
 			add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_scripts' ] );
@@ -872,6 +881,17 @@ class AdminPage
 			wp_enqueue_style( ...$style_args );
 		}
 
+	}
+
+	/**
+	 * Add .wphelper-admin-page classes to body
+	 * 
+	 * @since 0.32
+	 */
+	public function admin_body_class( $classes ) {
+		$classes .= ' wphelper-admin-page';
+		$classes .= " wphelper-admin-page-{$this->render}";
+		return $classes;
 	}
 
 	/**
