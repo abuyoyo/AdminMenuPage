@@ -1,6 +1,12 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.33
+Release date: Feb 22 2024
+
+### Fixed
+- Fix fatal error `Class "WPHelper\MetaBox" not found`. Note: WPHelper\MetaBox is an explicitly required dependency since 0.29, but is implicitly required since 0.25.
+
 ## 0.32
 Release date: Feb 16 2024
 
