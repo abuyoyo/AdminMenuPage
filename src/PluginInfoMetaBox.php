@@ -108,6 +108,9 @@ class PluginInfoMetaBox{
 	 * Prints inside Plugin Info Meta Box
 	 * 
 	 * @since 0.26
+	 * 
+	 * @todo Render wph_debug in its own meta-box.
+	 * @todo Move wph_debug functionality from template file to dedicated method/class.	
 	 */
 	function wph_debug() {
 		include __DIR__ . $this->tpl_debug;
