@@ -46,12 +46,17 @@ class PluginInfoMetaBox{
 	/**
 	 * Setup args used in template.
 	 * 
-	 * @todo move 'repo' setup to method from template
 	 */
 	function setup_template_args() {
 
 		$plugin_data = $this->plugin_core->plugin_data();
 
+		if ( ! empty( $plugin_data['UpdateURI'] ) || ! empty( $plugin_data['PluginURI'] ) ){
+			$repo_href = $plugin_data['UpdateURI'] ?: $plugin_data['PluginURI'];
+			$repo_text = $plugin_data['TextDomain'] ?? $this->plugin_core->slug();
+		} else {
+			$repo_href = $repo_text = '';
+		}
 
 		$last_update = $plugin_data['Last Update'] ?: $plugin_data['Release Date'];
 		$last_update = DateTime::createFromFormat('Y_m_d', $last_update);
@@ -69,7 +74,8 @@ class PluginInfoMetaBox{
 		} else {
 			$update_message = '';
 		}
-		return compact('plugin_data','update_message');
+
+		return compact('plugin_data','update_message','repo_href','repo_text');
 
 	}
 
