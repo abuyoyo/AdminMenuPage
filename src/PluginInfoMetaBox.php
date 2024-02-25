@@ -46,6 +46,14 @@ class PluginInfoMetaBox{
 	/**
 	 * Setup args used in template.
 	 * 
+	 * @since iac_engine 1.1.0
+	 * @since iac_engine 1.2.0 plugin_info_box now a function
+	 * @since iac_engine 1.3.0 use 'Last Update' header
+	 * @since 0.14             PluginInfoMetaBox::plugin_info_box()
+	 * @since 0.25             Method setup_template_args() returns args array for template.
+	 * @since 0.34             Accept multiple date formats in Last Update/Release Date headers.
+	 * 
+	 * @return array $args used in render template. [plugin_data, update_message, ..]
 	 */
 	function setup_template_args() {
 
@@ -58,8 +66,19 @@ class PluginInfoMetaBox{
 			$repo_href = $repo_text = '';
 		}
 
-		$last_update = $plugin_data['Last Update'] ?: $plugin_data['Release Date'];
-		$last_update = DateTime::createFromFormat('Y_m_d', $last_update);
+		// Match formats against date string and reduce to DateTime object
+		$date_string = $plugin_data['Last Update'] ?: $plugin_data['Release Date'];
+		/** @var DateTime|false */
+		$last_update = array_reduce(
+			[
+				'Y_m_d',
+				'Y-m-d',
+				'Ymd',
+				'd/m/Y'
+			],
+			fn($carry, $format) => $carry ?: DateTime::createFromFormat($format, $date_string),
+			false
+		);
 
 		if ($last_update) {
 			$diff = (int) abs( time() - $last_update->format('U') );
