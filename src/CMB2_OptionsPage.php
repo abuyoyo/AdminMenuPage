@@ -144,27 +144,41 @@ class CMB2_OptionsPage{
 		 * @todo export this to dedicated method
 		 */
 		if ( isset( $settings['sections'] ) ){
+
+			// CMB2 expects "flat" fields array. With titles as separating fields.
 			$this->fields = [];
+
 			foreach ( $settings['sections'] as $section ){
-				$title_field = [];
-				if ( $id = $section['id'] ?? $section['slug'] ){
-					$title_field['id'] = $id;
-				}
-				if ( $name = $section['name'] ?? $section['title'] ){
-					$title_field['name'] = $name;
-				}
-				if ( $desc = $section['desc'] ?? $section['description'] ){
-					$title_field['desc'] = $desc;
-				}
-				if ( ! empty($title_field)){
-					$title_field['type'] = 'title';
-					$this->fields[] = $title_field;
+
+				// skip if we already have a CMB2 title field
+				if ( current( $section['fields'] )['type'] !== 'title' ) {
+					/**
+					 * Create CMB2 title field from section args.
+					 * 
+					 * We expect section to have regular slug/title/description fields
+					 * But we also accept CMB2 fields id/name/desc
+					 */
+					$title_field = [];
+					if ( $id = $section['id'] ?? $section['slug'] ) {
+						$title_field['id'] = $id;
+					}
+					if ( $name = $section['name'] ?? $section['title'] ) {
+						$title_field['name'] = $name;
+					}
+					if ( $desc = $section['desc'] ?? $section['description'] ) {
+						$title_field['desc'] = $desc;
+					}
+					if ( ! empty( $title_field ) ) {
+						$title_field['type'] = 'title';
+						$this->fields[] = $title_field;
+					}
 				}
 
-				foreach ($section['fields'] as $field){
-					$field = $this->convert_field_to_cmb2_field($field);
-					$this->fields[] = $field;
+				// add section fields to "flat" array.
+				foreach ( $section['fields'] as $field ) {
+					$this->fields[] = $this->convert_field_to_cmb2_field($field);
 				}
+
 			}
 			unset( $settings['sections'] );
 		}
