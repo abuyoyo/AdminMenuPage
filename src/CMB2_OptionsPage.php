@@ -71,58 +71,6 @@ class CMB2_OptionsPage{
 		$settings['id'] = $settings['option_key'];
 		
 		unset( $settings['option_name'] );
-
-		/**
-		 * CMB2 only accepts url slug
-		 * 
-		 * @todo export parent_slug conversion to dedicated method
-		 * @todo perhaps move this to AdminPage::parent() method
-		 */
-		switch ( $settings['parent_slug'] ) {
-			case 'dashboard':
-				$settings['parent_slug'] = 'index.php';
-				break;
-			case 'posts':
-				$settings['parent_slug'] = 'edit.php';
-				break;
-			case 'media':
-				$settings['parent_slug'] = 'upload.php';
-				break;
-			case 'pages':
-				$settings['parent_slug'] = 'edit.php?post_type=page';
-				break;
-			case 'comments':
-				$settings['parent_slug'] = 'edit-comments.php';
-				break;
-			case 'themes':
-			case 'appearance': // Official WordPress designation 
-				$settings['parent_slug'] = 'themes.php';
-				break;
-			case 'plugins':
-				$settings['parent_slug'] = 'plugins.php';
-				break;
-			case 'users':
-				$settings['parent_slug'] = 'users.php';
-				break;
-			case 'options':
-			case 'settings': // Official WordPress designation
-				$settings['parent_slug'] = 'options-general.php';
-				break;
-			case 'tools':
-				$settings['parent_slug'] = 'tools.php';
-				break;
-			case 'network':
-			case 'network_settings':
-				$settings['parent_slug'] = 'settings.php';
-				break;
-			case null:
-				break;
-			default:
-				if ( post_type_exists( $settings['parent_slug'] ) ){
-					$settings['parent_slug'] = "edit.php?post_type={$settings['parent_slug']}";
-				}
-				break;
-		}
 		
 		if ( $admin_options['render'] == 'cmb2-tabs' ){
 			$settings['tab_group'] ??= $settings['parent_slug'] ?? $settings['id'];

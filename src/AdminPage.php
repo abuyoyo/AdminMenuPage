@@ -342,18 +342,52 @@ class AdminPage
 	 */
 	private function parent( $parent ) {
 		switch( $parent ) {
+			case 'dashboard':
+				$this->parent = 'index.php';
+				break;
+			case 'posts':
+				$this->parent = 'edit.php';
+				break;
+			case 'media':
+				$this->parent = 'upload.php';
+				break;
+			case 'pages':
+				$this->parent = 'edit.php?post_type=page';
+				break;
+			case 'comments':
+				$this->parent = 'edit-comments.php';
+				break;
+			case 'themes':
+			case 'appearance': // Official WordPress designation 
+				$this->parent = 'themes.php';
+				break;
+			case 'plugins':
+				$this->parent = 'plugins.php';
+				break;
+			case 'users':
+				$this->parent = 'users.php';
 			case 'options':
-			case 'settings':
+			case 'settings': // Official WordPress designation
 			case 'options-general.php':
 				$this->parent = 'options-general.php';
-			break;
+				break;
 			case 'tools':
 			case 'tools.php':
 				$this->parent = 'tools.php';
-			break;
+				break;
+			case 'network':
+			case 'network_settings':
+				$this->parent = 'settings.php';
+				break;
+			case null:
+				break;
 			default:
+				if ( post_type_exists( $this->parent ) ){
+					$this->parent = "edit.php?post_type={$this->parent}";
+					break;
+				}
 				$this->parent = $parent;
-			break;
+				break;
 		}
 	}
 
