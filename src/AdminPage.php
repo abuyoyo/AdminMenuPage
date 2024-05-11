@@ -566,6 +566,16 @@ class AdminPage
 			}
 		}
 
+		if ( 'default-template' == $this->render ){
+			/**
+			 * default template has its own .wrap element.
+			 * This is to reset 'sidebar' if plugin_info=true.
+			 * When 'sidebar' is set Plugin Info box will appear but 2 nested .wrap elements.
+			 * 
+			 * @todo separate default card from .wrap element
+			 */
+			$this->wrap = 'none';
+		}
 	}
 
 	/**
