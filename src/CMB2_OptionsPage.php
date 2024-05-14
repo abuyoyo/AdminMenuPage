@@ -71,58 +71,6 @@ class CMB2_OptionsPage{
 		$settings['id'] = $settings['option_key'];
 		
 		unset( $settings['option_name'] );
-
-		/**
-		 * CMB2 only accepts url slug
-		 * 
-		 * @todo export parent_slug conversion to dedicated method
-		 * @todo perhaps move this to AdminPage::parent() method
-		 */
-		switch ( $settings['parent_slug'] ) {
-			case 'dashboard':
-				$settings['parent_slug'] = 'index.php';
-				break;
-			case 'posts':
-				$settings['parent_slug'] = 'edit.php';
-				break;
-			case 'media':
-				$settings['parent_slug'] = 'upload.php';
-				break;
-			case 'pages':
-				$settings['parent_slug'] = 'edit.php?post_type=page';
-				break;
-			case 'comments':
-				$settings['parent_slug'] = 'edit-comments.php';
-				break;
-			case 'themes':
-			case 'appearance': // Official WordPress designation 
-				$settings['parent_slug'] = 'themes.php';
-				break;
-			case 'plugins':
-				$settings['parent_slug'] = 'plugins.php';
-				break;
-			case 'users':
-				$settings['parent_slug'] = 'users.php';
-				break;
-			case 'options':
-			case 'settings': // Official WordPress designation
-				$settings['parent_slug'] = 'options-general.php';
-				break;
-			case 'tools':
-				$settings['parent_slug'] = 'tools.php';
-				break;
-			case 'network':
-			case 'network_settings':
-				$settings['parent_slug'] = 'settings.php';
-				break;
-			case null:
-				break;
-			default:
-				if ( post_type_exists( $settings['parent_slug'] ) ){
-					$settings['parent_slug'] = "edit.php?post_type={$settings['parent_slug']}";
-				}
-				break;
-		}
 		
 		if ( $admin_options['render'] == 'cmb2-tabs' ){
 			$settings['tab_group'] ??= $settings['parent_slug'] ?? $settings['id'];
@@ -144,27 +92,41 @@ class CMB2_OptionsPage{
 		 * @todo export this to dedicated method
 		 */
 		if ( isset( $settings['sections'] ) ){
+
+			// CMB2 expects "flat" fields array. With titles as separating fields.
 			$this->fields = [];
+
 			foreach ( $settings['sections'] as $section ){
-				$title_field = [];
-				if ( $id = $section['id'] ?? $section['slug'] ){
-					$title_field['id'] = $id;
-				}
-				if ( $name = $section['name'] ?? $section['title'] ){
-					$title_field['name'] = $name;
-				}
-				if ( $desc = $section['desc'] ?? $section['description'] ){
-					$title_field['desc'] = $desc;
-				}
-				if ( ! empty($title_field)){
-					$title_field['type'] = 'title';
-					$this->fields[] = $title_field;
+
+				// skip if we already have a CMB2 title field
+				if ( current( $section['fields'] )['type'] !== 'title' ) {
+					/**
+					 * Create CMB2 title field from section args.
+					 * 
+					 * We expect section to have regular slug/title/description fields
+					 * But we also accept CMB2 fields id/name/desc
+					 */
+					$title_field = [];
+					if ( $id = $section['id'] ?? $section['slug'] ) {
+						$title_field['id'] = $id;
+					}
+					if ( $name = $section['name'] ?? $section['title'] ) {
+						$title_field['name'] = $name;
+					}
+					if ( $desc = $section['desc'] ?? $section['description'] ) {
+						$title_field['desc'] = $desc;
+					}
+					if ( ! empty( $title_field ) ) {
+						$title_field['type'] = 'title';
+						$this->fields[] = $title_field;
+					}
 				}
 
-				foreach ($section['fields'] as $field){
-					$field = $this->convert_field_to_cmb2_field($field);
-					$this->fields[] = $field;
+				// add section fields to "flat" array.
+				foreach ( $section['fields'] as $field ) {
+					$this->fields[] = $this->convert_field_to_cmb2_field($field);
 				}
+
 			}
 			unset( $settings['sections'] );
 		}

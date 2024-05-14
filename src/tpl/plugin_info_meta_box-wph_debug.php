@@ -3,6 +3,9 @@
  * Plugin Info Metabox - .wph-debug
  * 
  * @since 0.26
+ * 
+ * @todo Render wph_debug in its own meta-box.
+ * @todo Move wph_debug functionality from template file to dedicated method/class.
  */
 
 use WPHelper\AdminPage;
