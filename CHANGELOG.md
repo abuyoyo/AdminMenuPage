@@ -1,6 +1,21 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.34
+Release date: May 14 2024
+
+### Fixed
+- Fix fatal error when `render` option is an array that is not Callable.
+- Fix default template sometimes appearing in nested `.wrap` elements.
+
+### Changed
+- Option `parent` accepts slug shortcuts for all WordPress core top menus (`dashboard`, `users`, etc.)
+- Custom headers `Release Date`/`Last Update` accept multiple date formats.
+- CMB2 option pages accept mixed CMB2/section-based settings.
+
+### Internal
+- New method `PluginInfoMetaBox::render()` deprecates `PluginInfoMetaBox::plugin_info_box()`.
+
 ## 0.33
 Release date: Feb 22 2024
 
