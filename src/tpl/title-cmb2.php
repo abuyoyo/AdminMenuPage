@@ -6,7 +6,7 @@
  */
 if ( $this->cmb->prop( 'title' ) ):
 ?>
-	<h2><?php echo wp_kses_post( $this->cmb->prop( 'title' ) ); ?></h2>
+	<h1><?php echo wp_kses_post( $this->cmb->prop( 'title' ) ); ?></h1>
 	<hr class="wp-header-end">
 <?php
 endif;
