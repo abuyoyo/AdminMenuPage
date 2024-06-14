@@ -753,6 +753,8 @@ class AdminPage
 
 	/**
 	 * Add WordPress toplevel or submenu page
+	 * 
+	 * @since 0.2
 	 */
 	public function add_menu_page(){
 
@@ -794,7 +796,11 @@ class AdminPage
 	}
 
 	/**
+	 * Add plugin-info meta-box to this screen
 	 * 
+	 * @hook admin_menu, 11
+	 * 
+	 * @since 0.25
 	 */
 	public function add_plugin_info_meta_box() {
 
@@ -820,6 +826,8 @@ class AdminPage
 	/**
 	 * CMB2 options-page does not return page_hook/hook_suffix
 	 * Generate hook_suffix ourselves.
+	 * 
+	 * @since 0.14
 	 * 
 	 * @todo This method should probably be private.
 	 * @todo Merge methods validate_page_hook() + get_hook_suffix()
@@ -892,6 +900,9 @@ class AdminPage
 	 * 
 	 * @hook admin_enqueue_scripts
 	 * @access private
+	 * 
+	 * @since 0.3 _enqueue_scripts_actual()
+	 * @since 0.4 admin_enqueue_scripts()
 	 */
 	public function admin_enqueue_scripts( $hook ) {
 
@@ -913,6 +924,8 @@ class AdminPage
 	/**
 	 * admin_enqueue_styles
 	 * Enqueue user-provided styles on admin page.
+	 * 
+	 * @since 0.10
 	 * 
 	 * @hook admin_enqueue_styles
 	 * @access private
@@ -948,6 +961,8 @@ class AdminPage
 	/**
 	 * Getter - capability
 	 * Get the capability required to view the admin page.
+	 * 
+	 * @since 0.2
 	 *
 	 * @return string
 	 */
@@ -959,6 +974,8 @@ class AdminPage
 	/**
 	 * Getter - menu_title
 	 * Get the title of the admin page in the WordPress admin menu.
+	 * 
+	 * @since 0.2
 	 *
 	 * @return string
 	 */
@@ -970,6 +987,9 @@ class AdminPage
 	/**
 	 * Getter - title
 	 * Get the title of the admin page.
+	 * 
+	 * @since 0.2 get_page_title()
+	 * @since 0.3 get_title()
 	 *
 	 * @return string
 	 */
@@ -981,6 +1001,8 @@ class AdminPage
 	/**
 	 * Getter - parent / parent_slug
 	 * Get the parent slug of the admin page.
+	 * 
+	 * @since 0.2
 	 *
 	 * @return string
 	 */
@@ -992,6 +1014,8 @@ class AdminPage
 	/**
 	 * Getter - hook_suffix
 	 * Get the hook suffix provided by WordPress when registering menu page..
+	 * 
+	 * @since 0.13
 	 *
 	 * @return string
 	 * 
@@ -1006,6 +1030,8 @@ class AdminPage
 	/**
 	 * Getter - slug
 	 * Get the slug used by the admin page.
+	 * 
+	 * @since 0.2
 	 *
 	 * @return string
 	 */
@@ -1017,6 +1043,8 @@ class AdminPage
 	/**
 	 * Getter - render_tpl
 	 * Get the render template.
+	 * 
+	 * @since 0.14
 	 *
 	 * @return string
 	 */
@@ -1032,6 +1060,8 @@ class AdminPage
 	 * This callback function used as $callback parameter in add_menu_page()
 	 * 
 	 * @access public
+	 * 
+	 * @since 0.2
 	 */
 	public function render_admin_page()
 	{
@@ -1071,6 +1101,9 @@ class AdminPage
 	 * 
 	 * @see render_plugin_info_meta_box()
 	 * @deprecated
+	 * 
+	 * @since 0.17
+	 * @since 0.25 deprecated
 	 */
 	public function render_plugin_info_box(){
 
@@ -1088,6 +1121,9 @@ class AdminPage
 	 * Or else attempt to create PluginInfoMetaBox class from $this->plugin_core and call its render function.
 	 * 
 	 * @access private?
+	 * 
+	 * @since 0.17 render_plugin_info_box()
+	 * @since 0.25 render_plugin_info_meta_box() replaces/deprecates render_plugin_info_box()
 	 * 
 	 * @todo See if this function should be public API or only run on action hook
 	 * @todo deprecate public use - use wphelper/adminpage/plugin_info_box/{$this->slug} instead
@@ -1112,7 +1148,10 @@ class AdminPage
 	}
 
 	/**
+	 * Callback passed to add_meta_box() \
+	 * Render only "inside" div of plugin_info_meta_box.
 	 * 
+	 * @since 0.25
 	 */
 	public function render_plugin_info_meta_box_inside(){
 		if ( isset( $this->plugin_info ) && is_callable( $this->plugin_info ) ) {
@@ -1129,6 +1168,8 @@ class AdminPage
 
 	/**
 	 * Bootstrap PluginInfoMetaBox
+	 * 
+	 * @since 0.25
 	 */
 	private function bootstrap_plugin_info_meta_box() {
 		if ( empty( $this->plugin_info_meta_box ) && ! empty( $this->plugin_core ) ){
