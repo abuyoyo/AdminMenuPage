@@ -1,6 +1,15 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.35
+Release date: Jun 22 2024
+
+### Changed
+- Use h1 tag for title on CMB2 pages.
+
+### Fixed
+- Fix internal call to deprecated method.
+
 ## 0.34
 Release date: May 14 2024
 
