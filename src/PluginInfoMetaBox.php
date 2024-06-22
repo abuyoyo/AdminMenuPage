@@ -37,7 +37,7 @@ class PluginInfoMetaBox{
 		 * 
 		 * @since 0.23
 		 */
-		add_action( "wphelper/plugin_info_meta_box/{$this->plugin_core->slug()}", [ $this, 'plugin_info_box' ] );
+		add_action( "wphelper/plugin_info_meta_box/{$this->plugin_core->slug()}", [ $this, 'render' ] );
 		
 		add_action( "wphelper/plugin_info_meta_box/inside/{$this->plugin_core->slug()}", [ $this, 'inside' ] );
 
