@@ -74,7 +74,8 @@ class PluginInfoMetaBox{
 				'Y_m_d',
 				'Y-m-d',
 				'Ymd',
-				'd/m/Y'
+				'd/m/Y',
+				'd-m-Y',
 			],
 			fn($carry, $format) => $carry ?: DateTime::createFromFormat($format, $date_string),
 			false
