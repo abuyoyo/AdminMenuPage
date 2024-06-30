@@ -1,6 +1,12 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.36
+Release date: Jun 30 2024
+
+### Changed
+- Custom headers `Release Date`/`Last Update` accept `d-m-Y` date format.
+
 ## 0.35
 Release date: Jun 22 2024
 
