@@ -30,9 +30,7 @@
 
 			<!-- sidebar -->
 			<div id="postbox-container-1" class="postbox-container">
-				<div class="meta-box-sortables">
-					<?php do_action("wphelper/adminpage/plugin_info_box/{$this->admin_page->get_slug()}"); ?>
-				</div><!-- .meta-box-sortables -->
+				<?php load_template( __DIR__ . '/do-meta-boxes.php', false, [ 'admin_page'=> $this->admin_page ] ); ?>
 			</div><!-- #postbox-container-1 .postbox-container -->
 		</div><!-- #post-body -->
 		<div class="clear"></div>

@@ -722,6 +722,10 @@ class AdminPage
 		add_action ( 'admin_init' , [ $this , 'admin_init' ] );
 		add_action( "wphelper/adminpage/plugin_info_box/{$this->slug}" , [ $this , 'render_plugin_info_meta_box' ] );
 
+		if ( ! empty( $this->plugin_info ) ) {
+			add_action ( 'current_screen' , [ $this , 'add_plugin_info_meta_box' ], 11 );
+		}
+
 		if ( in_array( $this->render, [ 'cmb2', 'cmb2-tabs' ] ) ){
 
 			/**
@@ -744,10 +748,6 @@ class AdminPage
 		}
 
 		add_action ( 'admin_menu' , [ $this , 'add_menu_page' ], 11 );
-
-		if ( ! empty( $this->plugin_info ) ) {
-			add_action ( 'admin_menu' , [ $this , 'add_plugin_info_meta_box' ], 11 );
-		}
 
 	}
 
