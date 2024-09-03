@@ -20,7 +20,7 @@
 
 			<!-- sidebar -->
 			<div id="postbox-container-1" class="postbox-container">
-				<?php include 'do-meta-boxes.php'; ?>
+				<?php load_template( __DIR__ . '/do-meta-boxes.php', false, [ 'admin_page'=> $this ] ); ?>
 			</div><!-- #postbox-container-1 .postbox-container -->
 		</div><!-- #post-body -->
 		<div class="clear"></div>
