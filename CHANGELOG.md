@@ -1,6 +1,15 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.37
+Release date: Sep 5 2024
+
+### Changed
+- CMB2 option pages also use `do_meta_boxes` template.
+
+### Internal
+- No longer use action `wphelper/adminpage/plugin_info_box/$slug` to render plugin info-box.
+
 ## 0.36
 Release date: Jun 30 2024
 
