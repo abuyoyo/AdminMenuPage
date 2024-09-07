@@ -3,9 +3,6 @@
  * Plugin Info Metabox - .wph-debug
  * 
  * @since 0.26
- * 
- * @todo Render wph_debug in its own meta-box.
- * @todo Move wph_debug functionality from template file to dedicated method/class.
  */
 
 use WPHelper\AdminPage;
@@ -83,7 +80,6 @@ function wph_reduce_path($path) {
 	}
 </style>
 <?php if ( ! empty( $wph_admin_composer ) ): ?>
-<hr>
 <p>
 	AdminPage: <?php echo $wph_admin_composer->version; ?><br/>
 	Location: <?php echo $wph_admin_loc; ?><br/>

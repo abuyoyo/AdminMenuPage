@@ -18,8 +18,6 @@ class PluginInfoMetaBox{
 
 	private $tpl_inside = '/tpl/plugin_info_meta_box-inside.php';
 
-	private $tpl_debug = '/tpl/plugin_info_meta_box-wph_debug.php';
-
 	/**
 	 * @var PluginCore
 	 */
@@ -148,18 +146,5 @@ class PluginInfoMetaBox{
 		include __DIR__ . $this->tpl_inside;
 	}
 
-	/**
-	 * WPHelper classes debug info
-	 * 
-	 * Prints inside Plugin Info Meta Box
-	 * 
-	 * @since 0.26
-	 * 
-	 * @todo Render wph_debug in its own meta-box.
-	 * @todo Move wph_debug functionality from template file to dedicated method/class.	
-	 */
-	function wph_debug() {
-		include __DIR__ . $this->tpl_debug;
-	}
 }
 endif;
