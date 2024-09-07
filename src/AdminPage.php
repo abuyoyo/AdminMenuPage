@@ -219,9 +219,7 @@ class AdminPage
 
 		$this->slug( $options->slug ?? null );
 
-		if ( isset( $options->plugin_info ) ){ // before render()
-			$this->plugin_info( $options->plugin_info );
-		}
+		$this->plugin_info( $options->plugin_info ?? null );
 
 		if ( isset( $options->wrap ) ){ // before render()
 			$this->wrap( $options->wrap );
@@ -599,6 +597,8 @@ class AdminPage
 		// if true-y value passed and plugin_core isset and MetaBox::add() method exists
 		else if ( ! empty( $plugin_info ) && ! empty( $this->plugin_core ) && method_exists( MetaBox::class, 'add' ) )
 			$this->plugin_info = true;
+		else 
+			$this->plugin_info = false;
 	}
 
 	/**
