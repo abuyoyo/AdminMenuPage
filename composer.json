@@ -2,8 +2,8 @@
 	"name": "abuyoyo/adminmenupage",
 	"description": "WordPress admin menu page helper class",
 	"type": "library",
-	"version": "0.37",
-	"time": "2024-09-05",
+	"version": "0.38",
+	"time": "2024-09-07",
 	"license": "BSD-3-Clause",
 	"require": {
 		"abuyoyo/metabox": "~0.8"
