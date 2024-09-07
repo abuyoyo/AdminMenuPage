@@ -1,6 +1,13 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.38
+Release date: Sep 7 2024
+
+### Changed
+- WPHelper debug info is a separate meta-box.
+- Add `abuyoyo\screen-meta-links` to WPHelper debug meta-box.
+
 ## 0.37
 Release date: Sep 5 2024
 
