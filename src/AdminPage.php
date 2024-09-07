@@ -219,9 +219,7 @@ class AdminPage
 
 		$this->slug( $options->slug ?? null );
 
-		if ( isset( $options->plugin_info ) ){ // before render()
-			$this->plugin_info( $options->plugin_info );
-		}
+		$this->plugin_info( $options->plugin_info ?? null );
 
 		if ( isset( $options->wrap ) ){ // before render()
 			$this->wrap( $options->wrap );
@@ -599,6 +597,8 @@ class AdminPage
 		// if true-y value passed and plugin_core isset and MetaBox::add() method exists
 		else if ( ! empty( $plugin_info ) && ! empty( $this->plugin_core ) && method_exists( MetaBox::class, 'add' ) )
 			$this->plugin_info = true;
+		else 
+			$this->plugin_info = false;
 	}
 
 	/**
@@ -726,6 +726,10 @@ class AdminPage
 			add_action ( 'current_screen' , [ $this , 'add_plugin_info_meta_box' ], 11 );
 		}
 
+		if ( defined('WPH_DEBUG') && WPH_DEBUG ) {
+			add_action ( 'current_screen' , [ $this , 'add_wph_debug_metabox' ], 20 );
+		}
+
 		if ( in_array( $this->render, [ 'cmb2', 'cmb2-tabs' ] ) ){
 
 			/**
@@ -798,7 +802,7 @@ class AdminPage
 	/**
 	 * Add plugin-info meta-box to this screen
 	 * 
-	 * @hook admin_menu, 11
+	 * @hook current_screen, 11
 	 * 
 	 * @since 0.25
 	 */
@@ -817,6 +821,33 @@ class AdminPage
 			'screens' => [ $this->get_hook_suffix() ],
 			// 'template',
 			'render' => [ $this , 'render_plugin_info_meta_box_inside' ],
+		];
+		( new MetaBox($metabox_args) )->add();
+
+	}
+
+	/**
+	 * Add plugin-info meta-box to this screen
+	 * 
+	 * @hook current_screen, 11
+	 * 
+	 * @since 0.38
+	 */
+	public function add_wph_debug_metabox() {
+
+		/**
+		 * bail early if method unavailable. This is a redundancy @see self::plugin_info()
+		 */
+		if ( ! method_exists( MetaBox::class, 'add' ) )
+			return;
+
+		$metabox_args = [
+			'id' => $this->slug . '_wph_debug', // id is unique (each page adds its own identical metabox)
+			'title' => 'WPHelper Debug',
+			'context' => 'side',
+			'priority' => 'low',
+			'screens' => [ $this->get_hook_suffix() ],
+			'template' => __DIR__ . '/tpl/meta-box-wphelper-debug.php',
 		];
 		( new MetaBox($metabox_args) )->add();
 

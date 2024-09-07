@@ -3,9 +3,6 @@
  * Plugin Info Metabox - .wph-debug
  * 
  * @since 0.26
- * 
- * @todo Render wph_debug in its own meta-box.
- * @todo Move wph_debug functionality from template file to dedicated method/class.
  */
 
 use WPHelper\AdminPage;
@@ -56,6 +53,13 @@ if (class_exists(DatabaseTable::class)){
 	$wph_db_loc = wph_reduce_path( dirname( $wph_db_file ) );
 }
 
+if (class_exists(Screen_Meta_Links::class)){
+	$sml_ref = new ReflectionClass(Screen_Meta_Links::class);
+	$sml_file = $sml_ref->getFileName();
+	// $sml_composer =  json_decode(file_get_contents( dirname( $sml_file ) . '/composer.json' )) ;
+	$sml_loc = wph_reduce_path( dirname( $sml_file ) );
+}
+
 /**
  * Custom function for WPH_DEBUG plugin-info meta-box
  * 
@@ -83,7 +87,6 @@ function wph_reduce_path($path) {
 	}
 </style>
 <?php if ( ! empty( $wph_admin_composer ) ): ?>
-<hr>
 <p>
 	AdminPage: <?php echo $wph_admin_composer->version; ?><br/>
 	Location: <?php echo $wph_admin_loc; ?><br/>
@@ -120,6 +123,13 @@ function wph_reduce_path($path) {
 <p>
 	DatabaseTable: <?php echo $wph_db_composer->version; ?><br/>
 	Location: <?php echo $wph_db_loc; ?><br/>
+<?php endif; ?>
+
+<?php if ( ! empty( $sml_file ) ): ?>
+<hr>
+<p>
+	Screen_Meta_Links: <?php echo get_plugin_data( $sml_file )['Version']; ?><br/>
+	Location: <?php echo $sml_loc; ?><br/>
 <?php endif; ?>
 
 </p>
