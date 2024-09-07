@@ -798,7 +798,7 @@ class AdminPage
 	/**
 	 * Add plugin-info meta-box to this screen
 	 * 
-	 * @hook admin_menu, 11
+	 * @hook current_screen, 11
 	 * 
 	 * @since 0.25
 	 */
