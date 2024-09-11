@@ -22,6 +22,7 @@ if ( ! class_exists( AdminPage::class ) ):
  * @todo is_readable() + is_callable() called twice - on register and on render
  * @todo Merge methods validate_page_hook() + get_hook_suffix()
  * @todo Add 'submenu_title' field and functionality (rename first submenu item) @see CMB2_OptionsPage::replace_submenu_title()
+ * @todo Revisit/document 'render' + 'render_cb|render_tpl' usage.
  */
 class AdminPage
 {
@@ -226,12 +227,10 @@ class AdminPage
 		}
 
 		if ( isset( $options->render_cb ) ) {
-			_deprecated_argument( __METHOD__, '0.30', "Option 'render_cb' will be removed in version 1.0. Use 'render' instead." );
 			$this->render_cb( $options->render_cb );
 		}
 
 		if ( isset( $options->render_tpl ) ) { // before render()
-			_deprecated_argument( __METHOD__, '0.30', "Option 'render_tpl' will be removed in version 1.0. Use 'render' instead." );
 			$this->render_tpl( $options->render_tpl );
 		}
 
