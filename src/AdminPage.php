@@ -320,7 +320,7 @@ class AdminPage
 	 */
 	private function slug( $slug ) {
 
-		$this->slug = $slug // if not empty
+		$this->slug ??= $slug // if not empty
 			?: $this->settings['option_key'] // if isset option_key
 			?? (
 				isset( $this->plugin_core )
@@ -471,30 +471,30 @@ class AdminPage
 	private function render( $render=null ) {
 		if ( 'settings-page' == $render ) {
 			$this->render_tpl( __DIR__ . '/tpl/form-basic.php' );
-			$this->render = $this->render ?? $render; // 'settings-page'
+			$this->render ??= $render; // 'settings-page'
 		} else if ( 'cmb2' == $render || 'cmb2-tabs' == $render ) {
 
 			// validate
 			if ( ! defined( 'CMB2_LOADED' ) ){
 				$this->render_tpl( __DIR__ . '/tpl/wrap-cmb2-unavailable.php' );
-				$this->render = $this->render ?? 'cmb2-unavailable';
+				$this->render ??= 'cmb2-unavailable';
 			} else {
 				/**
 				 * Render templates managed and included by CMB2_OptionsPage
 				 * @see CMB2_OptionsPage::options_page_output()
 				 */
-				$this->render = $this->render ?? $render; // 'cmb2' || 'cmb2-tabs'
+				$this->render ??= $render; // 'cmb2' || 'cmb2-tabs'
 			}
 
 		} else if( is_callable( $render ) ) {
 			$this->render_cb( $render );
-			$this->render = $this->render ?? 'custom-callback';
+			$this->render ??= 'custom-callback';
 		} else if ( ! is_array( $render ) && is_readable( $render ?? '' ) ) {
 			$this->render_tpl( $render );
-			$this->render = $this->render ?? 'custom-template';
+			$this->render ??= 'custom-template';
 		} else {
 			$this->render_tpl( __DIR__ . '/tpl/wrap-default.php' );
-			$this->render = $this->render ?? 'default-template';
+			$this->render ??= 'default-template';
 		}
 	}
 
@@ -507,12 +507,8 @@ class AdminPage
 	 */
 	private function render_cb($render_cb){
 
-		// we already have it
-		if ( $this->render_cb )
-			return;
-
 		if( is_callable( $render_cb ) )
-			$this->render_cb = $render_cb;
+			$this->render_cb ??= $render_cb;
 
 	}
 
@@ -525,12 +521,8 @@ class AdminPage
 	 */
 	private function render_tpl($render_tpl){
 
-		// we already have it
-		if ($this->render_tpl)
-			return;
-
 		if( is_readable( $render_tpl ) )
-			$this->render_tpl = $render_tpl;
+			$this->render_tpl ??= $render_tpl;
 
 	}
 
@@ -592,18 +584,14 @@ class AdminPage
 	 */
 	private function plugin_info( $plugin_info ){
 
-		// we already have it
-		if ( $this->plugin_info )
-			return;
-
 		if( is_callable( $plugin_info ) )
-			$this->plugin_info = $plugin_info;
+			$this->plugin_info ??= $plugin_info;
 
 		// if true-y value passed and plugin_core isset and MetaBox::add() method exists
 		else if ( ! empty( $plugin_info ) && ! empty( $this->plugin_core ) && method_exists( MetaBox::class, 'add' ) )
-			$this->plugin_info = true;
+			$this->plugin_info ??= true;
 		else 
-			$this->plugin_info = false;
+			$this->plugin_info ??= false;
 	}
 
 	/**
