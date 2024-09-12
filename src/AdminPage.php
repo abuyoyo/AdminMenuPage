@@ -432,9 +432,16 @@ class AdminPage
 			 * called in \wp-content\plugins\cgv\inc\CGV.php on line 56
 			 * in \wp-content\plugins\cmb2\includes\CMB2_Options_Hookup.php on line 39
 			 * 
-			 * Validate cmb2_get_metabox did not return false.
+			 * Only allow adding single hookup for tab_group action (fixes multiple nav-tab elements on non-CMB2 pages)
+			 * Validate CMB2 meta-box exists (@see Fatal error above).
+			 * 
+			 * @var CMB2|bool $cmb
 			 */
-			if ( $cmb = cmb2_get_metabox( $this->parent ) ){
+			if (
+				! has_action( "wphelper/adminpage/tab_nav/{$this->tab_group}" )
+				&&
+				( $cmb = cmb2_get_metabox( $this->parent ) )
+			) {
 				$hookup = new CMB2_Options_Hookup( $cmb, $this->slug );
 				add_action ( "wphelper/adminpage/tab_nav/{$this->tab_group}", [ $hookup, 'options_page_tab_nav_output' ] );
 			}
