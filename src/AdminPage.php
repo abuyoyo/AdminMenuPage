@@ -230,6 +230,10 @@ class AdminPage
 			$this->render_cb( $options->render_cb );
 		}
 
+		if ( isset( $options->display_cb ) ) {
+			$this->render_cb( $options->display_cb );
+		}
+
 		if ( isset( $options->render_tpl ) ) { // before render()
 			$this->render_tpl( $options->render_tpl );
 		}
