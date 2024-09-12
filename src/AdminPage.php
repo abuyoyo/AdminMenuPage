@@ -315,6 +315,8 @@ class AdminPage
 	 * WordPress admin menu param
 	 * 
 	 * @access private
+	 * 
+	 * @todo Remove PluginCore <= 0.24 support.
 	 */
 	private function slug( $slug ) {
 
@@ -337,6 +339,8 @@ class AdminPage
 	 * WordPress admin menu param
 	 * 
 	 * @access private
+	 * 
+	 * @todo Convert to PHP 8 match()
 	 */
 	private function parent( $parent ) {
 		switch( $parent ) {
@@ -454,10 +458,11 @@ class AdminPage
 	 * 
 	 * @access private
 	 * 
-	 * @param string|Callable|Readable|null $render valid preset string ( `settings-page | cmb2 | cmb2-tabs` ),\
-	 * 										 or render callback function,\
-	 * 										 or PHP template file,\
-	 * 										 or null.
+	 * @param string|Callable|Readable|null $render
+	 * 										- Valid preset string ( `settings-page | cmb2 | cmb2-tabs` )
+	 * 										- Render callback function
+	 * 										- PHP template file
+	 * 										- null
 	 * 
 	 * @return void Sets `$this->render` to ( `custom-callback | custom-template | default-template | settings-page | cmb2 | cmb2-tabs | cmb2-unavailable` )
 	 * 
