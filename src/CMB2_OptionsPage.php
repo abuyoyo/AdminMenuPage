@@ -53,7 +53,7 @@ class CMB2_OptionsPage{
 		$settings = $admin_options['settings'];
 
 		$settings['object_types'] = [ 'options-page' ];
-		$settings['display_cb'] ??= [ $this, 'options_page_output' ];
+		$settings['display_cb']  ??= $admin_options['render_cb'] ?? [ $this, 'options_page_output' ];
 
 		$settings['option_key']  ??= ( $settings['option_name'] ?? ( $settings['id'] ?? $admin_options['slug'] ) );
 		$settings['title']       ??= $admin_options['title'];
