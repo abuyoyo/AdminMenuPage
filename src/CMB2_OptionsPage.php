@@ -185,11 +185,17 @@ class CMB2_OptionsPage{
 		
 		$options = $this->admin_page->options();
 
-		if ( ! empty( $options['plugin_core'] ) || ! empty( $options['plugin_info'] ) ){
-			include  __DIR__ . '/tpl/wrap-cmb2-sidebar.php';
-		} else {
-			include __DIR__ . '/tpl/wrap-cmb2-simple.php';
-		}
+		$args = [
+			'admin_page' => $this->admin_page,
+			'hookup' => $hookup,
+			'cmb' => $this->cmb,
+		];
+
+		$tpl = ( ! empty( $options['plugin_info'] ) )
+			? __DIR__ . '/tpl/wrap-cmb2-sidebar.php'
+			: __DIR__ . '/tpl/wrap-cmb2-simple.php';
+
+		load_template( $tpl, false, $args);
 
 	}
 

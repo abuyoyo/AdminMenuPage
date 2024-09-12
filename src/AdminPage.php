@@ -1096,27 +1096,35 @@ class AdminPage
 		}
 
 		//---------------------------[The McGuffin]---------------------------------//
+
+		$args = [ 'admin_page' => $this ];
+		if ( ! empty( $this->settings_page ) ){
+			$args['settings_page'] = $this->settings_page;
+		}
+
 		if ( isset( $this->render_cb ) && is_callable( $this->render_cb ) ) {
 			call_user_func( $this->render_cb );
 		} else if ( isset( $this->render_tpl ) && is_readable( $this->render_tpl ) ) {
-			include $this->render_tpl;
+			load_template( $this->render_tpl, false, $args );
 		}
 		//---------------------------[The McGuffin]---------------------------------//
 
 		// if wrap - 2. include chosen wrap template
 		if ( 'none' != $this->wrap ){
-			$ob_content = ob_get_clean();
+
+			$args['ob_content'] = ob_get_clean();
 
 			switch ( $this->wrap ){
-				case ( 'simple' ):
-					include 'tpl/wrap-simple.php';
-					break;
 				case ( 'sidebar' ):
-					include 'tpl/wrap-sidebar.php';
+					$wrap_tpl = __DIR__ . '/tpl/wrap-sidebar.php';
 					break;
+				case ( 'simple' ):
 				default:
+					$wrap_tpl = __DIR__ . '/tpl/wrap-simple.php';
 					break;
 			}
+
+			load_template( $wrap_tpl, false, $args );
 
 		}
 	}

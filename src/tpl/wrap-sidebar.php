@@ -2,9 +2,11 @@
 /**
  * Template for Settings Page with Sidebar.
  * 
- * @var string $ob_content - Render template or callback
- * @var WPHelper\AdminPage $this
+ * @var array $args Arguments passed to load_template()
+ * @var string $ob_content Render template or callback
+ * @var WPHelper\AdminPage $admin_page
  */
+extract($args);
 ?>
 <div class="wrap wph-wrap wph-wrap-sidebar">
 	<h1><?= get_admin_page_title() ?></h1>
@@ -20,7 +22,7 @@
 
 			<!-- sidebar -->
 			<div id="postbox-container-1" class="postbox-container">
-				<?php load_template( __DIR__ . '/do-meta-boxes.php', false, [ 'admin_page'=> $this ] ); ?>
+				<?php load_template( __DIR__ . '/do-meta-boxes.php', false, $args ); ?>
 			</div><!-- #postbox-container-1 .postbox-container -->
 		</div><!-- #post-body -->
 		<div class="clear"></div>
