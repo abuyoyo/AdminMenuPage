@@ -2,8 +2,11 @@
 /**
  * Simple wrap
  * 
- * @var string $ob_content - Render template or callback
+ * @var array $args Additional arguments passed to template
+ * @var string $ob_content Rendered output
+ * @var WPHelper\AdminPage $admin_page
  */
+extract($args);
 ?>
 <div class="wrap wph-wrap wph-wrap-simple">
 	<h1><?= get_admin_page_title() ?></h1>

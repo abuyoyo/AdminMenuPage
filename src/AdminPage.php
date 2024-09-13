@@ -22,6 +22,7 @@ if ( ! class_exists( AdminPage::class ) ):
  * @todo is_readable() + is_callable() called twice - on register and on render
  * @todo Merge methods validate_page_hook() + get_hook_suffix()
  * @todo Add 'submenu_title' field and functionality (rename first submenu item) @see CMB2_OptionsPage::replace_submenu_title()
+ * @todo Revisit/document 'render' + 'render_cb|render_tpl' usage.
  */
 class AdminPage
 {
@@ -226,12 +227,14 @@ class AdminPage
 		}
 
 		if ( isset( $options->render_cb ) ) {
-			_deprecated_argument( __METHOD__, '0.30', "Option 'render_cb' will be removed in version 1.0. Use 'render' instead." );
 			$this->render_cb( $options->render_cb );
 		}
 
+		if ( isset( $options->display_cb ) ) {
+			$this->render_cb( $options->display_cb );
+		}
+
 		if ( isset( $options->render_tpl ) ) { // before render()
-			_deprecated_argument( __METHOD__, '0.30', "Option 'render_tpl' will be removed in version 1.0. Use 'render' instead." );
 			$this->render_tpl( $options->render_tpl );
 		}
 
@@ -315,10 +318,12 @@ class AdminPage
 	 * WordPress admin menu param
 	 * 
 	 * @access private
+	 * 
+	 * @todo Remove PluginCore <= 0.24 support.
 	 */
 	private function slug( $slug ) {
 
-		$this->slug = $slug // if not empty
+		$this->slug ??= $slug // if not empty
 			?: $this->settings['option_key'] // if isset option_key
 			?? (
 				isset( $this->plugin_core )
@@ -337,6 +342,8 @@ class AdminPage
 	 * WordPress admin menu param
 	 * 
 	 * @access private
+	 * 
+	 * @todo Convert to PHP 8 match()
 	 */
 	private function parent( $parent ) {
 		switch( $parent ) {
@@ -428,9 +435,16 @@ class AdminPage
 			 * called in \wp-content\plugins\cgv\inc\CGV.php on line 56
 			 * in \wp-content\plugins\cmb2\includes\CMB2_Options_Hookup.php on line 39
 			 * 
-			 * Validate cmb2_get_metabox did not return false.
+			 * Only allow adding single hookup for tab_group action (fixes multiple nav-tab elements on non-CMB2 pages)
+			 * Validate CMB2 meta-box exists (@see Fatal error above).
+			 * 
+			 * @var CMB2|bool $cmb
 			 */
-			if ( $cmb = cmb2_get_metabox( $this->parent ) ){
+			if (
+				! has_action( "wphelper/adminpage/tab_nav/{$this->tab_group}" )
+				&&
+				( $cmb = cmb2_get_metabox( $this->parent ) )
+			) {
 				$hookup = new CMB2_Options_Hookup( $cmb, $this->slug );
 				add_action ( "wphelper/adminpage/tab_nav/{$this->tab_group}", [ $hookup, 'options_page_tab_nav_output' ] );
 			}
@@ -454,10 +468,11 @@ class AdminPage
 	 * 
 	 * @access private
 	 * 
-	 * @param string|Callable|Readable|null $render valid preset string ( `settings-page | cmb2 | cmb2-tabs` ),\
-	 * 										 or render callback function,\
-	 * 										 or PHP template file,\
-	 * 										 or null.
+	 * @param string|Callable|Readable|null $render
+	 * 										- Valid preset string ( `settings-page | cmb2 | cmb2-tabs` )
+	 * 										- Render callback function
+	 * 										- PHP template file
+	 * 										- null
 	 * 
 	 * @return void Sets `$this->render` to ( `custom-callback | custom-template | default-template | settings-page | cmb2 | cmb2-tabs | cmb2-unavailable` )
 	 * 
@@ -466,30 +481,30 @@ class AdminPage
 	private function render( $render=null ) {
 		if ( 'settings-page' == $render ) {
 			$this->render_tpl( __DIR__ . '/tpl/form-basic.php' );
-			$this->render = $this->render ?? $render; // 'settings-page'
+			$this->render ??= $render; // 'settings-page'
 		} else if ( 'cmb2' == $render || 'cmb2-tabs' == $render ) {
 
 			// validate
 			if ( ! defined( 'CMB2_LOADED' ) ){
 				$this->render_tpl( __DIR__ . '/tpl/wrap-cmb2-unavailable.php' );
-				$this->render = $this->render ?? 'cmb2-unavailable';
+				$this->render ??= 'cmb2-unavailable';
 			} else {
 				/**
 				 * Render templates managed and included by CMB2_OptionsPage
 				 * @see CMB2_OptionsPage::options_page_output()
 				 */
-				$this->render = $this->render ?? $render; // 'cmb2' || 'cmb2-tabs'
+				$this->render ??= $render; // 'cmb2' || 'cmb2-tabs'
 			}
 
 		} else if( is_callable( $render ) ) {
 			$this->render_cb( $render );
-			$this->render = $this->render ?? 'custom-callback';
+			$this->render ??= 'custom-callback';
 		} else if ( ! is_array( $render ) && is_readable( $render ?? '' ) ) {
 			$this->render_tpl( $render );
-			$this->render = $this->render ?? 'custom-template';
+			$this->render ??= 'custom-template';
 		} else {
 			$this->render_tpl( __DIR__ . '/tpl/wrap-default.php' );
-			$this->render = $this->render ?? 'default-template';
+			$this->render ??= 'default-template';
 		}
 	}
 
@@ -502,12 +517,8 @@ class AdminPage
 	 */
 	private function render_cb($render_cb){
 
-		// we already have it
-		if ( $this->render_cb )
-			return;
-
 		if( is_callable( $render_cb ) )
-			$this->render_cb = $render_cb;
+			$this->render_cb ??= $render_cb;
 
 	}
 
@@ -520,12 +531,8 @@ class AdminPage
 	 */
 	private function render_tpl($render_tpl){
 
-		// we already have it
-		if ($this->render_tpl)
-			return;
-
 		if( is_readable( $render_tpl ) )
-			$this->render_tpl = $render_tpl;
+			$this->render_tpl ??= $render_tpl;
 
 	}
 
@@ -587,18 +594,14 @@ class AdminPage
 	 */
 	private function plugin_info( $plugin_info ){
 
-		// we already have it
-		if ( $this->plugin_info )
-			return;
-
 		if( is_callable( $plugin_info ) )
-			$this->plugin_info = $plugin_info;
+			$this->plugin_info ??= $plugin_info;
 
 		// if true-y value passed and plugin_core isset and MetaBox::add() method exists
 		else if ( ! empty( $plugin_info ) && ! empty( $this->plugin_core ) && method_exists( MetaBox::class, 'add' ) )
-			$this->plugin_info = true;
+			$this->plugin_info ??= true;
 		else 
-			$this->plugin_info = false;
+			$this->plugin_info ??= false;
 	}
 
 	/**
@@ -1103,27 +1106,35 @@ class AdminPage
 		}
 
 		//---------------------------[The McGuffin]---------------------------------//
+
+		$args = [ 'admin_page' => $this ];
+		if ( ! empty( $this->settings_page ) ){
+			$args['settings_page'] = $this->settings_page;
+		}
+
 		if ( isset( $this->render_cb ) && is_callable( $this->render_cb ) ) {
 			call_user_func( $this->render_cb );
 		} else if ( isset( $this->render_tpl ) && is_readable( $this->render_tpl ) ) {
-			include $this->render_tpl;
+			load_template( $this->render_tpl, false, $args );
 		}
 		//---------------------------[The McGuffin]---------------------------------//
 
 		// if wrap - 2. include chosen wrap template
 		if ( 'none' != $this->wrap ){
-			$ob_content = ob_get_clean();
+
+			$args['ob_content'] = ob_get_clean();
 
 			switch ( $this->wrap ){
-				case ( 'simple' ):
-					include 'tpl/wrap-simple.php';
-					break;
 				case ( 'sidebar' ):
-					include 'tpl/wrap-sidebar.php';
+					$wrap_tpl = __DIR__ . '/tpl/wrap-sidebar.php';
 					break;
+				case ( 'simple' ):
 				default:
+					$wrap_tpl = __DIR__ . '/tpl/wrap-simple.php';
 					break;
 			}
+
+			load_template( $wrap_tpl, false, $args );
 
 		}
 	}

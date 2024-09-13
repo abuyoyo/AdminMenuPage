@@ -3,7 +3,12 @@
  * Settings-Page settings form
  * 
  * Print WordPress settings form and submit button.
+ * 
+ * @var array $args Additional arguments passed to template
+ * @var WPHelper\AdminPage $admin_page
+ * @var WPHelper\SettingsPage $settings_page
  */
+extract($args);
 ?>
 <form method="post" action="options.php">
 	<style>
@@ -19,9 +24,8 @@
 		}
 	</style>
 	<?php
-	/** @var WPHelper\AdminPage $this */
-	settings_fields( $this->settings_page->option_group );// Print hidden setting fields
-	do_settings_sections( $this->settings_page->page );// Print title, info callback and form-table
+	settings_fields( $settings_page->option_group );// Print hidden setting fields
+	do_settings_sections( $settings_page->page );// Print title, info callback and form-table
 	submit_button();
 	?>
 </form>

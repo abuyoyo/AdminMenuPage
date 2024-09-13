@@ -1,7 +1,14 @@
 <?php
 /**
  * Plugin Info Metabox - .inside
+ * 
+ * @var array $args Arguments passed to template.
+ * @var array $plugin_data
+ * @var string $repo_href
+ * @var string $repo_text
+ * @var string $update_message
  */
+extract($args);
 ?>
 <h3 style="font-weight: 100; font-size: 1.5em;"><?php echo $plugin_data['Name']; ?></h3>
 <p>
