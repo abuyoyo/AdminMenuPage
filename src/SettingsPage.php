@@ -19,6 +19,8 @@ if ( ! class_exists( SettingsPage::class ) ):
  * @author  abuyoyo
  * 
  * @since 0.11
+ * 
+ * @todo Remove deprecated $settings parameter from constructor.
  */
 class SettingsPage{
 
@@ -76,6 +78,8 @@ class SettingsPage{
 	 *
 	 * @param AdminPage $admin_page instance
 	 * @param null $settings deprecated
+	 * 
+	 * @todo Remove deprecated $settings parameter from constructor.
 	 */
 	public function __construct( $admin_page, $settings = null )
 	{

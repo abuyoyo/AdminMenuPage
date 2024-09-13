@@ -1,6 +1,21 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.39
+Release date: Sep 14 2024
+
+### Changed
+- Accept option `display_cb` (CMB2 style) as alias of `render_cb`.
+- CMB2 option page falls back to option `render_cb` if CMB2 setting `display_cb` not provided.
+- Un-deprecate `render_cb` and `render_tpl` options (deprecated since 0.31).
+
+### Fixed
+- Fix nav-tab duplication on non-CMB2 pages when multiple non-CMB2 pages are added to the same tab_group.
+
+### Internal
+- Use `load_template()` with `$args` parameter instead of `include` where appropriate.
+- Deprecate `AdminMenuPage` - add `_doing_it_wrong` message to constructor.
+
 ## 0.38
 Release date: Sep 7 2024
 

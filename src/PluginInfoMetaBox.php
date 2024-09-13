@@ -130,9 +130,7 @@ class PluginInfoMetaBox{
 	 * @since 0.34             Deprecate plugin_info_box() in favor of render()
 	 */
 	function render(){
-		$args = $this->setup_template_args();
-		extract($args);
-		include __DIR__ . $this->tpl;
+		load_template( __DIR__ . $this->tpl, false, $this->setup_template_args() );
 	}
 
 
@@ -141,9 +139,7 @@ class PluginInfoMetaBox{
 	 * No header.
 	 */
 	function inside(){
-		$args = $this->setup_template_args();
-		extract($args);
-		include __DIR__ . $this->tpl_inside;
+		load_template( __DIR__ . $this->tpl_inside, false, $this->setup_template_args() );
 	}
 
 }
