@@ -1,6 +1,15 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.40
+Release date: Oct 12 2024
+
+### Internal
+- Test method `Metabox::add()` using `is_callable` instead of `method_exists`.
+
+### Dependencies
+- Compatible with lib: WPHelper\Metabox (`abuyoyo/metabox`) ~0.9.
+
 ## 0.39
 Release date: Sep 14 2024
 
