@@ -598,7 +598,7 @@ class AdminPage
 			$this->plugin_info ??= $plugin_info;
 
 		// if true-y value passed and plugin_core isset and MetaBox::add() method exists
-		else if ( ! empty( $plugin_info ) && ! empty( $this->plugin_core ) && method_exists( MetaBox::class, 'add' ) )
+		else if ( ! empty( $plugin_info ) && ! empty( $this->plugin_core ) && is_callable( MetaBox::class, 'add' ) )
 			$this->plugin_info ??= true;
 		else 
 			$this->plugin_info ??= false;
@@ -814,7 +814,7 @@ class AdminPage
 		/**
 		 * bail early if method unavailable. This is a redundancy @see self::plugin_info()
 		 */
-		if ( ! method_exists( MetaBox::class, 'add' ) )
+		if ( ! is_callable( MetaBox::class, 'add' ) )
 			return;
 
 		$metabox_args = [
@@ -841,7 +841,7 @@ class AdminPage
 		/**
 		 * bail early if method unavailable. This is a redundancy @see self::plugin_info()
 		 */
-		if ( ! method_exists( MetaBox::class, 'add' ) )
+		if ( ! is_callable( MetaBox::class, 'add' ) )
 			return;
 
 		$metabox_args = [
