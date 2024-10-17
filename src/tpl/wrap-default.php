@@ -2,10 +2,12 @@
 /**
  * WordPress admin 'wrap' div
  * 
- * @var WPHelper\AdminPage $this
+ * @var array $args Additional arguments passed to template
+ * @var WPHelper\AdminPage $admin_page
  * 
  * @todo separate default card from .wrap element.
  */
+extract($args);
 ?>
 <div class="wrap wph-wrap wph-wrap-default">
 	<h1><?= get_admin_page_title() ?></h1>
@@ -18,8 +20,8 @@
 		</p>
 		<pre><code style="display: block;">new WPHelper\AdminPage(
 	[
-		'slug'     => '<?=$this->slug?>',
-		'title'    => '<?=$this->title?>',
+		'slug'     => '<?= $admin_page->get_slug() ?>',
+		'title'    => '<?= $admin_page->get_title() ?>',
 		<strong><em>'render' => 'callback_or_tpl_file',</em></strong>
 	]
 );</code></pre>

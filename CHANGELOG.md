@@ -1,6 +1,12 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.41
+Release date: Oct 17 2024
+
+### Fixed
+- Default template uses `load_template()` args.
+
 ## 0.40
 Release date: Oct 12 2024
 
