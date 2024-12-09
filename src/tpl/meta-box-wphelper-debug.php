@@ -60,26 +60,6 @@ if (class_exists(Screen_Meta_Links::class)){
 	$sml_loc = wph_reduce_path( dirname( $sml_file ) );
 }
 
-/**
- * Custom function for WPH_DEBUG plugin-info meta-box
- * 
- * Show relative path to known directories WP_CONTENT_DIR or ABSPATH
- * 
- * @since 0.32
- */
-function wph_reduce_path($path) {
-	return trailingslashit(
-		str_replace(
-			[
-				wp_normalize_path( trailingslashit( WP_CONTENT_DIR ) ),
-				wp_normalize_path( ABSPATH ),
-			],
-			'',
-			wp_normalize_path($path)
-		)
-	);
-}
-
 ?>
 <style>
 	.inside {
