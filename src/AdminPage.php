@@ -1,6 +1,7 @@
 <?php
 namespace WPHelper;
 
+use CMB2;
 use CMB2_Options_Hookup;
 
 defined( 'ABSPATH' ) || die( 'No soup for you!' );
@@ -23,6 +24,7 @@ if ( ! class_exists( AdminPage::class ) ):
  * @todo Merge methods validate_page_hook() + get_hook_suffix()
  * @todo Add 'submenu_title' field and functionality (rename first submenu item) @see CMB2_OptionsPage::replace_submenu_title()
  * @todo Revisit/document 'render' + 'render_cb|render_tpl' usage.
+ * @todo Review multiple pages registering to the same slug with multiple render callbacks.
  */
 class AdminPage
 {
@@ -238,13 +240,8 @@ class AdminPage
 			$this->render_tpl( $options->render_tpl );
 		}
 
-		// This runs last so we can have 'settings-page' with custom render_tpl
-		if ( isset( $options->render ) )
-			$this->render( $options->render );
-
-
-		if (true)
-			$this->render(); // render anyway - will use default tpl if render is empty
+		// Run render after render_cb + render_tpl so we can have 'settings-page' with custom render_tpl
+		$this->render( $options->render ?? null ); // Will use default tpl if empty
 
 		if (true)
 			$this->wrap(); // set wrap anyway - will set to 'none' if empty
@@ -475,8 +472,6 @@ class AdminPage
 	 * 										- null
 	 * 
 	 * @return void Sets `$this->render` to ( `custom-callback | custom-template | default-template | settings-page | cmb2 | cmb2-tabs | cmb2-unavailable` )
-	 * 
-	 * @todo Revisit null coalescing $this->render. We should only call this once. We call it twice(second time with null).
 	 */
 	private function render( $render=null ) {
 		if ( 'settings-page' == $render ) {
@@ -586,11 +581,11 @@ class AdminPage
 	/**
 	 * Setter - plugin_info
 	 * 
-	 * accepts:
-	 *     callable: Function that prints plugin info box
-	 *     boolean true (or non-empty value): print default 
+	 * Variable $plugin_info will only be set to true if PluginCore instance and MetaBox::add() method are available.
 	 * 
 	 * @access private
+	 * 
+	 * @param callable|boolean|mixed $plugin_info - Callable that renders the plugin info box | Boolean/truthy value to generate from PluginCore data. 
 	 */
 	private function plugin_info( $plugin_info ){
 
@@ -690,15 +685,9 @@ class AdminPage
 	 * REGISTER MENU - NOOP/DEPRECATE NOTICE
 	 * 
 	 * Empty function. Kept here for backward-compatibility purposes.
-	 * 
 	 * All setup operations are now made in the constructor. This function is empty and will be deprecated.
 	 * 
-	 * This runs for all registers
-	 * hook_suffix not defined yet
-	 * 
-	 * inside WPHelper namespace
-	 * \get_current_screen() function not defined
-	 * \current_action() also????
+	 * @deprecated
 	 */
 	function setup(){
 		_doing_it_wrong( __METHOD__, 'Deprecated. Noop/no-op. This function will be removed in v1.0', '0.14' );

@@ -55,7 +55,7 @@ class CMB2_OptionsPage{
 		$settings['object_types'] = [ 'options-page' ];
 		$settings['display_cb']  ??= $admin_options['render_cb'] ?? [ $this, 'options_page_output' ];
 
-		$settings['option_key']  ??= ( $settings['option_name'] ?? ( $settings['id'] ?? $admin_options['slug'] ) );
+		$settings['option_key']  ??= $settings['option_name'] ?? $settings['id'] ?? $admin_options['slug'];
 		$settings['title']       ??= $admin_options['title'];
 		$settings['menu_title']  ??= $admin_options['menu_title'];
 		// @todo Only if cmb2-tabs
@@ -131,11 +131,10 @@ class CMB2_OptionsPage{
 			unset( $settings['sections'] );
 		}
 
-
 		/**
 		 * Special provision for cmb2-switch
 		 */
-		if ( ! class_exists( 'CMB2_Switch_Button' ) ){
+		if ( ! class_exists( 'CMB2_Switch_Button' ) ) {
 			array_walk(
 				$this->fields,
 				function( &$field ){
@@ -153,12 +152,8 @@ class CMB2_OptionsPage{
 
 		// register parent pages before sub-menu pages
 		$priority = empty( $settings['parent_slug'] ) ? 9 : 10;
-
-		if ( $settings['allow_on_front'] ?? false ){
-			add_action( 'cmb2_init', [ $this, 'register_metabox' ], $priority );
-		} else {
-			add_action( 'cmb2_admin_init', [ $this, 'register_metabox' ], $priority );
-		}
+		$cmb2_init_hook = ( $settings['allow_on_front'] ?? false ) ? 'cmb2_init' : 'cmb2_admin_init';
+		add_action( $cmb2_init_hook, [ $this, 'register_metabox' ], $priority );
 
 		/**
 		 * @todo add 'submenu_title' field and functionality to WPHelper\AdminPage
