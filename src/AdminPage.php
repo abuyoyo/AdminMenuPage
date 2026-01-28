@@ -296,7 +296,9 @@ class AdminPage
 	 * @access private
 	 */
 	private function title( $title=null ) {
-		$this->title = $title ?? ( isset( $this->plugin_core ) ? $this->plugin_core->title() : __METHOD__ );
+		$this->title = $title
+			?? $this->plugin_core?->title()
+			?? ucfirst( $this->slug );
 	}
 
 	/**
