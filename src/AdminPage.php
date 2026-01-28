@@ -219,11 +219,7 @@ class AdminPage
 
 		$this->title( $options->title ?? null );
 
-		if ( ! isset( $options->menu_title ) )
-			$options->menu_title = $this->title;
-
-		if ( isset( $options->menu_title ) )
-			$this->menu_title( $options->menu_title );
+		$this->menu_title( $options->menu_title ?? null );
 
 		if ( isset( $options->submenu_title ) )
 			$this->submenu_title( $options->submenu_title );
@@ -308,7 +304,7 @@ class AdminPage
 	 * @access private
 	 */
 	private function menu_title( $menu_title ) {
-		$this->menu_title = $menu_title;
+		$this->menu_title = $menu_title ?? $this->title;
 	}
 
 	/**
