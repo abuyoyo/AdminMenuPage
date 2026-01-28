@@ -209,6 +209,8 @@ class AdminPage
 		if ( isset( $options->plugin_core ) )
 			$this->plugin_core( $options->plugin_core );
 
+		$this->slug( $options->slug ?? null );
+
 		$this->title( $options->title ?? null );
 
 		if ( ! isset( $options->menu_title ) )
@@ -219,8 +221,6 @@ class AdminPage
 
 		if ( isset( $options->capability ) )
 			$this->capability( $options->capability );
-
-		$this->slug( $options->slug ?? null );
 
 		$this->plugin_info( $options->plugin_info ?? null );
 
