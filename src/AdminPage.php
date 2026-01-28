@@ -22,7 +22,6 @@ if ( ! class_exists( AdminPage::class ) ):
  * @todo fix is_readable() PHP error when sending callback array
  * @todo is_readable() + is_callable() called twice - on register and on render
  * @todo Merge methods validate_page_hook() + get_hook_suffix()
- * @todo Add 'submenu_title' field and functionality (rename first submenu item) @see CMB2_OptionsPage::replace_submenu_title()
  * @todo Revisit/document 'render' + 'render_cb|render_tpl' usage.
  * @todo Review multiple pages registering to the same slug with multiple render callbacks.
  */
@@ -41,6 +40,13 @@ class AdminPage
 	 * @var string
 	 */
 	protected $menu_title;
+
+	/**
+	 * Title displayed in submenu.
+	 *
+	 * @var string
+	 */
+	protected $submenu_title;
 
 	/**
 	 * User capability required to view page.
@@ -219,6 +225,9 @@ class AdminPage
 		if ( isset( $options->menu_title ) )
 			$this->menu_title( $options->menu_title );
 
+		if ( isset( $options->submenu_title ) )
+			$this->submenu_title( $options->submenu_title );
+
 		if ( isset( $options->capability ) )
 			$this->capability( $options->capability );
 
@@ -298,6 +307,16 @@ class AdminPage
 	 */
 	private function menu_title( $menu_title ) {
 		$this->menu_title = $menu_title;
+	}
+
+	/**
+	 * Setter - submenu_title
+	 * WordPress admin menu param
+	 * 
+	 * @access private
+	 */
+	private function submenu_title( $submenu_title ) {
+		$this->submenu_title = $submenu_title;
 	}
 
 	/**
@@ -661,6 +680,7 @@ class AdminPage
 		$options = [
 			'title' => $this->title,
 			'menu_title' => $this->menu_title,
+			'submenu_title' => $this->submenu_title,
 			'capability' => $this->capability,
 			'slug' => $this->slug,
 			'parent' => $this->parent,
@@ -766,6 +786,16 @@ class AdminPage
 					$this->icon_url,
 					$this->position
 				);
+
+				// If parent && has subtitle - remove first submenu and replace menu_title parameter.
+				if (
+					! empty( $this->submenu_title )
+					&&
+					$this->menu_title != $this->submenu_title
+				){
+					$this->replace_submenu_title();
+				}
+
 				break;
 			case 'options':
 			case 'settings':
@@ -1193,6 +1223,24 @@ class AdminPage
 		}
 
 		return true;
+	}
+
+	/**
+	 * Replace submenu title of parent item
+	 *
+	 * @since 0.42
+	 */
+	private function replace_submenu_title(){
+		remove_submenu_page( $this->slug, $this->slug );
+		add_submenu_page(
+			$this->slug,
+			$this->title,
+			$this->submenu_title,
+			$this->capability,
+			$this->slug,
+			[ $this , 'render_admin_page' ],
+			0
+		);
 	}
 }
 endif;

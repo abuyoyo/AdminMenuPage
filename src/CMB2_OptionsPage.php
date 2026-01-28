@@ -16,8 +16,6 @@ if ( ! class_exists( CMB2_OptionsPage::class ) ):
  * @author  abuyoyo
  * 
  * @see CMB2_Options_Hookup::options_page_output and 'display_cb' - to manipulate tabs
- * 
- * @todo Add 'submenu_title' field and functionality (rename first submenu item) to WPHelper\AdminPage
  */
 class CMB2_OptionsPage{
 
@@ -58,6 +56,7 @@ class CMB2_OptionsPage{
 		$settings['option_key']  ??= $settings['option_name'] ?? $settings['id'] ?? $admin_options['slug'];
 		$settings['title']       ??= $admin_options['title'];
 		$settings['menu_title']  ??= $admin_options['menu_title'];
+		$settings['submenu_title'] ??= $admin_options['submenu_title'] ?? $admin_options['tab_title'] ?? $settings['tab_title'] ?? $admin_options['menu_title'];
 		// @todo Only if cmb2-tabs
 		$settings['tab_title']  ??= $admin_options['tab_title'] ?? $settings['submenu_title'] ?? $settings['menu_title'];
 		$settings['parent_slug'] ??= $admin_options['parent'];
@@ -155,11 +154,14 @@ class CMB2_OptionsPage{
 		$cmb2_init_hook = ( ! is_admin() && ( $settings['allow_on_front'] ?? false ) ) ? 'cmb2_init' : 'cmb2_admin_init';
 		add_action( $cmb2_init_hook, [ $this, 'register_metabox' ], $priority );
 
-		/**
-		 * @todo add 'submenu_title' field and functionality to WPHelper\AdminPage
-		 * @todo reverse control/flow - so 'tab title' inherits/defaults to AdminPage 'submenu_title' field if exists.
-		 */
-		if ( empty( $settings['parent_slug'] ) && $settings['menu_title'] != $settings['tab_title'] ){
+		// If parent && has subtitle - remove first submenu and replace menu_title parameter.
+		if (
+			empty( $settings['parent_slug'] )
+			&&
+			! empty( $settings['submenu_title'] )
+			&&
+			$settings['menu_title'] != $settings['submenu_title']
+		){
 			add_action('admin_menu', [ $this, 'replace_submenu_title'], 11 );
 		}
 
@@ -210,9 +212,7 @@ class CMB2_OptionsPage{
 
 
 	/**
-	 * Replace submenu title of parent item with tab title
-	 * 
-	 * @todo add 'submenu_title' field and functionality to WPHelper\PluginCore
+	 * Replace submenu title of parent item
 	 */
 	public function replace_submenu_title(){
 
@@ -220,7 +220,7 @@ class CMB2_OptionsPage{
 		add_submenu_page(
 			$this->cmb2_options['id'],
 			$this->cmb2_options['title'],
-			$this->cmb2_options['tab_title'],
+			$this->cmb2_options['submenu_title'],
 			$this->cmb2_options['capability'],
 			$this->cmb2_options['id'],
 			'',
