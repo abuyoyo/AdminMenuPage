@@ -2,7 +2,7 @@
 namespace WPHelper;
 
 use CMB2;
-use CMB2_Options_Hookup;
+use CMB2_Boxes;
 
 defined( 'ABSPATH' ) || die( 'No soup for you!' );
 
@@ -399,29 +399,6 @@ class AdminPage
 		$this->tab_group = $tab_group;
 
 		add_filter( 'cmb2_tab_group_tabs', [ $this, 'add_to_tab_group' ], 10, 2 );
-		add_action( 'cmb2_admin_init', function(){
-			/**
-			 * When deactivating CMB2 and reactivating - got this fatal error:
-			 * 
-			 * Fatal error: Uncaught Error: Argument 1 passed to CMB2_Options_Hookup::__construct()
-			 * must be an instance of CMB2, bool given,
-			 * called in \wp-content\plugins\cgv\inc\CGV.php on line 56
-			 * in \wp-content\plugins\cmb2\includes\CMB2_Options_Hookup.php on line 39
-			 * 
-			 * Only allow adding single hookup for tab_group action (fixes multiple nav-tab elements on non-CMB2 pages)
-			 * Validate CMB2 meta-box exists (@see Fatal error above).
-			 * 
-			 * @var CMB2|bool $cmb
-			 */
-			if (
-				! has_action( "wphelper/adminpage/tab_nav/{$this->tab_group}" )
-				&&
-				( $cmb = cmb2_get_metabox( $this->parent ) )
-			) {
-				$hookup = new CMB2_Options_Hookup( $cmb, $this->slug );
-				add_action ( "wphelper/adminpage/tab_nav/{$this->tab_group}", [ $hookup, 'options_page_tab_nav_output' ] );
-			}
-		});
 	}
 
 	/**
@@ -1204,6 +1181,54 @@ class AdminPage
 			[ $this , 'render_admin_page' ],
 			0
 		);
+	}
+
+	/**
+	 * UNUSED
+	 * 
+	 * @see CMB2_Options_Hookup::options_page_tab_nav_output()
+	 * 
+	 * Display options-page Tab Navigation output.
+	 *
+	 * @since 0.42
+	 */
+	public function options_page_tab_nav_output() {
+		load_template( __DIR__ . '/tpl/tab-nav-simple.php', false, [ 'admin_page' => $this ] );
+	}
+	
+	/**
+	 * @see CMB2_Options_Hookup::get_tab_group_tabs()
+	 * 
+	 * Gets navigation tabs array for CMB2 options pages which share the
+	 * same tab_group property.
+	 *
+	 * @since 0.42
+	 * 
+	 * @uses CMB2_Boxes
+	 * @uses CMB2
+	 * 
+	 * @return array Array of tab information ($option_key => $tab_title)
+	 */
+	public function get_tab_group_tabs() {
+		$tabs = [];
+
+		if (
+			! empty( $this->tab_group )
+			&&
+			class_exists( CMB2_Boxes::class )
+		) {
+			/** @var CMB2 $cmb */
+			foreach ( CMB2_Boxes::get_by( 'tab_group', $this->tab_group ) as $cmb ) {
+				$option_key = $cmb->options_page_keys();
+
+				// Must have an option key, must be an options page box.
+				if ( isset( $option_key[0] ) && 'options-page' === $cmb->mb_object_type() ) {
+					$tabs[ $option_key[0] ] = $cmb->prop( 'tab_title', $cmb->prop( 'title' ) );
+				}
+			}
+		}
+
+		return apply_filters( 'cmb2_tab_group_tabs', $tabs, $this->tab_group );
 	}
 }
 endif;

@@ -57,7 +57,7 @@ class CMB2_OptionsPage{
 		$settings['title']       ??= $admin_options['title'];
 		$settings['menu_title']  ??= $admin_options['menu_title'];
 		$settings['submenu_title'] ??= $admin_options['submenu_title'] ?? $admin_options['tab_title'] ?? $settings['tab_title'] ?? $admin_options['menu_title'];
-		// @todo Only if cmb2-tabs
+		$settings['tab_group']   ??= $admin_options['tab_group'];
 		$settings['tab_title']  ??= $admin_options['tab_title'] ?? $settings['submenu_title'] ?? $settings['menu_title'];
 		$settings['parent_slug'] ??= $admin_options['parent'];
 		$settings['position']    ??= $admin_options['position'];
