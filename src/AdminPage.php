@@ -720,7 +720,8 @@ class AdminPage
 			$this->settings_page = new SettingsPage($this);
 		}
 
-		add_action ( 'admin_menu' , [ $this , 'add_menu_page' ], 11 );
+		$priority = empty( $this->parent ) ? 9 : 11;
+		add_action ( 'admin_menu' , [ $this , 'add_menu_page' ], $priority );
 
 	}
 
