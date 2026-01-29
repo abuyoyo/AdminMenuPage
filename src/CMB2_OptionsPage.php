@@ -152,7 +152,7 @@ class CMB2_OptionsPage{
 
 		// register parent pages before sub-menu pages
 		$priority = empty( $settings['parent_slug'] ) ? 9 : 10;
-		$cmb2_init_hook = ( $settings['allow_on_front'] ?? false ) ? 'cmb2_init' : 'cmb2_admin_init';
+		$cmb2_init_hook = ( ! is_admin() && ( $settings['allow_on_front'] ?? false ) ) ? 'cmb2_init' : 'cmb2_admin_init';
 		add_action( $cmb2_init_hook, [ $this, 'register_metabox' ], $priority );
 
 		/**
