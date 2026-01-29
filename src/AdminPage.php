@@ -582,7 +582,12 @@ class AdminPage
 	 */
 	public function add_to_tab_group( $tabs, $tab_group ){
 		if ( $tab_group == $this->tab_group ){
-			$tabs[ $this->slug ] = $this->tab_title;
+			if ( empty( $this->parent ) ) {
+				//	if parent page - set as first tab
+				$tabs = array_merge( [ $this->slug => $this->tab_title ], $tabs );
+			} else {
+				$tabs[ $this->slug ] = $this->tab_title;
+			}
 		}
 		return $tabs;
 	}
