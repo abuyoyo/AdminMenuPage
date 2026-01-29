@@ -926,22 +926,12 @@ class AdminPage
 	 * 
 	 * @since 0.3 _enqueue_scripts_actual()
 	 * @since 0.4 admin_enqueue_scripts()
+	 * @since 0.42 Remove $hook param
 	 */
-	public function admin_enqueue_scripts( $hook ) {
-
-		// redundant
-		// this only gets called on load-{$this->hook_suffix} anyway
-		if( $hook != $this->hook_suffix ) {
-			return;
-		}
-
-		if ( ! $this->scripts)
-			return;
-
+	public function admin_enqueue_scripts() {
 		foreach ( $this->scripts as $script_args ){
 			wp_enqueue_script( ...$script_args );
 		}
-
 	}
 
 	/**
@@ -949,25 +939,15 @@ class AdminPage
 	 * Enqueue user-provided styles on admin page.
 	 * 
 	 * @since 0.10
+	 * @since 0.42 Remove $hook param
 	 * 
 	 * @hook admin_enqueue_styles
 	 * @access private
 	 */
-	public function admin_enqueue_styles( $hook ) {
-
-		// redundant
-		// this only gets called on load-{$this->hook_suffix} anyway
-		if( $hook != $this->hook_suffix ) {
-			return;
-		}
-
-		if ( ! $this->styles)
-			return;
-
+	public function admin_enqueue_styles() {
 		foreach ( $this->styles as $style_args ){
 			wp_enqueue_style( ...$style_args );
 		}
-
 	}
 
 	/**
