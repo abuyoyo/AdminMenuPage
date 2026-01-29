@@ -359,58 +359,25 @@ class AdminPage
 	 * WordPress admin menu param
 	 * 
 	 * @access private
-	 * 
-	 * @todo Convert to PHP 8 match()
 	 */
 	private function parent( $parent ) {
-		switch( $parent ) {
-			case 'dashboard':
-				$this->parent = 'index.php';
-				break;
-			case 'posts':
-				$this->parent = 'edit.php';
-				break;
-			case 'media':
-				$this->parent = 'upload.php';
-				break;
-			case 'pages':
-				$this->parent = 'edit.php?post_type=page';
-				break;
-			case 'comments':
-				$this->parent = 'edit-comments.php';
-				break;
-			case 'themes':
-			case 'appearance': // Official WordPress designation 
-				$this->parent = 'themes.php';
-				break;
-			case 'plugins':
-				$this->parent = 'plugins.php';
-				break;
-			case 'users':
-				$this->parent = 'users.php';
-			case 'options':
-			case 'settings': // Official WordPress designation
-			case 'options-general.php':
-				$this->parent = 'options-general.php';
-				break;
-			case 'tools':
-			case 'tools.php':
-				$this->parent = 'tools.php';
-				break;
-			case 'network':
-			case 'network_settings':
-				$this->parent = 'settings.php';
-				break;
-			case null:
-				break;
-			default:
-				if ( post_type_exists( $this->parent ) ){
-					$this->parent = "edit.php?post_type={$this->parent}";
-					break;
-				}
-				$this->parent = $parent;
-				break;
-		}
+		$this->parent = match( $parent ) {
+			'dashboard'           => 'index.php',
+			'posts'               => 'edit.php',
+			'media'               => 'upload.php',
+			'pages'               => 'edit.php?post_type=page',
+			'comments'            => 'edit-comments.php',
+			'appearance', // Official WordPress designation 
+			'themes'              => 'themes.php',
+			'plugins'             => 'plugins.php',
+			'users'               => 'users.php',
+			'settings', // Official WordPress designation
+			'options'             => 'options-general.php',
+			'tools'               => 'tools.php',
+			'network',
+			'network_settings'    => 'settings.php',
+			default               => post_type_exists( $parent ?? '' ) ? "edit.php?post_type={$parent}" : $parent,
+		};
 	}
 
 	/**
