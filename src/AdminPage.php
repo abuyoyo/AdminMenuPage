@@ -224,6 +224,9 @@ class AdminPage
 		if ( isset( $options->submenu_title ) )
 			$this->submenu_title( $options->submenu_title );
 
+		if ( isset( $options->tab_title ) )
+			$this->tab_title( $options->tab_title );
+
 		if ( isset( $options->capability ) )
 			$this->capability( $options->capability );
 
@@ -263,7 +266,7 @@ class AdminPage
 
 		if ( isset( $options->tab_group ) ){
 			$this->tab_group( $options->tab_group );
-			$this->tab_title( $options->tab_title ?? $options->submenu_title ?? $options->menu_title );
+			$this->tab_title( $options->tab_title ?? $options->submenu_title ?? $options->menu_title ?? $options->title ?? $this->title ); // tab_title redundant - fallbacks are not
 		}
 
 		if ( isset( $options->scripts ) )

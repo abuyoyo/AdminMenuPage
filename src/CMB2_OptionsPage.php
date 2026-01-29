@@ -73,7 +73,6 @@ class CMB2_OptionsPage{
 		
 		if ( $admin_options['render'] == 'cmb2-tabs' ){
 			$settings['tab_group'] ??= $settings['parent_slug'] ?? $settings['id'];
-			$settings['tab_title'] ??= $settings['menu_title'];
 		}
 
 		$this->fields = $settings['fields'] ?? [];
