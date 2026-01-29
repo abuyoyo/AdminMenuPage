@@ -335,23 +335,12 @@ class AdminPage
 	 * WordPress admin menu param
 	 * 
 	 * @access private
-	 * 
-	 * @todo Remove PluginCore <= 0.24 support.
 	 */
 	private function slug( $slug ) {
-
 		$this->slug ??= $slug // if not empty
 			?: $this->settings['option_key'] // if isset option_key
-			?? (
-				isset( $this->plugin_core )
-					? (
-						method_exists( PluginCore::class, 'token' )
-							? $this->plugin_core->token() // PluginCore ~0.25
-							: str_replace('-','_', strtolower( $this->plugin_core->slug() ) ) // PluginCore <= 0.24
-					)
-					: 'slug' . time() // unique slug
-				);
-
+			?? $this->plugin_core?->slug()
+			?? 'slug' . time(); // "unique" slug - USELESS - AdminPage MUST have id/slug
 	}
 
 	/**
