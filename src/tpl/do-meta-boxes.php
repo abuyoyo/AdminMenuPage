@@ -2,6 +2,7 @@
 /**
  * Bootstrap WordPress core meta-boxes to generate metaboxes
  * 
+ * @var array $args Additional arguments passed to template
  * @var WPHelper\AdminPage $admin_page
  */
 extract($args);
@@ -10,7 +11,7 @@ extract($args);
 	/*
 	we don't actually have draggable/movable metaboxes
 	.hide-if-no-js / hidden classes would help
-		*/
+	*/
 	.handle-actions {
 		display: none;
 	}

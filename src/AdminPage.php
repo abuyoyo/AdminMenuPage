@@ -1,7 +1,8 @@
 <?php
 namespace WPHelper;
 
-use CMB2_Options_Hookup;
+use CMB2;
+use CMB2_Boxes;
 
 defined( 'ABSPATH' ) || die( 'No soup for you!' );
 
@@ -21,8 +22,8 @@ if ( ! class_exists( AdminPage::class ) ):
  * @todo fix is_readable() PHP error when sending callback array
  * @todo is_readable() + is_callable() called twice - on register and on render
  * @todo Merge methods validate_page_hook() + get_hook_suffix()
- * @todo Add 'submenu_title' field and functionality (rename first submenu item) @see CMB2_OptionsPage::replace_submenu_title()
  * @todo Revisit/document 'render' + 'render_cb|render_tpl' usage.
+ * @todo Review multiple pages registering to the same slug with multiple render callbacks.
  */
 class AdminPage
 {
@@ -39,6 +40,13 @@ class AdminPage
 	 * @var string
 	 */
 	protected $menu_title;
+
+	/**
+	 * Title displayed in submenu.
+	 *
+	 * @var string
+	 */
+	protected $submenu_title;
 
 	/**
 	 * User capability required to view page.
@@ -207,24 +215,22 @@ class AdminPage
 		if ( isset( $options->plugin_core ) )
 			$this->plugin_core( $options->plugin_core );
 
+		$this->slug( $options->slug ?? null );
+
 		$this->title( $options->title ?? null );
 
-		if ( ! isset( $options->menu_title ) )
-			$options->menu_title = $this->title;
+		$this->menu_title( $options->menu_title ?? null );
 
-		if ( isset( $options->menu_title ) )
-			$this->menu_title( $options->menu_title );
+		if ( isset( $options->submenu_title ) )
+			$this->submenu_title( $options->submenu_title );
+
+		if ( isset( $options->tab_title ) )
+			$this->tab_title( $options->tab_title );
 
 		if ( isset( $options->capability ) )
 			$this->capability( $options->capability );
 
-		$this->slug( $options->slug ?? null );
-
 		$this->plugin_info( $options->plugin_info ?? null );
-
-		if ( isset( $options->wrap ) ){ // before render()
-			$this->wrap( $options->wrap );
-		}
 
 		if ( isset( $options->render_cb ) ) {
 			$this->render_cb( $options->render_cb );
@@ -238,16 +244,11 @@ class AdminPage
 			$this->render_tpl( $options->render_tpl );
 		}
 
-		// This runs last so we can have 'settings-page' with custom render_tpl
-		if ( isset( $options->render ) )
-			$this->render( $options->render );
+		// Run render after render_cb + render_tpl so we can have 'settings-page' with custom render_tpl
+		$this->render( $options->render ?? null ); // Will use default tpl if empty
 
-
-		if (true)
-			$this->render(); // render anyway - will use default tpl if render is empty
-
-		if (true)
-			$this->wrap(); // set wrap anyway - will set to 'none' if empty
+		// After render
+		$this->wrap( $options->wrap ?? null ); // Will set to 'none' if empty
 
 
 		if ( isset( $options->parent ) )
@@ -261,7 +262,7 @@ class AdminPage
 
 		if ( isset( $options->tab_group ) ){
 			$this->tab_group( $options->tab_group );
-			$this->tab_title( $options->tab_title ?? $options->submenu_title ?? $options->menu_title );
+			$this->tab_title( $options->tab_title ?? $options->submenu_title ?? $options->menu_title ?? $options->title ?? $this->title ); // tab_title redundant - fallbacks are not
 		}
 
 		if ( isset( $options->scripts ) )
@@ -290,7 +291,9 @@ class AdminPage
 	 * @access private
 	 */
 	private function title( $title=null ) {
-		$this->title = $title ?? ( isset( $this->plugin_core ) ? $this->plugin_core->title() : __METHOD__ );
+		$this->title = $title
+			?? $this->plugin_core?->title()
+			?? ucfirst( $this->slug );
 	}
 
 	/**
@@ -300,7 +303,17 @@ class AdminPage
 	 * @access private
 	 */
 	private function menu_title( $menu_title ) {
-		$this->menu_title = $menu_title;
+		$this->menu_title = $menu_title ?? $this->title;
+	}
+
+	/**
+	 * Setter - submenu_title
+	 * WordPress admin menu param
+	 * 
+	 * @access private
+	 */
+	private function submenu_title( $submenu_title ) {
+		$this->submenu_title = $submenu_title;
 	}
 
 	/**
@@ -318,23 +331,12 @@ class AdminPage
 	 * WordPress admin menu param
 	 * 
 	 * @access private
-	 * 
-	 * @todo Remove PluginCore <= 0.24 support.
 	 */
 	private function slug( $slug ) {
-
 		$this->slug ??= $slug // if not empty
 			?: $this->settings['option_key'] // if isset option_key
-			?? (
-				isset( $this->plugin_core )
-					? (
-						method_exists( PluginCore::class, 'token' )
-							? $this->plugin_core->token() // PluginCore ~0.25
-							: str_replace('-','_', strtolower( $this->plugin_core->slug() ) ) // PluginCore <= 0.24
-					)
-					: 'slug' . time() // unique slug
-				);
-
+			?? $this->plugin_core?->slug()
+			?? 'slug' . time(); // "unique" slug - USELESS - AdminPage MUST have id/slug
 	}
 
 	/**
@@ -342,58 +344,25 @@ class AdminPage
 	 * WordPress admin menu param
 	 * 
 	 * @access private
-	 * 
-	 * @todo Convert to PHP 8 match()
 	 */
 	private function parent( $parent ) {
-		switch( $parent ) {
-			case 'dashboard':
-				$this->parent = 'index.php';
-				break;
-			case 'posts':
-				$this->parent = 'edit.php';
-				break;
-			case 'media':
-				$this->parent = 'upload.php';
-				break;
-			case 'pages':
-				$this->parent = 'edit.php?post_type=page';
-				break;
-			case 'comments':
-				$this->parent = 'edit-comments.php';
-				break;
-			case 'themes':
-			case 'appearance': // Official WordPress designation 
-				$this->parent = 'themes.php';
-				break;
-			case 'plugins':
-				$this->parent = 'plugins.php';
-				break;
-			case 'users':
-				$this->parent = 'users.php';
-			case 'options':
-			case 'settings': // Official WordPress designation
-			case 'options-general.php':
-				$this->parent = 'options-general.php';
-				break;
-			case 'tools':
-			case 'tools.php':
-				$this->parent = 'tools.php';
-				break;
-			case 'network':
-			case 'network_settings':
-				$this->parent = 'settings.php';
-				break;
-			case null:
-				break;
-			default:
-				if ( post_type_exists( $this->parent ) ){
-					$this->parent = "edit.php?post_type={$this->parent}";
-					break;
-				}
-				$this->parent = $parent;
-				break;
-		}
+		$this->parent = match( $parent ) {
+			'dashboard'           => 'index.php',
+			'posts'               => 'edit.php',
+			'media'               => 'upload.php',
+			'pages'               => 'edit.php?post_type=page',
+			'comments'            => 'edit-comments.php',
+			'appearance', // Official WordPress designation 
+			'themes'              => 'themes.php',
+			'plugins'             => 'plugins.php',
+			'users'               => 'users.php',
+			'settings', // Official WordPress designation
+			'options'             => 'options-general.php',
+			'tools'               => 'tools.php',
+			'network',
+			'network_settings'    => 'settings.php',
+			default               => post_type_exists( $parent ?? '' ) ? "edit.php?post_type={$parent}" : $parent,
+		};
 	}
 
 	/**
@@ -426,29 +395,6 @@ class AdminPage
 		$this->tab_group = $tab_group;
 
 		add_filter( 'cmb2_tab_group_tabs', [ $this, 'add_to_tab_group' ], 10, 2 );
-		add_action( 'cmb2_admin_init', function(){
-			/**
-			 * When deactivating CMB2 and reactivating - got this fatal error:
-			 * 
-			 * Fatal error: Uncaught Error: Argument 1 passed to CMB2_Options_Hookup::__construct()
-			 * must be an instance of CMB2, bool given,
-			 * called in \wp-content\plugins\cgv\inc\CGV.php on line 56
-			 * in \wp-content\plugins\cmb2\includes\CMB2_Options_Hookup.php on line 39
-			 * 
-			 * Only allow adding single hookup for tab_group action (fixes multiple nav-tab elements on non-CMB2 pages)
-			 * Validate CMB2 meta-box exists (@see Fatal error above).
-			 * 
-			 * @var CMB2|bool $cmb
-			 */
-			if (
-				! has_action( "wphelper/adminpage/tab_nav/{$this->tab_group}" )
-				&&
-				( $cmb = cmb2_get_metabox( $this->parent ) )
-			) {
-				$hookup = new CMB2_Options_Hookup( $cmb, $this->slug );
-				add_action ( "wphelper/adminpage/tab_nav/{$this->tab_group}", [ $hookup, 'options_page_tab_nav_output' ] );
-			}
-		});
 	}
 
 	/**
@@ -475,8 +421,6 @@ class AdminPage
 	 * 										- null
 	 * 
 	 * @return void Sets `$this->render` to ( `custom-callback | custom-template | default-template | settings-page | cmb2 | cmb2-tabs | cmb2-unavailable` )
-	 * 
-	 * @todo Revisit null coalescing $this->render. We should only call this once. We call it twice(second time with null).
 	 */
 	private function render( $render=null ) {
 		if ( 'settings-page' == $render ) {
@@ -486,7 +430,7 @@ class AdminPage
 
 			// validate
 			if ( ! defined( 'CMB2_LOADED' ) ){
-				$this->render_tpl( __DIR__ . '/tpl/wrap-cmb2-unavailable.php' );
+				$this->render_tpl( __DIR__ . '/tpl/card-cmb2-unavailable.php' );
 				$this->render ??= 'cmb2-unavailable';
 			} else {
 				/**
@@ -503,7 +447,7 @@ class AdminPage
 			$this->render_tpl( $render );
 			$this->render ??= 'custom-template';
 		} else {
-			$this->render_tpl( __DIR__ . '/tpl/wrap-default.php' );
+			$this->render_tpl( __DIR__ . '/tpl/card-default.php' );
 			$this->render ??= 'default-template';
 		}
 	}
@@ -543,17 +487,20 @@ class AdminPage
 	 * Default: none
 	 * 
 	 * @access private
+	 * 
+	 * @todo Review if wrap='none' is neccessary or if wrap can be empty.
 	 */
 	private function wrap($wrap=null){
 
-		// we already have it
-		if ($this->wrap)
+		// We already have it
+		if ( $this->wrap )
 			return;
 
-		if ( ! empty($wrap) ){
-			$this->wrap = 'simple';
-		} else {
+		if ( empty( $wrap ) ){
 			$this->wrap = 'none';
+		} else {
+			// We set to simple first - and override later if necessary
+			$this->wrap = 'simple';
 		}
 
 		if ( 'sidebar' == $wrap ){
@@ -561,36 +508,31 @@ class AdminPage
 		}
 
 		// if plugin_info == true we set to sidebar regardless of passed $wrap parameter
-		if ( ! empty($this->plugin_info) ){
+		if ( ! empty( $this->plugin_info ) ){
 			$this->wrap = 'sidebar';
 		}
 
-		if ( 'settings-page' == $this->render ){
-			if ( empty($this->plugin_info) ){
-				$this->wrap = 'simple';
-			}
+		if ( 'settings-page' == $this->render && empty( $this->plugin_info ) ) {
+			$this->wrap = 'simple';
 		}
 
-		if ( 'default-template' == $this->render ){
-			/**
-			 * default template has its own .wrap element.
-			 * This is to reset 'sidebar' if plugin_info=true.
-			 * When 'sidebar' is set Plugin Info box will appear but 2 nested .wrap elements.
-			 * 
-			 * @todo separate default card from .wrap element
-			 */
-			$this->wrap = 'none';
+		if ( 'default-template' == $this->render && 'none' == $this->wrap ){
+			$this->wrap = 'simple';
+		}
+		
+		if ( 'cmb2-unavailable' == $this->render && 'none' == $this->wrap ){
+			$this->wrap = 'simple';
 		}
 	}
 
 	/**
 	 * Setter - plugin_info
 	 * 
-	 * accepts:
-	 *     callable: Function that prints plugin info box
-	 *     boolean true (or non-empty value): print default 
+	 * Variable $plugin_info will only be set to true if PluginCore instance and MetaBox::add() method are available.
 	 * 
 	 * @access private
+	 * 
+	 * @param callable|boolean|mixed $plugin_info - Callable that renders the plugin info box | Boolean/truthy value to generate from PluginCore data. 
 	 */
 	private function plugin_info( $plugin_info ){
 
@@ -611,7 +553,12 @@ class AdminPage
 	 */
 	public function add_to_tab_group( $tabs, $tab_group ){
 		if ( $tab_group == $this->tab_group ){
-			$tabs[ $this->slug ] = $this->tab_title;
+			if ( empty( $this->parent ) ) {
+				//	if parent page - set as first tab
+				$tabs = array_merge( [ $this->slug => $this->tab_title ], $tabs );
+			} else {
+				$tabs[ $this->slug ] = $this->tab_title;
+			}
 		}
 		return $tabs;
 	}
@@ -666,6 +613,7 @@ class AdminPage
 		$options = [
 			'title' => $this->title,
 			'menu_title' => $this->menu_title,
+			'submenu_title' => $this->submenu_title,
 			'capability' => $this->capability,
 			'slug' => $this->slug,
 			'parent' => $this->parent,
@@ -690,15 +638,9 @@ class AdminPage
 	 * REGISTER MENU - NOOP/DEPRECATE NOTICE
 	 * 
 	 * Empty function. Kept here for backward-compatibility purposes.
-	 * 
 	 * All setup operations are now made in the constructor. This function is empty and will be deprecated.
 	 * 
-	 * This runs for all registers
-	 * hook_suffix not defined yet
-	 * 
-	 * inside WPHelper namespace
-	 * \get_current_screen() function not defined
-	 * \current_action() also????
+	 * @deprecated
 	 */
 	function setup(){
 		_doing_it_wrong( __METHOD__, 'Deprecated. Noop/no-op. This function will be removed in v1.0', '0.14' );
@@ -754,7 +696,8 @@ class AdminPage
 			$this->settings_page = new SettingsPage($this);
 		}
 
-		add_action ( 'admin_menu' , [ $this , 'add_menu_page' ], 11 );
+		$priority = empty( $this->parent ) ? 9 : 11;
+		add_action ( 'admin_menu' , [ $this , 'add_menu_page' ], $priority );
 
 	}
 
@@ -777,6 +720,16 @@ class AdminPage
 					$this->icon_url,
 					$this->position
 				);
+
+				// If parent && has subtitle - remove first submenu and replace menu_title parameter.
+				if (
+					! empty( $this->submenu_title )
+					&&
+					$this->menu_title != $this->submenu_title
+				){
+					$this->replace_submenu_title();
+				}
+
 				break;
 			case 'options':
 			case 'settings':
@@ -937,22 +890,12 @@ class AdminPage
 	 * 
 	 * @since 0.3 _enqueue_scripts_actual()
 	 * @since 0.4 admin_enqueue_scripts()
+	 * @since 0.42 Remove $hook param
 	 */
-	public function admin_enqueue_scripts( $hook ) {
-
-		// redundant
-		// this only gets called on load-{$this->hook_suffix} anyway
-		if( $hook != $this->hook_suffix ) {
-			return;
-		}
-
-		if ( ! $this->scripts)
-			return;
-
+	public function admin_enqueue_scripts() {
 		foreach ( $this->scripts as $script_args ){
 			wp_enqueue_script( ...$script_args );
 		}
-
 	}
 
 	/**
@@ -960,25 +903,15 @@ class AdminPage
 	 * Enqueue user-provided styles on admin page.
 	 * 
 	 * @since 0.10
+	 * @since 0.42 Remove $hook param
 	 * 
 	 * @hook admin_enqueue_styles
 	 * @access private
 	 */
-	public function admin_enqueue_styles( $hook ) {
-
-		// redundant
-		// this only gets called on load-{$this->hook_suffix} anyway
-		if( $hook != $this->hook_suffix ) {
-			return;
-		}
-
-		if ( ! $this->styles)
-			return;
-
+	public function admin_enqueue_styles() {
 		foreach ( $this->styles as $style_args ){
 			wp_enqueue_style( ...$style_args );
 		}
-
 	}
 
 	/**
@@ -1224,6 +1157,72 @@ class AdminPage
 		}
 
 		return true;
+	}
+
+	/**
+	 * Replace submenu title of parent item
+	 *
+	 * @since 0.42
+	 */
+	private function replace_submenu_title(){
+		remove_submenu_page( $this->slug, $this->slug );
+		add_submenu_page(
+			$this->slug,
+			$this->title,
+			$this->submenu_title,
+			$this->capability,
+			$this->slug,
+			[ $this , 'render_admin_page' ],
+			0
+		);
+	}
+
+	/**
+	 * UNUSED
+	 * 
+	 * @see CMB2_Options_Hookup::options_page_tab_nav_output()
+	 * 
+	 * Display options-page Tab Navigation output.
+	 *
+	 * @since 0.42
+	 */
+	public function options_page_tab_nav_output() {
+		load_template( __DIR__ . '/tpl/tab-nav-simple.php', false, [ 'admin_page' => $this ] );
+	}
+	
+	/**
+	 * @see CMB2_Options_Hookup::get_tab_group_tabs()
+	 * 
+	 * Gets navigation tabs array for CMB2 options pages which share the
+	 * same tab_group property.
+	 *
+	 * @since 0.42
+	 * 
+	 * @uses CMB2_Boxes
+	 * @uses CMB2
+	 * 
+	 * @return array Array of tab information ($option_key => $tab_title)
+	 */
+	public function get_tab_group_tabs() {
+		$tabs = [];
+
+		if (
+			! empty( $this->tab_group )
+			&&
+			class_exists( CMB2_Boxes::class )
+		) {
+			/** @var CMB2 $cmb */
+			foreach ( CMB2_Boxes::get_by( 'tab_group', $this->tab_group ) as $cmb ) {
+				$option_key = $cmb->options_page_keys();
+
+				// Must have an option key, must be an options page box.
+				if ( isset( $option_key[0] ) && 'options-page' === $cmb->mb_object_type() ) {
+					$tabs[ $option_key[0] ] = $cmb->prop( 'tab_title', $cmb->prop( 'title' ) );
+				}
+			}
+		}
+
+		return apply_filters( 'cmb2_tab_group_tabs', $tabs, $this->tab_group );
 	}
 }
 endif;
