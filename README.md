@@ -3,7 +3,7 @@
 > Helper class for simple admin menu page registration in WordPress.
 
 ## Requirements
-* PHP >= 7.4
+* PHP >= 8.0
 * [Composer](https://getcomposer.org/)
 * [WordPress](https://wordpress.org)
 
@@ -31,7 +31,7 @@ use WPHelper\AdminPage;
 
 // Register the admin menu page.
 $args = [
-    'title' => 'The Tile of My Page', // title - passed to add_menu_page
+    'title' => 'The Title of My Page', // title - passed to add_menu_page
     'menu_title' => 'Page Title', // menu_title - passed to add_menu_page (optional - will use title if none provided)
     'capability' => 'manage_options', // capability - passed to add_menu_page (optional - will default to 'manage_options')
     'slug' => 'my_page', // slug - passed to add_menu_page

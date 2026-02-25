@@ -9,9 +9,18 @@ if ( ! trait_exists( CMB2_Override_Meta::class ) ):
  * 
  * Override default cmb2 meta.
  * Saves each field as separate option in wp_options table
+ * 
+ * @since 0.14
+ * 
+ * @link https://github.com/CMB2/CMB2-Snippet-Library/blob/master/filters-and-actions/override-cmb2-data-source.php
  */
 trait CMB2_Override_Meta{
 
+	/**
+	 * Trait method
+	 * 
+	 * @since 0.14
+	 */
 	function cmb2_override_fields( $fields ){
 		foreach( $fields as $field ){
 			add_filter( "cmb2_override_{$field['id']}_meta_value",  [ $this, 'cmb2_override_get' ], 10, 4 );
@@ -23,6 +32,7 @@ trait CMB2_Override_Meta{
 	/**
 	 * cmb2_override_meta_value
 	 * 
+	 * @since 0.14
 	 */
 	function cmb2_override_get( $override, $args, $field_args, $field ) {
 		return get_option( $field_args['field_id'], '' );
@@ -31,6 +41,7 @@ trait CMB2_Override_Meta{
 	/**
 	 * cmb2_override_meta_save
 	 * 
+	 * @since 0.14
 	 */
 	function cmb2_override_save( $override, $args, $field_args, $field ) {
 		// Here, we're storing the data to the options table, but you can store to any data source here.
@@ -42,6 +53,7 @@ trait CMB2_Override_Meta{
 	/**
 	 * cmb2_override_meta_remove
 	 * 
+	 * @since 0.14
 	 */
 	function cmb2_override_delete( $override, $args, $field_args, $field ) {
 		// Here, we're removing from the options table, but you can query to remove from any data source here.
