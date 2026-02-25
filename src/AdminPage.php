@@ -232,10 +232,6 @@ class AdminPage
 
 		$this->plugin_info( $options->plugin_info ?? null );
 
-		if ( isset( $options->wrap ) ){ // before render()
-			$this->wrap( $options->wrap );
-		}
-
 		if ( isset( $options->render_cb ) ) {
 			$this->render_cb( $options->render_cb );
 		}
@@ -251,8 +247,8 @@ class AdminPage
 		// Run render after render_cb + render_tpl so we can have 'settings-page' with custom render_tpl
 		$this->render( $options->render ?? null ); // Will use default tpl if empty
 
-		if (true)
-			$this->wrap(); // set wrap anyway - will set to 'none' if empty
+		// After render
+		$this->wrap( $options->wrap ?? null ); // Will set to 'none' if empty
 
 
 		if ( isset( $options->parent ) )
@@ -434,7 +430,7 @@ class AdminPage
 
 			// validate
 			if ( ! defined( 'CMB2_LOADED' ) ){
-				$this->render_tpl( __DIR__ . '/tpl/wrap-cmb2-unavailable.php' );
+				$this->render_tpl( __DIR__ . '/tpl/card-cmb2-unavailable.php' );
 				$this->render ??= 'cmb2-unavailable';
 			} else {
 				/**
@@ -451,7 +447,7 @@ class AdminPage
 			$this->render_tpl( $render );
 			$this->render ??= 'custom-template';
 		} else {
-			$this->render_tpl( __DIR__ . '/tpl/wrap-default.php' );
+			$this->render_tpl( __DIR__ . '/tpl/card-default.php' );
 			$this->render ??= 'default-template';
 		}
 	}
@@ -491,17 +487,20 @@ class AdminPage
 	 * Default: none
 	 * 
 	 * @access private
+	 * 
+	 * @todo Review if wrap='none' is neccessary or if wrap can be empty.
 	 */
 	private function wrap($wrap=null){
 
-		// we already have it
-		if ($this->wrap)
+		// We already have it
+		if ( $this->wrap )
 			return;
 
-		if ( ! empty($wrap) ){
-			$this->wrap = 'simple';
-		} else {
+		if ( empty( $wrap ) ){
 			$this->wrap = 'none';
+		} else {
+			// We set to simple first - and override later if necessary
+			$this->wrap = 'simple';
 		}
 
 		if ( 'sidebar' == $wrap ){
@@ -509,25 +508,20 @@ class AdminPage
 		}
 
 		// if plugin_info == true we set to sidebar regardless of passed $wrap parameter
-		if ( ! empty($this->plugin_info) ){
+		if ( ! empty( $this->plugin_info ) ){
 			$this->wrap = 'sidebar';
 		}
 
-		if ( 'settings-page' == $this->render ){
-			if ( empty($this->plugin_info) ){
-				$this->wrap = 'simple';
-			}
+		if ( 'settings-page' == $this->render && empty( $this->plugin_info ) ) {
+			$this->wrap = 'simple';
 		}
 
-		if ( 'default-template' == $this->render ){
-			/**
-			 * default template has its own .wrap element.
-			 * This is to reset 'sidebar' if plugin_info=true.
-			 * When 'sidebar' is set Plugin Info box will appear but 2 nested .wrap elements.
-			 * 
-			 * @todo separate default card from .wrap element
-			 */
-			$this->wrap = 'none';
+		if ( 'default-template' == $this->render && 'none' == $this->wrap ){
+			$this->wrap = 'simple';
+		}
+		
+		if ( 'cmb2-unavailable' == $this->render && 'none' == $this->wrap ){
+			$this->wrap = 'simple';
 		}
 	}
 
