@@ -1,6 +1,27 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.42
+Release date: Feb 26 2026
+
+### Removed
+- Drop support for PHP < 8.0.
+
+### Added
+- Accept option `submenu_title` to replace the menu title of the first submenu item (duplicate of parent menu item).
+- Support nav-tabs across all page types. Independent of, yet compatible with, CMB2 implementation.
+- Add function `wph_reduce_path()` to truncate library paths shown in WPHelper Debug info meta box. Define constant `WPH_KNOWN_LOCATIONS` as array of known paths to be truncated. 
+
+### Internal
+- Significant code refactoring.
+- No longer use action `wphelper/adminpage/tab_nav/$slug` to render tab-nav.
+- Card templates
+	- Remove `.wrap` element from default and CMB2 missing card templates.
+	- Rename templates `tpl/card-default`, `tpl/card-cmb2-unavailable`. 
+
+### Dependencies
+- PHP >= 8.0
+
 ## 0.41
 Release date: Oct 17 2024
 

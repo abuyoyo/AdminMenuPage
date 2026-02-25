@@ -3,7 +3,7 @@
 > Helper class for simple admin menu page registration in WordPress.
 
 ## Requirements
-* PHP >= 7.4
+* PHP >= 8.0
 * [Composer](https://getcomposer.org/)
 * [WordPress](https://wordpress.org)
 
