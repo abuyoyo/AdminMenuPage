@@ -280,8 +280,10 @@ class AdminPage
 		/**
 		 * Bootstrap on init. Do not call directly from constructor.
 		 * That way setter functions can be called after instance is created.
+		 * 
+		 * priority 20 - allow constructor to be called on 'init'.
 		 */
-		add_action( 'init', [ $this, 'init' ] );
+		add_action( 'init', [ $this, 'init' ], 20 );
 	}
 
 	/**
