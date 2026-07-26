@@ -488,7 +488,7 @@ class AdminPage
 	 * 
 	 * @access private
 	 * 
-	 * @todo Review if wrap='none' is neccessary or if wrap can be empty.
+	 * @todo Review if wrap='none' is necessary or if wrap can be empty.
 	 */
 	private function wrap($wrap=null){
 
