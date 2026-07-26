@@ -1,6 +1,12 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.43
+Release date: Jul 26 2026
+
+### Changed
+- Run `init()` on priority 20. Allows constructor to be called on `init` hook. Necessary for passing translatable strings.
+
 ## 0.42
 Release date: Feb 26 2026
 
