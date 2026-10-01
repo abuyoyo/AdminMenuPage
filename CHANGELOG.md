@@ -1,6 +1,18 @@
 # Changelog
 WPHelper\AdminMenuPage
 
+## 0.44
+Release date: Oct 2 2026
+
+### Added
+- Add `plugin-update-checker` to WPHelper debug meta-box.
+
+### Removed
+- Remove deprecated class `AdminMenuPage`.
+- Remove deprecated methods `AdminPage::setup()`, `AdminPage::render_plugin_info_box()`, `PluginInfoMetaBox::plugin_info_box()`. 
+- Remove deprecated argument from `SettingsPage` constructor.
+- Remove class `CMB2_OptionsPage_Multi` and trait `CMB2_Override_Meta`.
+
 ## 0.43
 Release date: Jul 26 2026
 
