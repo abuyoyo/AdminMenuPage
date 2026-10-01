@@ -1,6 +1,6 @@
 {
 	"name": "abuyoyo/adminmenupage",
-	"description": "WordPress admin menu page helper class",
+	"description": "WordPress admin menu page helper class.",
 	"type": "library",
 	"version": "0.43",
 	"time": "2026-07-26",

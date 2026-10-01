@@ -16,8 +16,6 @@ if ( ! class_exists( SettingsPage::class ) ):
  * Helper class
  * Create WordPress Setting page.
  * 
- * @author  abuyoyo
- * 
  * @since 0.11
  * 
  * @todo Remove deprecated $settings parameter from constructor.

@@ -163,7 +163,7 @@ class AdminPage
     /**
      * Methods
      *
-     * @var Callable[] arrays of Callable methods to hook on `load-{$hook_suffix}` 
+     * @var callable[] arrays of Callable methods to hook on `load-{$hook_suffix}` 
      */
 	protected $methods = [];
 
@@ -289,8 +289,6 @@ class AdminPage
 	/**
 	 * Setter - title
 	 * WordPress admin menu param
-	 * 
-	 * @access private
 	 */
 	private function title( $title=null ) {
 		$this->title = $title
@@ -301,40 +299,32 @@ class AdminPage
 	/**
 	 * Setter - menu_title
 	 * WordPress admin menu param
-	 * 
-	 * @access private
 	 */
-	private function menu_title( $menu_title ) {
+	private function menu_title( ?string $menu_title ) {
 		$this->menu_title = $menu_title ?? $this->title;
 	}
 
 	/**
 	 * Setter - submenu_title
 	 * WordPress admin menu param
-	 * 
-	 * @access private
 	 */
-	private function submenu_title( $submenu_title ) {
+	private function submenu_title( ?string $submenu_title ) {
 		$this->submenu_title = $submenu_title;
 	}
 
 	/**
 	 * Setter - capability
 	 * WordPress admin menu param
-	 * 
-	 * @access private
 	 */
-	private function capability( $capability ) {
+	private function capability( ?string $capability ) {
 		$this->capability = $capability;
 	}
 
 	/**
 	 * Setter - slug
 	 * WordPress admin menu param
-	 * 
-	 * @access private
 	 */
-	private function slug( $slug ) {
+	private function slug( ?string $slug ) {
 		$this->slug ??= $slug // if not empty
 			?: $this->settings['option_key'] // if isset option_key
 			?? $this->plugin_core?->slug()
@@ -344,10 +334,8 @@ class AdminPage
 	/**
 	 * Setter - parent
 	 * WordPress admin menu param
-	 * 
-	 * @access private
 	 */
-	private function parent( $parent ) {
+	private function parent( ?string $parent ) {
 		$this->parent = match( $parent ) {
 			'dashboard'           => 'index.php',
 			'posts'               => 'edit.php',
@@ -370,30 +358,24 @@ class AdminPage
 	/**
 	 * Setter - icon_url
 	 * WordPress admin menu param
-	 * 
-	 * @access private
 	 */
-	private function icon_url( $icon_url ) {
+	private function icon_url( string $icon_url ) {
 		$this->icon_url = $icon_url;
 	}
 
 	/**
 	 * Setter - position
 	 * WordPress admin menu param
-	 * 
-	 * @access private
 	 */
-	private function position( $position ) {
+	private function position( int|float $position ) {
 		$this->position = $position;
 	}
 
 	/**
 	 * Setter - tab_group
 	 * CMB2 Tab Group - used by regular 'wrap' pages as well.
-	 * 
-	 * @access private
 	 */
-	private function tab_group( $tab_group ) {
+	private function tab_group( ?string $tab_group ) {
 		$this->tab_group = $tab_group;
 
 		add_filter( 'cmb2_tab_group_tabs', [ $this, 'add_to_tab_group' ], 10, 2 );
@@ -402,10 +384,8 @@ class AdminPage
 	/**
 	 * Setter - tab_title
 	 * CMB2 Tab Title - only set if tab_group.
-	 * 
-	 * @access private
 	 */
-	private function tab_title( $tab_title ) {
+	private function tab_title( ?string $tab_title ) {
 		$this->tab_title = $tab_title;
 	}
 
@@ -414,9 +394,7 @@ class AdminPage
 	 * Sets $this->render string
 	 * Sets $this->render_cb or $this->render_tpl
 	 * 
-	 * @access private
-	 * 
-	 * @param string|Callable|Readable|null $render
+	 * @param string|callable|resource|null $render
 	 * 										- Valid preset string ( `settings-page | cmb2 | cmb2-tabs` )
 	 * 										- Render callback function
 	 * 										- PHP template file
@@ -458,8 +436,6 @@ class AdminPage
 	 * Setter - render_cb
 	 * 
 	 * Set callback function in $this->render_cb
-	 * 
-	 * @access private
 	 */
 	private function render_cb($render_cb){
 
@@ -472,8 +448,6 @@ class AdminPage
 	 * Setter - render_tpl
 	 * 
 	 * Set template filename in $this->render_tpl
-	 * 
-	 * @access private
 	 */
 	private function render_tpl($render_tpl){
 
@@ -488,11 +462,9 @@ class AdminPage
 	 * Set wrap type.
 	 * Default: none
 	 * 
-	 * @access private
-	 * 
 	 * @todo Review if wrap='none' is necessary or if wrap can be empty.
 	 */
-	private function wrap($wrap=null){
+	private function wrap( ?string $wrap=null ){
 
 		// We already have it
 		if ( $this->wrap )
@@ -532,8 +504,6 @@ class AdminPage
 	 * 
 	 * Variable $plugin_info will only be set to true if PluginCore instance and MetaBox::add() method are available.
 	 * 
-	 * @access private
-	 * 
 	 * @param callable|boolean|mixed $plugin_info - Callable that renders the plugin info box | Boolean/truthy value to generate from PluginCore data. 
 	 */
 	private function plugin_info( $plugin_info ){
@@ -553,7 +523,7 @@ class AdminPage
 	 * 
 	 * @hook cmb2_tab_group_tabs
 	 */
-	public function add_to_tab_group( $tabs, $tab_group ){
+	public function add_to_tab_group( array $tabs, string $tab_group ){
 		if ( $tab_group == $this->tab_group ){
 			if ( empty( $this->parent ) ) {
 				//	if parent page - set as first tab
@@ -568,8 +538,6 @@ class AdminPage
 	/**
 	 * Setter - scripts
 	 * Scripts to enqueue on admin page
-	 * 
-	 * @access private
 	 */
 	private function scripts($scripts){
 		$this->scripts = $scripts;
@@ -578,8 +546,6 @@ class AdminPage
 	/**
 	 * Setter - styles
 	 * Styles to enqueue on admin page
-	 * 
-	 * @access private
 	 */
 	private function styles($styles){
 		$this->styles = $styles;
@@ -588,20 +554,18 @@ class AdminPage
 	/**
 	 * Setter - methods
 	 * Callables to run on 'load-{$hook_suffix}'
-	 * 
-	 * @access private
 	 */
-	function methods($methods){
+	private function methods($methods){
 		$this->methods = $methods;
 	}
 
-	function plugin_core($plugin_core){
+	private function plugin_core($plugin_core){
 		if ( $plugin_core instanceof PluginCore ){
 			$this->plugin_core = $plugin_core;
 		}
 	}
 
-	function settings($settings){
+	private function settings( array $settings ){
 		$this->settings = $settings;
 	}
 
@@ -1096,8 +1060,6 @@ class AdminPage
 	 * 
 	 * Call user-provided callable.
 	 * Or else attempt to create PluginInfoMetaBox class from $this->plugin_core and call its render function.
-	 * 
-	 * @access private?
 	 * 
 	 * @since 0.17 render_plugin_info_box()
 	 * @since 0.25 render_plugin_info_meta_box() replaces/deprecates render_plugin_info_box()

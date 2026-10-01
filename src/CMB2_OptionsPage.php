@@ -13,9 +13,9 @@ if ( ! class_exists( CMB2_OptionsPage::class ) ):
  * Helper class
  * Create WordPress Setting page using CMB2 Options Hookup.
  * 
- * @author  abuyoyo
- * 
  * @see CMB2_Options_Hookup::options_page_output and 'display_cb' - to manipulate tabs
+ * 
+ * @since 0.14
  */
 class CMB2_OptionsPage{
 
@@ -40,9 +40,11 @@ class CMB2_OptionsPage{
 	protected $cmb2_options;
 
 	/**
-	 * @param AdminPage $admin_page
+	 * Constructor
+	 * 
+	 * @since 0.14
 	 */
-	function __construct( $admin_page ){
+	function __construct( AdminPage $admin_page ){
 
 		$this->admin_page = $admin_page;
 
@@ -166,6 +168,11 @@ class CMB2_OptionsPage{
 
 	}
 
+	/**
+	 * Register CMB2 metabox
+	 * 
+	 * @since 0.14
+	 */
 	public function register_metabox(){
 		$this->cmb = new CMB2( $this->cmb2_options );
 	}
@@ -173,11 +180,9 @@ class CMB2_OptionsPage{
 	/**
 	 * Display options-page output. To override, set 'display_cb' box property.
 	 * 
-	 * @param CMB2_Options_Hookup $hookup - instance of Options Page Hookup class (caller of this function)
-	 * 
-	 * @see CMB2_Options_Hookup
+	 * @since 0.14
 	 */
-	public function options_page_output( $hookup ) {
+	public function options_page_output( CMB2_Options_Hookup $hookup ) {
 		
 		$options = $this->admin_page->options();
 
@@ -191,12 +196,14 @@ class CMB2_OptionsPage{
 			? __DIR__ . '/tpl/wrap-cmb2-sidebar.php'
 			: __DIR__ . '/tpl/wrap-cmb2-simple.php';
 
-		load_template( $tpl, false, $args);
+		load_template( $tpl, false, $args );
 
 	}
 
-
-	private function convert_field_to_cmb2_field( $field ){
+	/**
+	 * @since 0.14
+	 */
+	private function convert_field_to_cmb2_field( array $field ){
 
 		$field['id']   ??= $field['slug']        ?? null;
 		$field['name'] ??= $field['title']       ?? null;
@@ -212,6 +219,8 @@ class CMB2_OptionsPage{
 
 	/**
 	 * Replace submenu title of parent item
+	 * 
+	 * @since 0.17
 	 */
 	public function replace_submenu_title(){
 
