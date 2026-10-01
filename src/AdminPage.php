@@ -1027,23 +1027,6 @@ class AdminPage
 	}
 
 	/**
-	 * 
-	 * @see render_plugin_info_meta_box()
-	 * @deprecated
-	 * 
-	 * @since 0.17
-	 * @since 0.25 deprecated
-	 */
-	public function render_plugin_info_box(){
-
-		_doing_it_wrong( __METHOD__, 'Deprecated. Use render_plugin_info_meta_box() instead.', '0.26' );
-
-		$this->render_plugin_info_meta_box();
-	}
-
-
-
-	/**
 	 * Render plugin info meta-box
 	 * 
 	 * Call user-provided callable.
