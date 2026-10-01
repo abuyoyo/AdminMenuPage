@@ -97,6 +97,17 @@ if ( class_exists( Screen_Meta_Links::class ) ) {
 	];
 }
 
+if ( class_exists( PucFactory::class ) ){
+	$wph_ref = new ReflectionClass( PucFactory::class );
+	$wph_file = $wph_ref->getFileName();
+
+	$wph_libraries[] = [
+		'name' => 'PluginUpdateChecker',
+		'ver' => $wph_ref->getStaticPropertyValue( 'latestCompatibleVersion' ),
+		'loc' =>  wph_reduce_path( dirname( $wph_file, 3 ) ),
+	];
+}
+
 unset( $wph_ref );
 unset( $wph_file );
 unset( $wph_composer );
