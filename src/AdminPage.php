@@ -191,7 +191,7 @@ class AdminPage
 	/**
 	 * CMB2 custom settings page
 	 *
-	 * @var CMB2_OptionsPage|CMB2_OptionsPage_Multi
+	 * @var CMB2_OptionsPage
 	 */
 	protected $cmb2_page;
 
@@ -630,17 +630,7 @@ class AdminPage
 		}
 
 		if ( in_array( $this->render, [ 'cmb2', 'cmb2-tabs' ] ) ){
-
-			/**
-			 * Option 'multi' is not well documented.
-			 * Default CMB2 Options pages save forms into single database option.
-			 * "Multi" pages allow creating CMB2 Option pages where every field is saved as separate option (ie. multi-option).
-			 * 
-			 * @todo Rename 'multi' option + class CMB2_OptionsPage_Multi.
-			 */
-			$this->cmb2_page = $this->settings['options_type'] ?? '' == 'multi'
-				? new CMB2_OptionsPage_Multi( $this )
-				: new CMB2_OptionsPage( $this );
+			$this->cmb2_page = new CMB2_OptionsPage( $this );
 
 			// skip add_menu_page
 			return;
