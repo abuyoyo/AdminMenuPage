@@ -601,18 +601,6 @@ class AdminPage
 	}
 
 	/**
-	 * REGISTER MENU - NOOP/DEPRECATE NOTICE
-	 * 
-	 * Empty function. Kept here for backward-compatibility purposes.
-	 * All setup operations are now made in the constructor. This function is empty and will be deprecated.
-	 * 
-	 * @deprecated
-	 */
-	function setup(){
-		_doing_it_wrong( __METHOD__, 'Deprecated. Noop/no-op. This function will be removed in v1.0', '0.14' );
-	}
-
-	/**
 	 * Set default user capability if none provided
 	 * 
 	 * Finish constructing object after all info is available
