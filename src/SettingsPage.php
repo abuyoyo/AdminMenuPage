@@ -16,8 +16,6 @@ if ( ! class_exists( SettingsPage::class ) ):
  * Helper class
  * Create WordPress Setting page.
  * 
- * @author  abuyoyo
- * 
  * @since 0.11
  * 
  * @todo Remove deprecated $settings parameter from constructor.
@@ -74,19 +72,13 @@ class SettingsPage{
 	public $sanitize_callback;
 
 	/**
-	 * Constructor.
-	 *
-	 * @param AdminPage $admin_page instance
-	 * @param null $settings deprecated
+	 * Constructor
 	 * 
-	 * @todo Remove deprecated $settings parameter from constructor.
+	 * @since 0.11
+	 * @since 0.44 Accept only one parameter.
 	 */
-	public function __construct( $admin_page, $settings = null )
+	public function __construct( AdminPage $admin_page )
 	{
-
-		if ( ! empty( $settings ) ) {
-			_deprecated_argument( __FUNCTION__, '3.0.0' );
-		}
 
 		// save reference to caller instance
 		$this->admin_page = $admin_page;

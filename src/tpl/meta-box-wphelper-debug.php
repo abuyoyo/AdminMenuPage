@@ -10,55 +10,107 @@ use WPHelper\MetaBox;
 use WPHelper\PluginCore;
 use WPHelper\Utility\Singleton;
 use WPHelper\DatabaseTable;
+use WPHelper\PucFactory;
 
-if (class_exists(AdminPage::class)){
-	$wph_admin_ref = new ReflectionClass(AdminPage::class);
-	$wph_admin_file = $wph_admin_ref->getFileName();
-	$wph_admin_composer =  json_decode(file_get_contents( dirname( $wph_admin_file, 2 ) . '/composer.json' )) ;
-	$wph_admin_loc = wph_reduce_path( dirname( $wph_admin_file, 2 ) );
+$wph_libraries = [];
+
+if ( class_exists( AdminPage::class ) ) {
+	$wph_ref = new ReflectionClass( AdminPage::class );
+	$wph_file = $wph_ref->getFileName();
+	$wph_composer =  json_decode( file_get_contents( dirname( $wph_file, 2 ) . '/composer.json' ) );
+
+	$wph_libraries[] = [
+		'name' => 'AdminPage',
+		'ver' => $wph_composer->version,
+		'loc' =>  wph_reduce_path( dirname( $wph_file, 2 ) ),
+	];
 }
 
-if (class_exists(PluginCore::class)){
-	$wph_pc_ref = new ReflectionClass(PluginCore::class);
-	$wph_pc_file = $wph_pc_ref->getFileName();
-	$wph_pc_composer =  json_decode(file_get_contents( dirname( $wph_pc_file ) . '/composer.json' )) ;
-	$wph_pc_loc = wph_reduce_path( dirname( $wph_pc_file ) );
+if ( class_exists( PluginCore::class ) ) {
+	$wph_ref = new ReflectionClass( PluginCore::class );
+	$wph_file = $wph_ref->getFileName();
+	$wph_composer =  json_decode( file_get_contents( dirname( $wph_file ) . '/composer.json' ) );
+
+	$wph_libraries[] = [
+		'name' => 'PluginCore',
+		'ver' => $wph_composer->version,
+		'loc' =>  wph_reduce_path( dirname( $wph_file ) ),
+	];
 }
 	
-if (class_exists(MetaBox::class)){
-	$wph_mb_ref = new ReflectionClass(MetaBox::class);
-	$wph_mb_file = $wph_mb_ref->getFileName();
-	$wph_mb_composer =  json_decode(file_get_contents( dirname( $wph_mb_file ) . '/composer.json' )) ;
-	$wph_mb_loc = wph_reduce_path( dirname( $wph_mb_file ) );
+if ( class_exists( MetaBox::class ) ) {
+	$wph_ref = new ReflectionClass( MetaBox::class );
+	$wph_file = $wph_ref->getFileName();
+	$wph_composer =  json_decode( file_get_contents( dirname( $wph_file ) . '/composer.json' ) );
+
+	$wph_libraries[] = [
+		'name' => 'MetaBox',
+		'ver' => $wph_composer->version,
+		'loc' =>  wph_reduce_path( dirname( $wph_file ) ),
+	];
 }
 
-if (trait_exists(Singleton::class)){
-	$wph_util_ref = new ReflectionClass(Singleton::class);
-	$wph_util_file = $wph_util_ref->getFileName();
-	$wph_util_composer =  json_decode(file_get_contents( dirname( $wph_util_file, 2 ) . '/composer.json' )) ;
-	$wph_util_loc = wph_reduce_path( dirname( $wph_util_file, 2 ) );
+if ( trait_exists( Singleton::class ) ) {
+	$wph_ref = new ReflectionClass( Singleton::class );
+	$wph_file = $wph_ref->getFileName();
+	$wph_composer =  json_decode( file_get_contents( dirname( $wph_file, 2 ) . '/composer.json' ) );
+
+	$wph_libraries[] = [
+		'name' => 'Utility',
+		'ver' => $wph_composer->version,
+		'loc' =>  wph_reduce_path( dirname( $wph_file, 2 ) ),
+	];
 }
 
-if (function_exists('wph_die')){
-	$wph_util_func = new ReflectionFunction('wph_die');
-	$wph_util_func_file = $wph_util_func->getFileName();
-	$wph_util_func_composer =  json_decode(file_get_contents( dirname( $wph_util_func_file, 3 ) . '/composer.json' )) ;
-	$wph_util_func_loc = wph_reduce_path( dirname( $wph_util_func_file, 3 ) );
+if ( function_exists( 'wph_die' ) ) {
+	$wph_util_func = new ReflectionFunction( 'wph_die' );
+	$wph_file = $wph_util_func->getFileName();
+	$wph_composer =  json_decode( file_get_contents( dirname( $wph_file, 3 ) . '/composer.json' ) );
+
+	$wph_libraries[] = [
+		'name' => 'Utility functions',
+		'ver' => $wph_composer->version,
+		'loc' =>  wph_reduce_path( dirname( $wph_file, 3 ) ),
+	];
 }
 
-if (class_exists(DatabaseTable::class)){
-	$wph_db_ref = new ReflectionClass(DatabaseTable::class);
-	$wph_db_file = $wph_db_ref->getFileName();
-	$wph_db_composer =  json_decode(file_get_contents( dirname( $wph_db_file ) . '/composer.json' )) ;
-	$wph_db_loc = wph_reduce_path( dirname( $wph_db_file ) );
+if ( class_exists( DatabaseTable::class ) ) {
+	$wph_ref = new ReflectionClass( DatabaseTable::class );
+	$wph_file = $wph_ref->getFileName();
+	$wph_composer =  json_decode( file_get_contents( dirname( $wph_file ) . '/composer.json' ) );
+
+	$wph_libraries[] = [
+		'name' => 'DatabaseTable',
+		'ver' => $wph_composer->version,
+		'loc' =>  wph_reduce_path( dirname( $wph_file ) ),
+	];
 }
 
-if (class_exists(Screen_Meta_Links::class)){
-	$sml_ref = new ReflectionClass(Screen_Meta_Links::class);
-	$sml_file = $sml_ref->getFileName();
-	// $sml_composer =  json_decode(file_get_contents( dirname( $sml_file ) . '/composer.json' )) ;
-	$sml_loc = wph_reduce_path( dirname( $sml_file ) );
+if ( class_exists( Screen_Meta_Links::class ) ) {
+	$wph_ref = new ReflectionClass( Screen_Meta_Links::class );
+	$wph_file = $wph_ref->getFileName();
+
+	$wph_libraries[] = [
+		'name' => 'Screen_Meta_Links',
+		'ver' => get_plugin_data( $wph_file )[ 'Version' ],
+		'loc' =>  wph_reduce_path( dirname( $wph_file ) ),
+	];
 }
+
+if ( class_exists( PucFactory::class ) ){
+	$wph_ref = new ReflectionClass( PucFactory::class );
+	$wph_file = $wph_ref->getFileName();
+
+	$wph_libraries[] = [
+		'name' => 'PluginUpdateChecker',
+		'ver' => $wph_ref->getStaticPropertyValue( 'latestCompatibleVersion' ),
+		'loc' =>  wph_reduce_path( dirname( $wph_file, 3 ) ),
+	];
+}
+
+unset( $wph_ref );
+unset( $wph_file );
+unset( $wph_composer );
 
 ?>
 <style>
@@ -66,50 +118,15 @@ if (class_exists(Screen_Meta_Links::class)){
 		word-wrap: break-word;
 	}
 </style>
-<?php if ( ! empty( $wph_admin_composer ) ): ?>
-<p>
-	AdminPage: <?php echo $wph_admin_composer->version; ?><br/>
-	Location: <?php echo $wph_admin_loc; ?><br/>
-<?php endif; ?>
 
-<?php if ( ! empty( $wph_pc_composer ) ): ?>
-<hr>
-<p>
-	PluginCore: <?php echo $wph_pc_composer->version; ?><br/>
-	Location: <?php echo $wph_pc_loc; ?><br/>
+<?php foreach ( $wph_libraries as $k => $wph_lib ): ?>
+<?php if ( $k > 0 ): ?>
+	<hr>
 <?php endif; ?>
+	<p>
+		<?php echo $wph_lib[ 'name' ] ?>: <?php echo $wph_lib[ 'ver' ]; ?><br/>
+		Location: <?php echo $wph_lib[ 'loc' ]; ?>
+	</p>
+<?php endforeach;
 
-<?php if ( ! empty( $wph_mb_composer ) ): ?>
-<hr>
-<p>
-	MetaBox: <?php echo $wph_mb_composer->version; ?><br/>
-	Location: <?php echo $wph_mb_loc; ?><br/>
-<?php endif; ?>
-
-<?php if ( ! empty( $wph_util_composer ) ): ?>
-<hr>
-<p>
-	Utility: <?php echo $wph_util_composer->version; ?><br/>
-	Location: <?php echo $wph_util_loc; ?><br/>
-<?php endif; ?>
-
-<?php if ( ! empty( $wph_util_func_composer ) ): ?>
-	functions: <?php echo $wph_util_func_composer->version; ?><br/>
-	Location: <?php echo $wph_util_func_loc; ?><br/>
-<?php endif; ?>
-
-<?php if ( ! empty( $wph_db_composer ) ): ?>
-<hr>
-<p>
-	DatabaseTable: <?php echo $wph_db_composer->version; ?><br/>
-	Location: <?php echo $wph_db_loc; ?><br/>
-<?php endif; ?>
-
-<?php if ( ! empty( $sml_file ) ): ?>
-<hr>
-<p>
-	Screen_Meta_Links: <?php echo get_plugin_data( $sml_file )['Version']; ?><br/>
-	Location: <?php echo $sml_loc; ?><br/>
-<?php endif; ?>
-
-</p>
+unset( $wph_libraries );

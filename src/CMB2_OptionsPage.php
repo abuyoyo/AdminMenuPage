@@ -13,9 +13,9 @@ if ( ! class_exists( CMB2_OptionsPage::class ) ):
  * Helper class
  * Create WordPress Setting page using CMB2 Options Hookup.
  * 
- * @author  abuyoyo
- * 
  * @see CMB2_Options_Hookup::options_page_output and 'display_cb' - to manipulate tabs
+ * 
+ * @since 0.14
  */
 class CMB2_OptionsPage{
 
@@ -40,9 +40,11 @@ class CMB2_OptionsPage{
 	protected $cmb2_options;
 
 	/**
-	 * @param AdminPage $admin_page
+	 * Constructor
+	 * 
+	 * @since 0.14
 	 */
-	function __construct( $admin_page ){
+	function __construct( AdminPage $admin_page ){
 
 		$this->admin_page = $admin_page;
 
@@ -164,8 +166,28 @@ class CMB2_OptionsPage{
 			add_action('admin_menu', [ $this, 'replace_submenu_title'], 11 );
 		}
 
+		/**
+		 * Setting 'options_type' => 'multi' is not well documented.
+		 * Default CMB2 Options page saves form into a single database option.
+		 * With 'options_type' => 'multi' each field is saved as separate option (ie. multi-option).
+		 * 
+		 * @todo Rename 'options_type' => 'multi' setting.
+		 */
+		if ( $settings['options_type'] ?? '' === 'multi' ) {
+			foreach( $this->fields as $field ){
+				add_filter( "cmb2_override_{$field['id']}_meta_value",  [ $this, 'cmb2_override_get' ],    10, 4 );
+				add_filter( "cmb2_override_{$field['id']}_meta_save",   [ $this, 'cmb2_override_save' ],   10, 4 );
+				add_filter( "cmb2_override_{$field['id']}_meta_remove", [ $this, 'cmb2_override_delete' ], 10, 4 );
+			}
+		}
+
 	}
 
+	/**
+	 * Register CMB2 metabox
+	 * 
+	 * @since 0.14
+	 */
 	public function register_metabox(){
 		$this->cmb = new CMB2( $this->cmb2_options );
 	}
@@ -173,11 +195,9 @@ class CMB2_OptionsPage{
 	/**
 	 * Display options-page output. To override, set 'display_cb' box property.
 	 * 
-	 * @param CMB2_Options_Hookup $hookup - instance of Options Page Hookup class (caller of this function)
-	 * 
-	 * @see CMB2_Options_Hookup
+	 * @since 0.14
 	 */
-	public function options_page_output( $hookup ) {
+	public function options_page_output( CMB2_Options_Hookup $hookup ) {
 		
 		$options = $this->admin_page->options();
 
@@ -191,12 +211,14 @@ class CMB2_OptionsPage{
 			? __DIR__ . '/tpl/wrap-cmb2-sidebar.php'
 			: __DIR__ . '/tpl/wrap-cmb2-simple.php';
 
-		load_template( $tpl, false, $args);
+		load_template( $tpl, false, $args );
 
 	}
 
-
-	private function convert_field_to_cmb2_field( $field ){
+	/**
+	 * @since 0.14
+	 */
+	private function convert_field_to_cmb2_field( array $field ){
 
 		$field['id']   ??= $field['slug']        ?? null;
 		$field['name'] ??= $field['title']       ?? null;
@@ -212,6 +234,8 @@ class CMB2_OptionsPage{
 
 	/**
 	 * Replace submenu title of parent item
+	 * 
+	 * @since 0.17
 	 */
 	public function replace_submenu_title(){
 
@@ -226,5 +250,50 @@ class CMB2_OptionsPage{
 			0,
 		);
 	}
+
+	/**
+	 * @hook cmb2_override_{$field_id}_meta_value
+	 * 
+	 * @since 0.14 CMB2_Override_Meta::cmb2_override_get()
+	 * @since 0.44 Method moved to class CMB2_OptionsPage::cmb2_override_get()
+	 * 
+	 * @link https://github.com/CMB2/CMB2-Snippet-Library/blob/master/filters-and-actions/override-cmb2-data-source.php
+	 */
+	function cmb2_override_get( $override, $args, $field_args, $field ) {
+		return get_option( $field_args['field_id'], '' );
+	}
+
+	/**
+	 * @hook cmb2_override_{$field_id}_meta_save
+	 * 
+	 * @since 0.14 CMB2_Override_Meta::cmb2_override_save()
+	 * @since 0.44 Method moved to class CMB2_OptionsPage::cmb2_override_save()
+	 * 
+	 * @link https://github.com/CMB2/CMB2-Snippet-Library/blob/master/filters-and-actions/override-cmb2-data-source.php
+	 */
+	function cmb2_override_save( $override, $args, $field_args, $field ) {
+		// Here, we're storing the data to the options table, but you can store to any data source here.
+		// If to a custom table, you can use the $args['id'] as the reference id.
+		$updated = update_option( $field_args['id'], $args['value'], false );
+		return !! $updated;
+	}
+
+	/**
+	 * @hook cmb2_override_{$field_id}_meta_remove
+	 * 
+	 * @since 0.14 CMB2_Override_Meta::cmb2_override_delete()
+	 * @since 0.44 Method moved to class CMB2_OptionsPage::cmb2_override_delete()
+	 * 
+	 * @link https://github.com/CMB2/CMB2-Snippet-Library/blob/master/filters-and-actions/override-cmb2-data-source.php
+	 */
+	function cmb2_override_delete( $override, $args, $field_args, $field ) {
+		// Here, we're removing from the options table, but you can query to remove from any data source here.
+		// If from a custom table, you can use the $args['id'] to query against.
+		// (If we do "delete_option", then our default value will be re-applied, which isn't desired.)
+		$updated = update_option( $field_args['id'], '' );
+		// $updated = update_option( $field_args['field_id'], '' );
+		return !! $updated;
+	}
+
 }
 endif;

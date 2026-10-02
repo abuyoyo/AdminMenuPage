@@ -5,7 +5,7 @@
  * Print form tag used by CMB2 options page.
  * 
  * @var CMB2 $cmb
- * @var CMB2_Options_Hook $hookup
+ * @var CMB2_Options_Hookup $hookup
  */
 ?>
 <form class="cmb-form" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="POST" id="<?php echo $cmb->cmb_id; ?>" enctype="multipart/form-data" encoding="multipart/form-data">
